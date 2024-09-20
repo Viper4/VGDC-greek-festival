@@ -7,17 +7,15 @@ public class CameraControl : MonoBehaviour
     [SerializeField] Transform target;
     [SerializeField] float followSpeed = 1f;
 
-    // Start is called before the first frame update
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
-        Vector3 position = Vector2.Lerp(transform.position, target.position, followSpeed * Time.deltaTime);
-        position.z = -10;
-        transform.position = position;
+        Vector3 newPosition = Vector2.Lerp(transform.position, target.position, followSpeed * Time.deltaTime);
+        newPosition.z = -10f; // Keep the camera above everything so we can see
+        transform.position = newPosition;
     }
 }

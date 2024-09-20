@@ -33,6 +33,7 @@ public class Gun : MonoBehaviour
 
     IEnumerator FireRoutine(Vector2 initialVelocity)
     {
+        initialVelocity.y = 0;
         firing = true;
         Rigidbody2D bulletRB = Instantiate(bullet, spawnPoint.position, spawnPoint.rotation).GetComponent<Rigidbody2D>();
         bulletRB.velocity = initialVelocity + (new Vector2(spawnPoint.right.x, spawnPoint.right.y) * bulletSpeed);
