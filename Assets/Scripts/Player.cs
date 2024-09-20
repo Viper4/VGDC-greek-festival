@@ -16,7 +16,9 @@ public class Player : MonoBehaviour
     float velocityY = 0;
     Vector2 moveVelocity;
 
-    [SerializeField] LayerMask floorLayers;
+    [SerializeField] LayerMask groundLayers;
+
+    [SerializeField] Gun gun;
 
     private void Awake()
     {
@@ -25,20 +27,20 @@ public class Player : MonoBehaviour
 
     private void OnEnable()
     {
-        playerInput.Player.Move.Enable();
-        playerInput.Player.Run.Enable();
-        playerInput.Player.Crouch.Enable();
-        playerInput.Player.Jump.Enable();
+        foreach (InputAction action in playerInput)
+        {
+            action.Enable();
+        }
 
-        playerInput.Player.Jump.performed += Jump;
+        playerInput.Player.Fire.performed += Fire;
     }
 
     private void OnDisable()
     {
-        playerInput.Player.Move.Disable();
-        playerInput.Player.Run.Disable();
-        playerInput.Player.Crouch.Disable();
-        playerInput.Player.Jump.Disable();
+        foreach (InputAction action in playerInput)
+        {
+            action.Disable();
+        }
     }
 
     // Start is called before the first frame update
@@ -48,30 +50,17 @@ public class Player : MonoBehaviour
         _collider = GetComponent<Collider2D>();
     }
 
+    // Called every time the Physics engine updates (not tied to framerate, fixed rate)
     private void FixedUpdate()
     {
-        if (IsGrounded())
-        {
-            if(velocityY > 0)
-            {
-                velocityY += Physics2D.gravity.y;
-            }
-            else
-            {
-                velocityY = 0;
-            }
-        }
-        else
-        {
-            velocityY += Physics2D.gravity.y;
-        }
-
-        rb.velocity = moveVelocity + new Vector2(0, velocityY);
+        rb.velocity = moveVelocity + new Vector2(0, rb.velocity.y + velocityY);
+        velocityY = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
+        // Read player input and set moveVelocity. velocityY set separately so we dont multiply velocityY by run/crouch/walk speed
         bool running = playerInput.Player.Run.ReadValue<float>() >= 1f;
         bool crouching = playerInput.Player.Crouch.ReadValue<float>() >= 1f;
         moveVelocity = playerInput.Player.Move.ReadValue<Vector2>();
@@ -87,16 +76,36 @@ public class Player : MonoBehaviour
         {
             moveVelocity *= walkSpeed;
         }
+
+        if(playerInput.Player.Jump.ReadValue<float>() >= 1f)
+        {
+            Jump();
+        }
+
+        // Rotate player in direction of movement
+        if (moveVelocity != Vector2.zero)
+        {
+            transform.right = new Vector2(moveVelocity.x, 0);
+        }
+
     }
 
+    // Cast a ray downward 0.01m below player's bounding box to check for ground
     bool IsGrounded()
     {
-        return Physics2D.Raycast(transform.position, Vector2.down, _collider.bounds.extents.y + 0.01f, floorLayers);
+        return Physics2D.Raycast(transform.position, Vector2.down, _collider.bounds.extents.y + 0.01f, groundLayers);
     }
 
-    void Jump(InputAction.CallbackContext context)
+    void Jump()
     {
-        Debug.Log("Jump");
-        velocityY += jumpVelocity;
+        if (velocityY <= 0 && IsGrounded())
+        {
+            velocityY += jumpVelocity;
+        }
+    }
+
+    void Fire(InputAction.CallbackContext context)
+    {
+        gun.Fire(rb.velocity);
     }
 }
