@@ -33,9 +33,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Run",
+                    "name": "Dash",
                     "type": "Value",
                     "id": "27d74401-6877-41f8-a1b8-5cda60b9a59d",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Walk",
+                    "type": "Value",
+                    "id": "f3fbeb0d-7c7c-4cf5-83c7-58e4e1a2084b",
                     "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": "",
@@ -277,7 +286,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Run",
+                    "action": "Dash",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -300,6 +309,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3924401f-8e2c-4dab-97ef-82aea30033a0",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Walk",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

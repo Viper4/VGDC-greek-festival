@@ -13,7 +13,6 @@ public class Player : MonoBehaviour
     [SerializeField] float crouchSpeed = 1f;
     [SerializeField] float jumpVelocity = 2f;
     bool isGrounded = false;
-    float velocityY = 0;
     Vector2 moveVelocity;
 
     bool canDoubleJump = false;
@@ -21,10 +20,7 @@ public class Player : MonoBehaviour
     [SerializeField] float dashSpeed = 10;
     [SerializeField] float dashDuration = 0.25f;
     [SerializeField] float dashCooldown = 0.5f;
-    [SerializeField] float dashTapThreshold = 0.15f;
-    float dashTapTime = 1f;
     bool canDash = true;
-    Vector2 lastDashDirection = Vector2.zero;
     Vector2 dashVelocity = Vector2.zero;
 
     [SerializeField] Gun gun;
@@ -42,10 +38,11 @@ public class Player : MonoBehaviour
             action.Enable();
         }
 
+        // Add listeners
         playerInput.Player.Crouch.performed += Crouch;
+        playerInput.Player.Crouch.canceled += Uncrouch;
         playerInput.Player.Jump.performed += CheckDoubleJump;
         playerInput.Player.Fire.performed += Fire;
-        playerInput.Player.Move.performed += CheckDash;
     }
 
     private void OnDisable()
@@ -54,6 +51,12 @@ public class Player : MonoBehaviour
         {
             action.Disable();
         }
+
+        // Remove listeners
+        playerInput.Player.Crouch.performed -= Crouch;
+        playerInput.Player.Crouch.canceled -= Uncrouch;
+        playerInput.Player.Jump.performed -= CheckDoubleJump;
+        playerInput.Player.Fire.performed -= Fire;
     }
 
     // Start is called before the first frame update
@@ -73,22 +76,27 @@ public class Player : MonoBehaviour
         {
             rb.velocity = moveVelocity + new Vector2(0, rb.velocity.y);
         }
-        velocityY = 0;
+        if(rb.velocity.y > 0)
+        {
+            rb.gravityScale = 1;
+        }
+        else
+        {
+            rb.gravityScale = 2;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Read player input and set moveVelocity. velocityY set separately so we dont multiply velocityY by run/crouch/walk speed
-        bool running = playerInput.Player.Run.ReadValue<float>() >= 1f;
+        // Read player input and set moveVelocity.
+        bool walking = playerInput.Player.Walk.ReadValue<float>() >= 1f;
         bool crouching = playerInput.Player.Crouch.ReadValue<float>() >= 1f;
-        if (playerInput.Player.Crouch.WasReleasedThisFrame())
-            Uncrouch();
         moveVelocity = playerInput.Player.Move.ReadValue<Vector2>();
         moveVelocity.y = 0; // Prevent player from becoming a rocket
-        if (running)
+        if (walking)
         {
-            moveVelocity *= runSpeed;
+            moveVelocity *= walkSpeed;
         }
         else if (crouching)
         {
@@ -96,18 +104,23 @@ public class Player : MonoBehaviour
         }
         else
         {
-            moveVelocity *= walkSpeed;
-        }
-
-        if(playerInput.Player.Jump.ReadValue<float>() >= 1f)
-        {
-            Jump();
+            moveVelocity *= runSpeed;
         }
 
         // Rotate player in direction of movement
         if (moveVelocity != Vector2.zero)
         {
             transform.right = new Vector2(moveVelocity.x, 0);
+        }
+
+        if (playerInput.Player.Jump.ReadValue<float>() >= 1f)
+        {
+            Jump();
+        }
+
+        if(canDash && playerInput.Player.Dash.ReadValue<float>() >= 1f)
+        {
+            Dash();
         }
     }
 
@@ -117,7 +130,7 @@ public class Player : MonoBehaviour
         transform.position -= new Vector3(0, 0.5f);
     }
 
-    void Uncrouch()
+    void Uncrouch(InputAction.CallbackContext context)
     {
         transform.localScale = new Vector3(1, 1, 1);
         transform.position += new Vector3(0, 0.5f);
@@ -125,7 +138,7 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
-        if (velocityY <= 0 && isGrounded)
+        if (isGrounded)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
         }
@@ -140,28 +153,20 @@ public class Player : MonoBehaviour
         }
     }
 
-    void CheckDash(InputAction.CallbackContext context)
+    void Dash()
     {
-        if (canDash)
-        {
-            Vector2 dashDirection = playerInput.Player.Move.ReadValue<Vector2>();
-            if (Time.unscaledTime - dashTapTime < dashTapThreshold && (lastDashDirection - dashDirection).sqrMagnitude < 0.75f)
-            {
-                dashVelocity = dashDirection * dashSpeed;
-                canDash = false;
-                StartCoroutine(DashCooldown());
-            }
-            dashTapTime = Time.unscaledTime;
-            lastDashDirection = dashDirection;
-        }
+        Vector2 dashDirection = playerInput.Player.Move.ReadValue<Vector2>();
+        dashVelocity = dashDirection * dashSpeed;
+        canDash = false;
+        StartCoroutine(DashCooldown());
     }
 
     IEnumerator DashCooldown()
     {
+        canDash = false;
         yield return new WaitForSeconds(dashDuration);
         rb.velocity = Vector2.zero;
         dashVelocity = Vector2.zero;
-        lastDashDirection = Vector2.zero;
         yield return new WaitForSeconds(dashCooldown - dashDuration);
         while(!isGrounded)
         {

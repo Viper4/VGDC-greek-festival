@@ -1089,8 +1089,8 @@ MonoBehaviour:
   jumpVelocity: 5
   dashSpeed: 25
   dashDuration: 0.2
-  dashCooldown: 0.4
-  dashTapThreshold: 0.2
+  dashCooldown: 1
+  dashTapThreshold: 0.25
   gun: {fileID: 1076929939}
 --- !u!70 &1623497984
 CapsuleCollider2D:
