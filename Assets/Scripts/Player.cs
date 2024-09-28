@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-    PlayerInput playerInput;
+    public static PlayerInput playerInput;
     Rigidbody2D rb;
 
     [SerializeField] float walkSpeed = 2f;
@@ -30,11 +30,12 @@ public class Player : MonoBehaviour
     Transform ground;
     float footstepTimer = 0;
 
+    public float timePlayed = 0;
     Transform lastCheckpoint;
     public List<Spirit> followingSpirits = new List<Spirit>();
-    int spiritsSaved = 0;
-    int deaths = 0;
-
+    public int spiritsSaved = 0;
+    public int deaths = 0;
+    
     [SerializeField] StatsUI statsUI;
 
     // Called before Start()
@@ -77,97 +78,111 @@ public class Player : MonoBehaviour
     // Called every time the Physics engine updates (not tied to framerate, fixed rate)
     private void FixedUpdate()
     {
-        if(dashVelocity != Vector2.zero)
+        if(Time.timeScale > 0)
         {
-            rb.velocity = dashVelocity;
-        }
-        else
-        {
-            rb.velocity = moveVelocity + new Vector2(0, rb.velocity.y);
-        }
-        if(rb.velocity.y > 0)
-        {
-            rb.gravityScale = 1;
-        }
-        else
-        {
-            rb.gravityScale = 2;
+            if (dashVelocity != Vector2.zero)
+            {
+                rb.velocity = dashVelocity;
+            }
+            else
+            {
+                rb.velocity = moveVelocity + new Vector2(0, rb.velocity.y);
+            }
+            if (rb.velocity.y > 0)
+            {
+                rb.gravityScale = 1;
+            }
+            else
+            {
+                rb.gravityScale = 2;
+            }
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Read player input and set moveVelocity
-        bool walking = playerInput.Player.Walk.ReadValue<float>() >= 1f;
-        bool crouching = playerInput.Player.Crouch.ReadValue<float>() >= 1f;
-        Vector2 moveInput = playerInput.Player.Move.ReadValue<Vector2>();
-        moveVelocity = moveInput;
-        moveVelocity.y = 0; // Prevent player from becoming a rocket
-        if (walking)
+        if(Time.timeScale > 0)
         {
-            moveVelocity *= walkSpeed;
-        }
-        else if (crouching)
-        {
-            moveVelocity *= crouchSpeed;
-        }
-        else
-        {
-            moveVelocity *= runSpeed;
-        }
-
-        // When we're moving
-        if (moveVelocity != Vector2.zero)
-        {
-            // Rotate player in direction of movement
-            transform.right = new Vector2(moveVelocity.x, 0);
-
-            // Handle footsteps
-            if (isGrounded && !crouching)
+            // Read player input and set moveVelocity
+            bool crouching = playerInput.Player.Crouch.ReadValue<float>() >= 1f;
+            bool walking = !crouching && playerInput.Player.Walk.ReadValue<float>() >= 1f;
+            Vector2 moveInput = playerInput.Player.Move.ReadValue<Vector2>();
+            moveVelocity = moveInput;
+            moveVelocity.y = 0; // Prevent player from becoming a rocket
+            if (walking)
             {
-                float stepInterval = walking ? movementAudio.walkStepInterval : movementAudio.runStepInterval;
-                if (footstepTimer >= stepInterval)
-                {
-                    movementAudio.PlayFootstep(ground.tag, walking);
-                    footstepTimer = 0;
-                }
-
-                footstepTimer += Time.deltaTime;
+                moveVelocity *= walkSpeed;
             }
-        }
+            else if (crouching)
+            {
+                moveVelocity *= crouchSpeed;
+            }
+            else
+            {
+                moveVelocity *= runSpeed;
+            }
 
-        // Check for dash
-        if (canDash && playerInput.Player.Dash.ReadValue<float>() >= 1f && moveInput != Vector2.zero)
-        {
-            Dash(moveInput);
-        }
+            // When we're moving
+            if (moveVelocity != Vector2.zero)
+            {
+                // Rotate player in direction of movement
+                transform.right = new Vector2(moveVelocity.x, 0);
 
-        if (playerInput.Player.Jump.ReadValue<float>() >= 1f)
-        {
-            Jump();
+                // Handle footsteps
+                if (isGrounded && !crouching)
+                {
+                    float stepInterval = walking ? movementAudio.walkStepInterval : movementAudio.runStepInterval;
+                    if (footstepTimer >= stepInterval)
+                    {
+                        movementAudio.PlayFootstep(ground.tag, walking);
+                        footstepTimer = 0;
+                    }
+
+                    footstepTimer += Time.deltaTime;
+                }
+            }
+
+            // Check for dash
+            if (canDash && playerInput.Player.Dash.ReadValue<float>() >= 1f && moveInput != Vector2.zero)
+            {
+                Dash(moveInput);
+            }
+
+            if (playerInput.Player.Jump.ReadValue<float>() >= 1f)
+            {
+                Jump();
+            }
+
+            timePlayed += Time.deltaTime;
         }
     }
 
     void Crouch(InputAction.CallbackContext context)
     {
-        movementAudio.PlayCrouch();
-        transform.localScale = new Vector3(1, 0.5f, 1);
-        transform.position -= new Vector3(0, 0.5f);
+        if(Time.timeScale > 0)
+        {
+            movementAudio.PlayCrouch();
+            transform.localScale = new Vector3(1, 0.5f, 1);
+            transform.position -= new Vector3(0, 0.5f);
+        }
     }
 
     void Uncrouch(InputAction.CallbackContext context)
     {
-        movementAudio.PlayCrouch();
-        transform.localScale = new Vector3(1, 1, 1);
-        transform.position += new Vector3(0, 0.5f);
+        if (Time.timeScale > 0)
+        {
+            movementAudio.PlayCrouch();
+            transform.localScale = new Vector3(1, 1, 1);
+            transform.position += new Vector3(0, 0.5f);
+        }
     }
 
     void Jump()
     {
-        if (isGrounded && dashVelocity == Vector2.zero)
+        if (Time.timeScale > 0 && isGrounded && dashVelocity == Vector2.zero)
         {
-            if(rb.velocity.y == 0)
+            if (rb.velocity.y == 0)
                 movementAudio.PlayJump(ground.tag);
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
         }
@@ -175,7 +190,7 @@ public class Player : MonoBehaviour
 
     void CheckDoubleJump(InputAction.CallbackContext context)
     {
-        if (!isGrounded && canDoubleJump && dashVelocity == Vector2.zero)
+        if (Time.timeScale > 0 && !isGrounded && canDoubleJump && dashVelocity == Vector2.zero)
         {
             movementAudio.PlayDoubleJump();
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
@@ -185,9 +200,12 @@ public class Player : MonoBehaviour
 
     void Dash(Vector2 moveInput)
     {
-        movementAudio.PlayDash();
-        dashVelocity = moveInput * dashSpeed;
-        StartCoroutine(DashCooldown());
+        if (Time.timeScale > 0)
+        {
+            movementAudio.PlayDash();
+            dashVelocity = moveInput * dashSpeed;
+            StartCoroutine(DashCooldown());
+        }
     }
 
     IEnumerator DashCooldown()
@@ -198,7 +216,7 @@ public class Player : MonoBehaviour
         rb.velocity = Vector2.zero;
         dashVelocity = Vector2.zero;
         yield return new WaitForSeconds(dashCooldown - dashDuration);
-        while(!isGrounded)
+        while (!isGrounded)
         {
             yield return new WaitForFixedUpdate();
         }
@@ -208,11 +226,30 @@ public class Player : MonoBehaviour
 
     void Fire(InputAction.CallbackContext context)
     {
-        gun.Fire(rb.velocity);
+        if(Time.timeScale > 0)
+            gun.Fire(rb.velocity);
+    }
+
+    void KillPlayer()
+    {
+        transform.SetPositionAndRotation(lastCheckpoint.position, lastCheckpoint.rotation);
+        foreach (Spirit followingSpirit in followingSpirits)
+        {
+            followingSpirit.ResetSpirit();
+        }
+        followingSpirits.Clear();
+        deaths++;
+        statsUI.PopupUI(deaths, spiritsSaved, 0.5f);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.transform.CompareTag("DeathZone"))
+        {
+            KillPlayer();
+            return;
+        }
+
         // Recharge isGrounded if the thing we land on isn't a trap and isn't too steep
         if (!collision.transform.name.Contains("Trap"))
         {
@@ -236,12 +273,12 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collider)
     {
-        switch(collision.tag)
+        switch(collider.tag)
         {
             case "Spirit":
-                Spirit spirit = collision.GetComponent<Spirit>();
+                Spirit spirit = collider.GetComponent<Spirit>();
                 if (spirit.target == null)
                 {
                     if (followingSpirits.Count > 0)
@@ -263,20 +300,13 @@ public class Player : MonoBehaviour
                     followingSpirit.Fade();
                 }
                 followingSpirits.Clear();
-                lastCheckpoint = collision.transform;
-                collision.GetComponent<SpriteRenderer>().enabled = false;
-                collision.GetComponent<Collider2D>().enabled = false;
+                lastCheckpoint = collider.transform;
+                collider.GetComponent<SpriteRenderer>().enabled = false;
+                collider.GetComponent<Collider2D>().enabled = false;
                 statsUI.PopupUI(deaths, spiritsSaved, 0.5f);
                 break;
             case "DeathZone":
-                transform.SetPositionAndRotation(lastCheckpoint.position, lastCheckpoint.rotation);
-                foreach(Spirit followingSpirit in followingSpirits)
-                {
-                    followingSpirit.ResetSpirit();
-                }
-                followingSpirits.Clear();
-                deaths++;
-                statsUI.PopupUI(deaths, spiritsSaved, 0.5f);
+                KillPlayer();
                 break;
         }
     }
