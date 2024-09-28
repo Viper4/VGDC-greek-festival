@@ -264,6 +264,7 @@ public class Player : MonoBehaviour
                 }
                 followingSpirits.Clear();
                 lastCheckpoint = collision.transform;
+                collision.GetComponent<SpriteRenderer>().enabled = false;
                 collision.GetComponent<Collider2D>().enabled = false;
                 statsUI.PopupUI(deaths, spiritsSaved, 0.5f);
                 break;
