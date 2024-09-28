@@ -9,7 +9,7 @@ public class TrapFloor : MonoBehaviour
 
     private void Start()
     {
-        TryGetComponent<AudioSource>(out breakAudio);
+        TryGetComponent(out breakAudio);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

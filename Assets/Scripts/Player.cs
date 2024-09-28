@@ -20,19 +20,28 @@ public class Player : MonoBehaviour
     [SerializeField] float dashSpeed = 10;
     [SerializeField] float dashDuration = 0.25f;
     [SerializeField] float dashCooldown = 0.5f;
+    [SerializeField] SpriteRenderer dashIndicator;
     bool canDash = true;
     Vector2 dashVelocity = Vector2.zero;
 
     [SerializeField] Gun gun;
 
-    private void Awake()
-    {
-        playerInput = new PlayerInput();
-        dashVelocity = Vector2.zero;
-    }
+    [SerializeField] MovementAudio movementAudio;
+    Transform ground;
+    float footstepTimer = 0;
 
+    Transform lastCheckpoint;
+    public List<Spirit> followingSpirits = new List<Spirit>();
+    int spiritsSaved = 0;
+    int deaths = 0;
+
+    [SerializeField] StatsUI statsUI;
+
+    // Called before Start()
     private void OnEnable()
     {
+        playerInput = new PlayerInput();
+
         foreach (InputAction action in playerInput)
         {
             action.Enable();
@@ -89,10 +98,11 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Read player input and set moveVelocity.
+        // Read player input and set moveVelocity
         bool walking = playerInput.Player.Walk.ReadValue<float>() >= 1f;
         bool crouching = playerInput.Player.Crouch.ReadValue<float>() >= 1f;
-        moveVelocity = playerInput.Player.Move.ReadValue<Vector2>();
+        Vector2 moveInput = playerInput.Player.Move.ReadValue<Vector2>();
+        moveVelocity = moveInput;
         moveVelocity.y = 0; // Prevent player from becoming a rocket
         if (walking)
         {
@@ -107,62 +117,82 @@ public class Player : MonoBehaviour
             moveVelocity *= runSpeed;
         }
 
-        // Rotate player in direction of movement
+        // When we're moving
         if (moveVelocity != Vector2.zero)
         {
+            // Rotate player in direction of movement
             transform.right = new Vector2(moveVelocity.x, 0);
+
+            // Handle footsteps
+            if (isGrounded && !crouching)
+            {
+                float stepInterval = walking ? movementAudio.walkStepInterval : movementAudio.runStepInterval;
+                if (footstepTimer >= stepInterval)
+                {
+                    movementAudio.PlayFootstep(ground.tag, walking);
+                    footstepTimer = 0;
+                }
+
+                footstepTimer += Time.deltaTime;
+            }
+        }
+
+        // Check for dash
+        if (canDash && playerInput.Player.Dash.ReadValue<float>() >= 1f && moveInput != Vector2.zero)
+        {
+            Dash(moveInput);
         }
 
         if (playerInput.Player.Jump.ReadValue<float>() >= 1f)
         {
             Jump();
         }
-
-        if(canDash && playerInput.Player.Dash.ReadValue<float>() >= 1f)
-        {
-            Dash();
-        }
     }
 
     void Crouch(InputAction.CallbackContext context)
     {
+        movementAudio.PlayCrouch();
         transform.localScale = new Vector3(1, 0.5f, 1);
         transform.position -= new Vector3(0, 0.5f);
     }
 
     void Uncrouch(InputAction.CallbackContext context)
     {
+        movementAudio.PlayCrouch();
         transform.localScale = new Vector3(1, 1, 1);
         transform.position += new Vector3(0, 0.5f);
     }
 
     void Jump()
     {
-        if (isGrounded)
+        if (isGrounded && dashVelocity == Vector2.zero)
         {
+            if(rb.velocity.y == 0)
+                movementAudio.PlayJump(ground.tag);
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
         }
     }
 
     void CheckDoubleJump(InputAction.CallbackContext context)
     {
-        if (!isGrounded && canDoubleJump)
+        if (!isGrounded && canDoubleJump && dashVelocity == Vector2.zero)
         {
+            movementAudio.PlayDoubleJump();
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
             canDoubleJump = false;
         }
     }
 
-    void Dash()
+    void Dash(Vector2 moveInput)
     {
-        Vector2 dashDirection = playerInput.Player.Move.ReadValue<Vector2>();
-        dashVelocity = dashDirection * dashSpeed;
-        canDash = false;
+        movementAudio.PlayDash();
+        dashVelocity = moveInput * dashSpeed;
         StartCoroutine(DashCooldown());
     }
 
     IEnumerator DashCooldown()
     {
+        dashIndicator.color = Color.red;
         canDash = false;
         yield return new WaitForSeconds(dashDuration);
         rb.velocity = Vector2.zero;
@@ -172,25 +202,81 @@ public class Player : MonoBehaviour
         {
             yield return new WaitForFixedUpdate();
         }
+        dashIndicator.color = Color.green;
         canDash = true;
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if(Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
-        {
-            isGrounded = true;
-            canDoubleJump = true;
-        }
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        isGrounded = false;
     }
 
     void Fire(InputAction.CallbackContext context)
     {
         gun.Fire(rb.velocity);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Recharge isGrounded if the thing we land on isn't a trap and isn't too steep
+        if (!collision.transform.name.Contains("Trap"))
+        {
+            if (Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
+            {
+                ground = collision.transform;
+                if (!isGrounded)
+                    movementAudio.PlayLand(ground.tag, Mathf.Abs(collision.relativeVelocity.y) * 0.1f);
+                isGrounded = true;
+                canDoubleJump = true;
+            }
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if(ground == collision.transform)
+        {
+            isGrounded = false;
+            ground = null;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        switch(collision.tag)
+        {
+            case "Spirit":
+                Spirit spirit = collision.GetComponent<Spirit>();
+                if (spirit.target == null)
+                {
+                    if (followingSpirits.Count > 0)
+                    {
+                        spirit.StartFollow(followingSpirits[^1].transform);
+                        followingSpirits.Add(spirit);
+                    }
+                    else
+                    {
+                        spirit.StartFollow(transform);
+                        followingSpirits.Add(spirit);
+                    }
+                }
+                break;
+            case "Checkpoint":
+                foreach(Spirit followingSpirit in followingSpirits)
+                {
+                    spiritsSaved++;
+                    followingSpirit.Fade();
+                }
+                followingSpirits.Clear();
+                lastCheckpoint = collision.transform;
+                collision.GetComponent<Collider2D>().enabled = false;
+                statsUI.PopupUI(deaths, spiritsSaved, 0.5f);
+                break;
+            case "DeathZone":
+                transform.SetPositionAndRotation(lastCheckpoint.position, lastCheckpoint.rotation);
+                foreach(Spirit followingSpirit in followingSpirits)
+                {
+                    followingSpirit.ResetSpirit();
+                }
+                followingSpirits.Clear();
+                deaths++;
+                statsUI.PopupUI(deaths, spiritsSaved, 0.5f);
+                break;
+        }
     }
 }

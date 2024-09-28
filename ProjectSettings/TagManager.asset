@@ -3,7 +3,19 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Dirt
+  - Gravel
+  - MetalV1
+  - MetalV2
+  - Mud
+  - Rock
+  - Sand
+  - Tile
+  - Spirit
+  - Bullet
+  - DeathZone
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
