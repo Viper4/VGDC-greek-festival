@@ -31,10 +31,10 @@ public class Player : MonoBehaviour
     Transform ground;
     float footstepTimer = 0;
 
+    Checkpoint lastCheckpoint;
+    public List<Soul> followingSouls = new List<Soul>();
     public float timePlayed = 0;
-    Transform lastCheckpoint;
-    public List<Spirit> followingSpirits = new List<Spirit>();
-    public int spiritsSaved = 0;
+    public int soulsSaved = 0;
     public int deaths = 0;
     [SerializeField] float deathTime = 1f;
     bool dying = false;
@@ -252,16 +252,16 @@ public class Player : MonoBehaviour
         // Respawn player at lastCheckpoint
         spriteRenderer.color = oldColor;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-        transform.position = lastCheckpoint.position;
+        transform.position = lastCheckpoint.transform.position;
 
-        // Reset all spirits that were following
-        foreach (Spirit followingSpirit in followingSpirits)
+        // Reset all souls that were following
+        foreach (Soul followingSoul in followingSouls)
         {
-            followingSpirit.ResetSpirit();
+            followingSoul.ResetSoul();
         }
-        followingSpirits.Clear();
+        followingSouls.Clear();
         deaths++;
-        statsUI.PopupUI(deaths, spiritsSaved, 0.5f); // Show stats
+        statsUI.PopupUI(deaths, soulsSaved, 0.5f); // Show stats
         dying = false;
     }
 
@@ -300,57 +300,50 @@ public class Player : MonoBehaviour
     {
         switch(other.tag)
         {
-            case "Spirit":
-                Spirit spirit = other.GetComponent<Spirit>();
-                if (spirit.target == null)
+            case "Soul":
+                Soul soul = other.GetComponent<Soul>();
+                if (soul.target == null)
                 {
-                    if (followingSpirits.Count > 0)
+                    if (followingSouls.Count > 0)
                     {
-                        // Get this spirit to start following the last spirit in the chain
-                        spirit.StartFollow(followingSpirits[^1].transform);
-                        followingSpirits.Add(spirit);
+                        // Get this soul to start following the last soul in the chain
+                        soul.StartFollow(followingSouls[^1].transform);
+                        followingSouls.Add(soul);
                     }
                     else
                     {
-                        // This spirit is the first spirit so its first in the chain and follows the player
-                        spirit.StartFollow(transform);
-                        followingSpirits.Add(spirit);
+                        // This soul is the first soul so its first in the chain and follows the player
+                        soul.StartFollow(transform);
+                        followingSouls.Add(soul);
                     }
                 }
                 break;
             case "Checkpoint":
-                foreach (Spirit followingSpirit in followingSpirits)
+                Checkpoint checkpoint = other.GetComponent<Checkpoint>();
+                checkpoint.Save(followingSouls.Count);
+
+                foreach (Soul followingSoul in followingSouls)
                 {
-                    spiritsSaved++;
-                    followingSpirit.Fade();
+                    soulsSaved++;
+                    followingSoul.Fade();
                 }
-                // If we saved new spirits
-                if(followingSpirits.Count > 0)
-                {
-                    statsUI.PopupUI(deaths, spiritsSaved, 0.5f);
-                }
-                followingSpirits.Clear();
+                // If we saved new souls show stats
+                if(followingSouls.Count > 0)
+                    statsUI.PopupUI(deaths, soulsSaved, 0.5f);
+                followingSouls.Clear();
 
                 // If we're setting a new checkpoint
-                if (lastCheckpoint != other.transform)
+                if (lastCheckpoint != checkpoint)
                 {
-                    Debug.Log("Here");
                     // Show stats
-                    statsUI.PopupUI(deaths, spiritsSaved, 0.5f);
+                    statsUI.PopupUI(deaths, soulsSaved, 0.5f);
 
                     // If the last checkpoint isn't null, unselect it
                     if (lastCheckpoint != null)
-                    {
-                        Color unselectedColor = Color.green;
-                        unselectedColor.a = 0.5f;
-                        lastCheckpoint.GetComponent<SpriteRenderer>().color = unselectedColor;
-                    }
+                        lastCheckpoint.Deselect();
 
                     // Select this checkpoint
-                    lastCheckpoint = other.transform;
-                    Color selectedColor = Color.yellow;
-                    selectedColor.a = 0.25f;
-                    other.GetComponent<SpriteRenderer>().color = selectedColor;
+                    lastCheckpoint = checkpoint;
                 }
                 break;
             case "DeathZone":

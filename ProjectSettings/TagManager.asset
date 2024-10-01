@@ -12,10 +12,10 @@ TagManager:
   - Rock
   - Sand
   - Tile
-  - Spirit
   - Bullet
   - DeathZone
   - Checkpoint
+  - Soul
   layers:
   - Default
   - TransparentFX

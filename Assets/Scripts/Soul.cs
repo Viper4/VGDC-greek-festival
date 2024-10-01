@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Spirit : MonoBehaviour
+public class Soul : MonoBehaviour
 {
     Rigidbody2D rb;
     SpriteRenderer spriteRenderer;
@@ -71,7 +71,7 @@ public class Spirit : MonoBehaviour
         spriteRenderer.color = followingColor;
     }
 
-    public void ResetSpirit()
+    public void ResetSoul()
     {
         target = null;
         spriteRenderer.color = startColor;

@@ -12,7 +12,7 @@ public class PauseUI : MonoBehaviour
     [SerializeField] Player player;
     [SerializeField] TextMeshProUGUI timePlayedText;
     [SerializeField] TextMeshProUGUI deathsText;
-    [SerializeField] TextMeshProUGUI spiritsText;
+    [SerializeField] TextMeshProUGUI soulsText;
 
     private void Start()
     {
@@ -41,7 +41,7 @@ public class PauseUI : MonoBehaviour
         {
             timePlayedText.text = "Time played: " + player.timePlayed.ToString("0.00");
             deathsText.text = "X " + player.deaths.ToString();
-            spiritsText.text = "X " + player.spiritsSaved.ToString();
+            soulsText.text = "X " + player.soulsSaved.ToString();
             Time.timeScale = 0;
             screenBlur.SetActive(true);
             pauseMenu.SetActive(true);

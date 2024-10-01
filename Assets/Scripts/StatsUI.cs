@@ -11,10 +11,10 @@ public class StatsUI : MonoBehaviour
     [SerializeField] Image deathsIcon;
     [SerializeField] TextMeshProUGUI deathsText;
 
-    Color spiritsStartColor;
-    Color spiritsEndColor;
-    [SerializeField] Image spiritsIcon;
-    [SerializeField] TextMeshProUGUI spiritsText;
+    Color soulsStartColor;
+    Color soulsEndColor;
+    [SerializeField] Image soulsIcon;
+    [SerializeField] TextMeshProUGUI soulsText;
 
     Coroutine popupCoroutine;
 
@@ -24,21 +24,21 @@ public class StatsUI : MonoBehaviour
         deathsEndColor = deathsStartColor;
         deathsEndColor.a = 0;
 
-        spiritsStartColor = spiritsIcon.color;
-        spiritsEndColor = spiritsStartColor;
-        spiritsEndColor.a = 0;
+        soulsStartColor = soulsIcon.color;
+        soulsEndColor = soulsStartColor;
+        soulsEndColor.a = 0;
 
         deathsIcon.color = deathsEndColor;
-        spiritsIcon.color = spiritsEndColor;
+        soulsIcon.color = soulsEndColor;
     }
 
-    public void PopupUI(int deaths, int spirits, float time)
+    public void PopupUI(int deaths, int souls, float time)
     {
         if(popupCoroutine != null) 
             StopCoroutine(popupCoroutine);
 
         deathsText.text = "X " + deaths.ToString();
-        spiritsText.text = "X " + spirits.ToString();
+        soulsText.text = "X " + souls.ToString();
         popupCoroutine = StartCoroutine(Popup(time));
     }
 
@@ -52,9 +52,9 @@ public class StatsUI : MonoBehaviour
             deathsIcon.color = lerpedDeathsColor;
             deathsText.color = lerpedDeathsColor;
 
-            Color lerpedSpiritsColor = Color.Lerp(spiritsEndColor, spiritsStartColor, timer / time);
-            spiritsIcon.color = lerpedSpiritsColor;
-            spiritsText.color = lerpedSpiritsColor;
+            Color lerpedSpiritsColor = Color.Lerp(soulsEndColor, soulsStartColor, timer / time);
+            soulsIcon.color = lerpedSpiritsColor;
+            soulsText.color = lerpedSpiritsColor;
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
@@ -69,9 +69,9 @@ public class StatsUI : MonoBehaviour
             deathsIcon.color = lerpedDeathsColor;
             deathsText.color = lerpedDeathsColor;
 
-            Color lerpedSpiritsColor = Color.Lerp(spiritsStartColor, spiritsEndColor, timer / time);
-            spiritsIcon.color = lerpedSpiritsColor;
-            spiritsText.color = lerpedSpiritsColor;
+            Color lerpedSpiritsColor = Color.Lerp(soulsStartColor, soulsEndColor, timer / time);
+            soulsIcon.color = lerpedSpiritsColor;
+            soulsText.color = lerpedSpiritsColor;
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
