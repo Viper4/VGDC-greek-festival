@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
 {
     public static PlayerInput playerInput;
     Rigidbody2D rb;
+    SpriteRenderer spriteRenderer;
 
     [SerializeField] float walkSpeed = 2f;
     [SerializeField] float runSpeed = 5f;
@@ -35,6 +36,8 @@ public class Player : MonoBehaviour
     public List<Spirit> followingSpirits = new List<Spirit>();
     public int spiritsSaved = 0;
     public int deaths = 0;
+    [SerializeField] float deathTime = 1f;
+    bool dying = false;
     
     [SerializeField] StatsUI statsUI;
 
@@ -73,6 +76,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     // Called every time the Physics engine updates (not tied to framerate, fixed rate)
@@ -232,7 +236,21 @@ public class Player : MonoBehaviour
 
     void KillPlayer()
     {
-        transform.SetPositionAndRotation(lastCheckpoint.position, lastCheckpoint.rotation);
+        if(!dying)
+            StartCoroutine(DieAnimation());
+    }
+
+    IEnumerator DieAnimation()
+    {
+        dying = true;
+        // Play some animation
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        Color oldColor = spriteRenderer.color;
+        spriteRenderer.color = Color.red;
+        yield return new WaitForSeconds(deathTime);
+        spriteRenderer.color = oldColor;
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        transform.position = lastCheckpoint.position;
         foreach (Spirit followingSpirit in followingSpirits)
         {
             followingSpirit.ResetSpirit();
@@ -240,6 +258,7 @@ public class Player : MonoBehaviour
         followingSpirits.Clear();
         deaths++;
         statsUI.PopupUI(deaths, spiritsSaved, 0.5f);
+        dying = false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -273,12 +292,12 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collider)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        switch(collider.tag)
+        switch(other.tag)
         {
             case "Spirit":
-                Spirit spirit = collider.GetComponent<Spirit>();
+                Spirit spirit = other.GetComponent<Spirit>();
                 if (spirit.target == null)
                 {
                     if (followingSpirits.Count > 0)
@@ -294,16 +313,19 @@ public class Player : MonoBehaviour
                 }
                 break;
             case "Checkpoint":
-                foreach(Spirit followingSpirit in followingSpirits)
+                foreach (Spirit followingSpirit in followingSpirits)
                 {
                     spiritsSaved++;
                     followingSpirit.Fade();
                 }
                 followingSpirits.Clear();
-                lastCheckpoint = collider.transform;
-                collider.GetComponent<SpriteRenderer>().enabled = false;
-                collider.GetComponent<Collider2D>().enabled = false;
                 statsUI.PopupUI(deaths, spiritsSaved, 0.5f);
+
+                lastCheckpoint = other.transform;
+                Color newColor = Color.yellow;
+                newColor.a = 0.25f;
+                other.GetComponent<SpriteRenderer>().color = newColor;
+                other.enabled = false;
                 break;
             case "DeathZone":
                 KillPlayer();
