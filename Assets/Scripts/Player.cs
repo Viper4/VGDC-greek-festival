@@ -108,7 +108,7 @@ public class Player : MonoBehaviour
     {
         if(Time.timeScale > 0)
         {
-            // Read player input and set moveVelocity
+            // Read player input for movement
             bool crouching = playerInput.Player.Crouch.ReadValue<float>() >= 1f;
             bool walking = !crouching && playerInput.Player.Walk.ReadValue<float>() >= 1f;
             Vector2 moveInput = playerInput.Player.Move.ReadValue<Vector2>();
@@ -214,8 +214,8 @@ public class Player : MonoBehaviour
 
     IEnumerator DashCooldown()
     {
-        dashIndicator.color = Color.red;
         canDash = false;
+        dashIndicator.color = Color.red;
         yield return new WaitForSeconds(dashDuration);
         rb.velocity = Vector2.zero;
         dashVelocity = Vector2.zero;
@@ -234,7 +234,7 @@ public class Player : MonoBehaviour
             gun.Fire(rb.velocity);
     }
 
-    void KillPlayer()
+    public void KillPlayer()
     {
         if(!dying)
             StartCoroutine(DieAnimation());
@@ -242,22 +242,26 @@ public class Player : MonoBehaviour
 
     IEnumerator DieAnimation()
     {
-        dying = true;
-        // Play some animation
-        rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        dying = true; // Stop code from playing animation over and over again
+        rb.constraints = RigidbodyConstraints2D.FreezeAll; // Stop player movement
+
+        // Change sprite color to red
         Color oldColor = spriteRenderer.color;
         spriteRenderer.color = Color.red;
         yield return new WaitForSeconds(deathTime);
+        // Respawn player at lastCheckpoint
         spriteRenderer.color = oldColor;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         transform.position = lastCheckpoint.position;
+
+        // Reset all spirits that were following
         foreach (Spirit followingSpirit in followingSpirits)
         {
             followingSpirit.ResetSpirit();
         }
         followingSpirits.Clear();
         deaths++;
-        statsUI.PopupUI(deaths, spiritsSaved, 0.5f);
+        statsUI.PopupUI(deaths, spiritsSaved, 0.5f); // Show stats
         dying = false;
     }
 
@@ -302,11 +306,13 @@ public class Player : MonoBehaviour
                 {
                     if (followingSpirits.Count > 0)
                     {
+                        // Get this spirit to start following the last spirit in the chain
                         spirit.StartFollow(followingSpirits[^1].transform);
                         followingSpirits.Add(spirit);
                     }
                     else
                     {
+                        // This spirit is the first spirit so its first in the chain and follows the player
                         spirit.StartFollow(transform);
                         followingSpirits.Add(spirit);
                     }
@@ -318,14 +324,34 @@ public class Player : MonoBehaviour
                     spiritsSaved++;
                     followingSpirit.Fade();
                 }
+                // If we saved new spirits
+                if(followingSpirits.Count > 0)
+                {
+                    statsUI.PopupUI(deaths, spiritsSaved, 0.5f);
+                }
                 followingSpirits.Clear();
-                statsUI.PopupUI(deaths, spiritsSaved, 0.5f);
 
-                lastCheckpoint = other.transform;
-                Color newColor = Color.yellow;
-                newColor.a = 0.25f;
-                other.GetComponent<SpriteRenderer>().color = newColor;
-                other.enabled = false;
+                // If we're setting a new checkpoint
+                if (lastCheckpoint != other.transform)
+                {
+                    Debug.Log("Here");
+                    // Show stats
+                    statsUI.PopupUI(deaths, spiritsSaved, 0.5f);
+
+                    // If the last checkpoint isn't null, unselect it
+                    if (lastCheckpoint != null)
+                    {
+                        Color unselectedColor = Color.green;
+                        unselectedColor.a = 0.5f;
+                        lastCheckpoint.GetComponent<SpriteRenderer>().color = unselectedColor;
+                    }
+
+                    // Select this checkpoint
+                    lastCheckpoint = other.transform;
+                    Color selectedColor = Color.yellow;
+                    selectedColor.a = 0.25f;
+                    other.GetComponent<SpriteRenderer>().color = selectedColor;
+                }
                 break;
             case "DeathZone":
                 KillPlayer();

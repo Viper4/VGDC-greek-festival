@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 public class Spirit : MonoBehaviour
@@ -35,12 +34,14 @@ public class Spirit : MonoBehaviour
         {
             if (target != null && (target.position - transform.position).sqrMagnitude > followRadius * followRadius)
             {
+                // When the target is far away, follow it with no gravity
                 rb.gravityScale = 0;
                 rb.velocity = Vector2.zero;
                 transform.position = Vector2.Lerp(transform.position, target.position - (target.position - transform.position).normalized * (followRadius - 0.25f), followSpeed * Time.deltaTime);
             }
             else if (ground == null)
             {
+                // When we're idle, apply slight gravity until we hit the ground
                 rb.gravityScale = 0.1f;
             }
         }
@@ -60,7 +61,6 @@ public class Spirit : MonoBehaviour
     {
         if(!fading && ground == collision.transform)
         {
-            rb.gravityScale = 0.1f;
             ground = null;
         }
     }
@@ -87,6 +87,7 @@ public class Spirit : MonoBehaviour
 
     IEnumerator FadeRoutine()
     {
+        // Fade spirit's sprite color alpha to 0 and delete it after
         float fadeTimer = 0;
         Color fadeStartColor = spriteRenderer.color;
         while(fadeTimer < fadeTime)

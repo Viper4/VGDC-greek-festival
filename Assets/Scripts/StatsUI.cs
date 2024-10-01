@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using Unity.VisualScripting;
 
 public class StatsUI : MonoBehaviour
 {
@@ -45,6 +44,7 @@ public class StatsUI : MonoBehaviour
 
     IEnumerator Popup(float time)
     {
+        // Fade icons and text from 0 alpha to 1
         float timer = 0;
         while(timer < time)
         {
@@ -61,6 +61,7 @@ public class StatsUI : MonoBehaviour
 
         yield return new WaitForSeconds(3f);
 
+        // Fade icons and text from 1 alpha to 0
         timer = 0;
         while (timer < time)
         {

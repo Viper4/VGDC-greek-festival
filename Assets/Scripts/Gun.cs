@@ -13,18 +13,6 @@ public class Gun : MonoBehaviour
 
     bool firing = false;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void Fire(Vector2 initialVelocity)
     {
         if(!firing)
@@ -33,8 +21,8 @@ public class Gun : MonoBehaviour
 
     IEnumerator FireRoutine(Vector2 initialVelocity)
     {
-        initialVelocity.y = 0;
         firing = true;
+        initialVelocity.y = 0;
         Rigidbody2D bulletRB = Instantiate(bullet, spawnPoint.position, spawnPoint.rotation).GetComponent<Rigidbody2D>();
         bulletRB.velocity = initialVelocity + (new Vector2(spawnPoint.right.x, spawnPoint.right.y) * bulletSpeed);
         Destroy(bulletRB.gameObject, bulletDespawnTime);

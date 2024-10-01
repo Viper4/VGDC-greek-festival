@@ -12,6 +12,7 @@ public class MovementAudio : MonoBehaviour
     [SerializeField] AudioClip crouchClip;
 
     // Cant serialize a dictionary so we do this stupid shit
+    // We have audio clip arrays for each ground type and their respective walk, run, jump, and land sound effects.
     [SerializeField, Header("Running")] AudioClip[] dirtRunClips;
     [SerializeField] AudioClip[] gravelRunClips;
     [SerializeField] AudioClip[] metalV1RunClips;
@@ -125,6 +126,7 @@ public class MovementAudio : MonoBehaviour
             }
             else
             {
+                // Play dirt sound effect by default if ground tag is unknown
                 audioSource.PlayOneShot(dirtWalkClips[Random.Range(0, dirtWalkClips.Length)], walkVolume);
             }
         }
@@ -136,6 +138,7 @@ public class MovementAudio : MonoBehaviour
             }
             else
             {
+                // Play dirt sound effect by default if ground tag is unknown
                 audioSource.PlayOneShot(dirtRunClips[Random.Range(0, dirtRunClips.Length)], runVolume);
             }
         }
@@ -149,6 +152,7 @@ public class MovementAudio : MonoBehaviour
         }
         else
         {
+            // Play dirt sound effect by default if ground tag is unknown
             audioSource.PlayOneShot(dirtJumpClips[Random.Range(0, dirtJumpClips.Length)], jumpVolume);
         }
     }
@@ -161,6 +165,7 @@ public class MovementAudio : MonoBehaviour
         }
         else
         {
+            // Play dirt sound effect by default if ground tag is unknown
             audioSource.PlayOneShot(dirtLandClips[Random.Range(0, dirtLandClips.Length)], Mathf.Clamp(speed, 0, maxLandVolume));
         }
     }
