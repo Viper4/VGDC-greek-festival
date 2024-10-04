@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,6 +9,7 @@ public class Player : MonoBehaviour
     public static PlayerInput playerInput;
     Rigidbody2D rb;
     SpriteRenderer spriteRenderer;
+    HealthSystem healthSystem;
 
     [SerializeField] float walkSpeed = 2f;
     [SerializeField] float runSpeed = 5f;
@@ -77,6 +79,7 @@ public class Player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        healthSystem = GetComponent<HealthSystem>();
     }
 
     // Called every time the Physics engine updates (not tied to framerate, fixed rate)
@@ -263,27 +266,37 @@ public class Player : MonoBehaviour
         deaths++;
         statsUI.PopupUI(deaths, soulsSaved, 0.5f); // Show stats
         dying = false;
+        healthSystem.ResetHealth();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.transform.CompareTag("DeathZone"))
+        if (!collision.transform.name.Contains("Trap") && Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
         {
-            KillPlayer();
-            return;
+            ground = collision.transform;
+            if (!isGrounded)
+                movementAudio.PlayLand(ground.tag, Mathf.Abs(collision.relativeVelocity.y) * 0.1f);
+            isGrounded = true;
+            canDoubleJump = true;
         }
-
-        // Recharge isGrounded if the thing we land on isn't a trap and isn't too steep
-        if (!collision.transform.name.Contains("Trap"))
+        switch (collision.transform.tag)
         {
-            if (Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
-            {
-                ground = collision.transform;
-                if (!isGrounded)
-                    movementAudio.PlayLand(ground.tag, Mathf.Abs(collision.relativeVelocity.y) * 0.1f);
-                isGrounded = true;
-                canDoubleJump = true;
-            }
+            case "DeathZone":
+                KillPlayer();
+                break;
+            case "DamageZone":
+                healthSystem.Damage(1, 0.5f);
+                break;
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        switch (collision.transform.tag)
+        {
+            case "DamageZone":
+                healthSystem.Damage(1, 0.5f);
+                break;
         }
     }
 
@@ -348,6 +361,9 @@ public class Player : MonoBehaviour
                 break;
             case "DeathZone":
                 KillPlayer();
+                break;
+            case "DamageZone":
+                healthSystem.Damage(1, 0.5f);
                 break;
         }
     }
