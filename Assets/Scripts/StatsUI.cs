@@ -6,6 +6,10 @@ using UnityEngine.UI;
 
 public class StatsUI : MonoBehaviour
 {
+    [SerializeField] RectTransform healthMask;
+    [SerializeField] RectTransform heartsParent;
+    [SerializeField] GameObject heartPrefab;
+
     Color deathsStartColor;
     Color deathsEndColor;
     [SerializeField] Image deathsIcon;
@@ -30,6 +34,23 @@ public class StatsUI : MonoBehaviour
 
         deathsIcon.color = deathsEndColor;
         soulsIcon.color = soulsEndColor;
+    }
+
+    public void SetHealth(float healthPercent)
+    {
+        healthMask.sizeDelta = new Vector2(healthPercent * heartsParent.sizeDelta.x, healthMask.sizeDelta.y);
+    }
+
+    public void SetMaxHealth(float maxHealth)
+    {
+        for (int i = heartsParent.childCount - 1; i >= 0; i--)
+        {
+            Destroy(heartsParent.GetChild(i).gameObject);
+        }
+        for (int i = 0; i < maxHealth; i++)
+        {
+            Instantiate(heartPrefab, heartsParent);
+        }
     }
 
     public void PopupUI(int deaths, int souls, float time)

@@ -16,7 +16,6 @@ TagManager:
   - DeathZone
   - Checkpoint
   - Soul
-  - DamageZone
   layers:
   - Default
   - TransparentFX

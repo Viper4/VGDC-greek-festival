@@ -39,7 +39,7 @@ public class PauseUI : MonoBehaviour
         }
         else
         {
-            timePlayedText.text = "Time played: " + player.timePlayed.ToString("0.00");
+            timePlayedText.text = "Time played: " + Time.time.ToString("0.00");
             deathsText.text = "X " + player.deaths.ToString();
             soulsText.text = "X " + player.soulsSaved.ToString();
             Time.timeScale = 0;

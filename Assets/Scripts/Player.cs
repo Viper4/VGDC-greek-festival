@@ -35,7 +35,6 @@ public class Player : MonoBehaviour
 
     Checkpoint lastCheckpoint;
     public List<Soul> followingSouls = new List<Soul>();
-    public float timePlayed = 0;
     public int soulsSaved = 0;
     public int deaths = 0;
     [SerializeField] float deathTime = 1f;
@@ -160,8 +159,6 @@ public class Player : MonoBehaviour
             {
                 Jump();
             }
-
-            timePlayed += Time.deltaTime;
         }
     }
 
@@ -266,7 +263,57 @@ public class Player : MonoBehaviour
         deaths++;
         statsUI.PopupUI(deaths, soulsSaved, 0.5f); // Show stats
         dying = false;
+        isGrounded = false;
+        ground = null;
         healthSystem.ResetHealth();
+    }
+
+    public void SetCheckpoint(Checkpoint checkpoint)
+    {
+        checkpoint.Save(followingSouls.Count);
+
+        foreach (Soul followingSoul in followingSouls)
+        {
+            soulsSaved++;
+            followingSoul.Fade();
+        }
+        // If we saved new souls show stats
+        if (followingSouls.Count > 0)
+            statsUI.PopupUI(deaths, soulsSaved, 0.5f);
+        followingSouls.Clear();
+
+        // If we're setting a new checkpoint
+        if (lastCheckpoint != checkpoint)
+        {
+            // Show stats
+            statsUI.PopupUI(deaths, soulsSaved, 0.5f);
+
+            // If the last checkpoint isn't null, unselect it
+            if (lastCheckpoint != null)
+                lastCheckpoint.Deselect();
+
+            // Select this checkpoint
+            lastCheckpoint = checkpoint;
+        }
+    }
+
+    public void PickupSoul(Soul soul)
+    {
+        if (soul.target == null)
+        {
+            if (followingSouls.Count > 0)
+            {
+                // Get this soul to start following the last soul in the chain
+                soul.StartFollow(followingSouls[^1].transform);
+                followingSouls.Add(soul);
+            }
+            else
+            {
+                // This soul is the first soul so its first in the chain and follows the player
+                soul.StartFollow(transform);
+                followingSouls.Add(soul);
+            }
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -284,19 +331,6 @@ public class Player : MonoBehaviour
             case "DeathZone":
                 KillPlayer();
                 break;
-            case "DamageZone":
-                healthSystem.Damage(1, 0.5f);
-                break;
-        }
-    }
-
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        switch (collision.transform.tag)
-        {
-            case "DamageZone":
-                healthSystem.Damage(1, 0.5f);
-                break;
         }
     }
 
@@ -313,57 +347,8 @@ public class Player : MonoBehaviour
     {
         switch(other.tag)
         {
-            case "Soul":
-                Soul soul = other.GetComponent<Soul>();
-                if (soul.target == null)
-                {
-                    if (followingSouls.Count > 0)
-                    {
-                        // Get this soul to start following the last soul in the chain
-                        soul.StartFollow(followingSouls[^1].transform);
-                        followingSouls.Add(soul);
-                    }
-                    else
-                    {
-                        // This soul is the first soul so its first in the chain and follows the player
-                        soul.StartFollow(transform);
-                        followingSouls.Add(soul);
-                    }
-                }
-                break;
-            case "Checkpoint":
-                Checkpoint checkpoint = other.GetComponent<Checkpoint>();
-                checkpoint.Save(followingSouls.Count);
-
-                foreach (Soul followingSoul in followingSouls)
-                {
-                    soulsSaved++;
-                    followingSoul.Fade();
-                }
-                // If we saved new souls show stats
-                if(followingSouls.Count > 0)
-                    statsUI.PopupUI(deaths, soulsSaved, 0.5f);
-                followingSouls.Clear();
-
-                // If we're setting a new checkpoint
-                if (lastCheckpoint != checkpoint)
-                {
-                    // Show stats
-                    statsUI.PopupUI(deaths, soulsSaved, 0.5f);
-
-                    // If the last checkpoint isn't null, unselect it
-                    if (lastCheckpoint != null)
-                        lastCheckpoint.Deselect();
-
-                    // Select this checkpoint
-                    lastCheckpoint = checkpoint;
-                }
-                break;
             case "DeathZone":
                 KillPlayer();
-                break;
-            case "DamageZone":
-                healthSystem.Damage(1, 0.5f);
                 break;
         }
     }
