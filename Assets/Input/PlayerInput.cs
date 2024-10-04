@@ -46,6 +46,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""Nail"",
+                    ""type"": ""Button"",
+                    ""id"": ""82f66243-100c-445b-a11e-1de48cfe9f89"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Fire"",
                     ""type"": ""Button"",
                     ""id"": ""a55a9945-0e5b-4b70-8ec3-ccb3b06c508b"",
@@ -428,6 +437,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Ability 1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""316cc821-7fd9-412a-8cde-b08cde6606a2"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Nail"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1048,6 +1068,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
+        m_Player_Nail = m_Player.FindAction("Nail", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         m_Player_Walk = m_Player.FindAction("Walk", throwIfNotFound: true);
@@ -1130,6 +1151,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Look;
+    private readonly InputAction m_Player_Nail;
     private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_Dash;
     private readonly InputAction m_Player_Walk;
@@ -1142,6 +1164,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public PlayerActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Look => m_Wrapper.m_Player_Look;
+        public InputAction @Nail => m_Wrapper.m_Player_Nail;
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
         public InputAction @Walk => m_Wrapper.m_Player_Walk;
@@ -1163,6 +1186,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
+            @Nail.started += instance.OnNail;
+            @Nail.performed += instance.OnNail;
+            @Nail.canceled += instance.OnNail;
             @Fire.started += instance.OnFire;
             @Fire.performed += instance.OnFire;
             @Fire.canceled += instance.OnFire;
@@ -1191,6 +1217,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
+            @Nail.started -= instance.OnNail;
+            @Nail.performed -= instance.OnNail;
+            @Nail.canceled -= instance.OnNail;
             @Fire.started -= instance.OnFire;
             @Fire.performed -= instance.OnFire;
             @Fire.canceled -= instance.OnFire;
@@ -1401,6 +1430,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
+        void OnNail(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
         void OnWalk(InputAction.CallbackContext context);

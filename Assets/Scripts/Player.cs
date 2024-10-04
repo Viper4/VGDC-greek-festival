@@ -55,7 +55,8 @@ public class Player : MonoBehaviour
         playerInput.Player.Crouch.performed += Crouch;
         playerInput.Player.Crouch.canceled += Uncrouch;
         playerInput.Player.Jump.performed += CheckDoubleJump;
-        playerInput.Player.Fire.performed += Fire;
+        //playerInput.Player.Fire.performed += Fire;
+        //playerInput.Player.Nail.performed += Nail;
     }
 
     private void OnDisable()
@@ -69,7 +70,7 @@ public class Player : MonoBehaviour
         playerInput.Player.Crouch.performed -= Crouch;
         playerInput.Player.Crouch.canceled -= Uncrouch;
         playerInput.Player.Jump.performed -= CheckDoubleJump;
-        playerInput.Player.Fire.performed -= Fire;
+        //playerInput.Player.Fire.performed -= Fire;
     }
 
     // Start is called before the first frame update
@@ -227,12 +228,15 @@ public class Player : MonoBehaviour
         dashIndicator.color = Color.green;
         canDash = true;
     }
-
+/*
     void Fire(InputAction.CallbackContext context)
     {
+        
         if(Time.timeScale > 0)
             gun.Fire(rb.velocity);
+        
     }
+*/
 
     public void KillPlayer()
     {
