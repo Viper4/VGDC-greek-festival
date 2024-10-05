@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 public class NailAttack : MonoBehaviour
@@ -12,13 +13,19 @@ public class NailAttack : MonoBehaviour
         Attack();
     }
 
-    [SerializeField] private Transform attackTransform;
-    [SerializeField] private float attackRange = 1.5f;
-    [SerializeField] private LayerMask attackableLayer;
-    RaycastHit2D[] hits;
     [SerializeField] private float NailCooldown = 0.3f;
 
+    [SerializeField] Collider2D NailHitbox;
+
+    [SerializeField] LayerMask HitLayers;
+    Collider2D[]hits = new Collider2D[10];
+
     public void Attack(){
-        hits = Physics2D.CircleCastAll(attackTransform.position, attackRange, transform.right, 0f, attackableLayer);
+        ContactFilter2D Filter = new ContactFilter2D(){layerMask=HitLayers, useLayerMask=true};
+        NailHitbox.OverlapCollider(Filter, hits);
+
+        for(int i=0; i < NailHitbox.OverlapCollider(Filter, hits); i++){
+            Debug.Log(hits[i].name);
+        }
     }
 }
