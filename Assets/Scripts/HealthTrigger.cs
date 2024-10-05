@@ -1,22 +1,34 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class HealthTrigger : MonoBehaviour
+public class HealthTrigger : Trigger
 {
+    AudioSource audioSource;
+
     [SerializeField] float healthAmount = 1;
     [SerializeField] float maxHealthAmount = 0;
     [SerializeField] int uses = 1;
     [SerializeField] float cooldown = 0.5f;
     [SerializeField] bool overrideCooldown = false;
-    HealthSystem playerHealth;
+    HealthSystem triggerHealthSystem;
+
+    private void Start()
+    {
+        InitializeHashSet();
+        TryGetComponent(out audioSource);
+    }
 
     void Use()
     {
-        bool changedMaxHealth = playerHealth.AddMaxHealth(maxHealthAmount, cooldown, overrideCooldown);
-        bool changedHealth = playerHealth.AddHealth(healthAmount, cooldown, overrideCooldown);
+        if (!triggerHealthSystem.gameObject.activeSelf)
+            return;
+        bool changedMaxHealth = triggerHealthSystem.AddMaxHealth(maxHealthAmount, cooldown, overrideCooldown);
+        bool changedHealth = triggerHealthSystem.AddHealth(healthAmount, cooldown, overrideCooldown);
         if (changedHealth || changedMaxHealth)
         {
+            if (audioSource != null)
+                audioSource.Play();
             uses--;
             if (uses == 0)
                 Destroy(gameObject);
@@ -26,37 +38,45 @@ public class HealthTrigger : MonoBehaviour
     private void FixedUpdate()
     {
         // If the player is still triggering this, keep using the health trigger
-        if (playerHealth != null)
+        if (triggerHealthSystem != null)
         {
             Use();
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public override void TriggerEnter(Collider2D collider)
     {
-        if (collision.CompareTag("Player"))
+        base.TriggerEnter(collider);
+        if (collider.TryGetComponent(out triggerHealthSystem))
         {
-            playerHealth = collision.GetComponent<HealthSystem>();
             Use();
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    public override void TriggerExit(Collider2D collider)
     {
-        if (collision.transform.CompareTag("Player"))
+        base.TriggerExit(collider);
+        if (collider.TryGetComponent(out HealthSystem exitingHealthSystem) && exitingHealthSystem == triggerHealthSystem)
         {
-            playerHealth = collision.transform.GetComponent<HealthSystem>();
+            triggerHealthSystem = null;
+        }
+    }
+
+    public override void CollisionEnter(Collision2D collision)
+    {
+        base.CollisionEnter(collision);
+        if (collision.transform.TryGetComponent(out triggerHealthSystem))
+        {
             Use();
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    public override void CollisionExit(Collision2D collision)
     {
-        playerHealth = null;
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        playerHealth = null;
+        base.CollisionExit(collision);
+        if(collision.transform.TryGetComponent(out HealthSystem exitingHealthSystem) && exitingHealthSystem == triggerHealthSystem)
+        {
+            triggerHealthSystem = null;
+        }
     }
 }

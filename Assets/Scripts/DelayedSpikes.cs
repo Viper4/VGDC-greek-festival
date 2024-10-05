@@ -1,20 +1,22 @@
 using System.Collections;
-using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class DelayedSpikes : MonoBehaviour
+public class DelayedSpikes : Trigger
 {
-    [SerializeField] string triggerTag;
     [SerializeField] float delay = 0.75f;
     [SerializeField] float spikeSpeed = 1;
     [SerializeField] Vector2 retractedPosition;
     [SerializeField] Vector2 extendedPosition;
     [SerializeField] Transform spikeParent;
-    bool extended = false;
+
+    private void Start()
+    {
+        InitializeHashSet();
+    }
 
     IEnumerator ExtendSpikes()
     {
-        extended = true;
         yield return new WaitForSeconds(delay);
         while (new Vector2(spikeParent.localPosition.x, spikeParent.localPosition.y) != extendedPosition)
         {
@@ -30,21 +32,19 @@ public class DelayedSpikes : MonoBehaviour
             spikeParent.localPosition = Vector2.MoveTowards(spikeParent.localPosition, retractedPosition, spikeSpeed * Time.deltaTime);
             yield return new WaitForEndOfFrame();
         }
-        extended = false;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    public override void TriggerEnter(Collider2D collider)
     {
-        if(triggerTag == "" || other.CompareTag(triggerTag) && !extended)
-        {
-            StopAllCoroutines();
-            StartCoroutine(ExtendSpikes());
-        }
+        base.TriggerExit(collider);
+        StopAllCoroutines();
+        StartCoroutine(ExtendSpikes());
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    public override void TriggerExit(Collider2D collider)
     {
-        if (triggerTag == "" || other.CompareTag(triggerTag))
+        base.TriggerExit(collider);
+        if (collidersInTrigger == 0)
         {
             StopAllCoroutines();
             StartCoroutine(RetractSpikes());

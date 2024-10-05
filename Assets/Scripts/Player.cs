@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,8 +22,10 @@ public class Player : MonoBehaviour
     [SerializeField] float dashSpeed = 10;
     [SerializeField] float dashDuration = 0.25f;
     [SerializeField] float dashCooldown = 0.5f;
+    [SerializeField] float dashDrag = 0.5f;
     [SerializeField] SpriteRenderer dashIndicator;
     bool canDash = true;
+    bool tryDash = false;
     Vector2 dashVelocity = Vector2.zero;
 
     [SerializeField] Gun gun;
@@ -86,14 +87,24 @@ public class Player : MonoBehaviour
     {
         if(Time.timeScale > 0)
         {
+            Vector2 newVelocity;
             if (dashVelocity != Vector2.zero)
             {
-                rb.velocity = dashVelocity;
+                newVelocity = dashVelocity;
+                if (dashVelocity.y == 0 && (dashVelocity.x > 0 && moveVelocity.x < 0 || dashVelocity.x < 0 && moveVelocity.x > 0))
+                {
+                    dashVelocity = Vector2.zero;
+                    newVelocity = moveVelocity;
+                }
             }
             else
             {
-                rb.velocity = moveVelocity + new Vector2(0, rb.velocity.y);
+                newVelocity = moveVelocity;
             }
+            if (dashVelocity.y == 0)
+                newVelocity += new Vector2(0, rb.velocity.y);
+
+            rb.velocity = newVelocity;
             if (rb.velocity.y > 0)
             {
                 rb.gravityScale = 1;
@@ -149,15 +160,21 @@ public class Player : MonoBehaviour
                 }
             }
 
-            // Check for dash
-            if (canDash && playerInput.Player.Dash.ReadValue<float>() >= 1f && moveInput != Vector2.zero)
-            {
-                Dash(moveInput);
-            }
-
             if (playerInput.Player.Jump.ReadValue<float>() >= 1f)
             {
                 Jump();
+            }
+
+            // Check for dash
+            if (playerInput.Player.Dash.ReadValue<float>() >= 1f && moveInput != Vector2.zero)
+            {
+                tryDash = true;
+                if(canDash)
+                    Dash(moveInput);
+            }
+            else
+            {
+                tryDash = false;
             }
         }
     }
@@ -217,13 +234,28 @@ public class Player : MonoBehaviour
         canDash = false;
         dashIndicator.color = Color.red;
         yield return new WaitForSeconds(dashDuration);
-        rb.velocity = Vector2.zero;
-        dashVelocity = Vector2.zero;
+        if (!tryDash || isGrounded)
+        {
+            // Stop dash momentum if we aren't bunny hopping
+            dashVelocity = Vector2.zero;
+            rb.velocity = Vector2.zero;
+        }
+        else
+        {
+            // If we're bunny hopping, preserve x velocity but stop vertical dash momentum
+            if(dashVelocity.y != 0)
+            {
+                dashVelocity.y = 0;
+                rb.velocity = new Vector2(rb.velocity.x, 0);
+            }
+        }
         yield return new WaitForSeconds(dashCooldown - dashDuration);
         while (!isGrounded)
         {
+            dashVelocity.x = Mathf.Lerp(dashVelocity.x, 0, Time.deltaTime * dashDrag);
             yield return new WaitForFixedUpdate();
         }
+        dashVelocity = Vector2.zero;
         dashIndicator.color = Color.green;
         canDash = true;
     }
@@ -325,6 +357,7 @@ public class Player : MonoBehaviour
                 movementAudio.PlayLand(ground.tag, Mathf.Abs(collision.relativeVelocity.y) * 0.1f);
             isGrounded = true;
             canDoubleJump = true;
+            rb.sharedMaterial.friction = 0.5f; // Prevent player from sliding off ramps and flying super far
         }
         switch (collision.transform.tag)
         {
@@ -340,6 +373,7 @@ public class Player : MonoBehaviour
         {
             isGrounded = false;
             ground = null;
+            rb.sharedMaterial.friction = 0; // Prevent player from hanging in the air on sides of platforms
         }
     }
 
