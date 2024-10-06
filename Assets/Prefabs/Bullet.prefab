@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7456626309491124521}
   - component: {fileID: 4558692935667424915}
   - component: {fileID: 6819902237702633379}
-  - component: {fileID: 3814479776228184795}
+  - component: {fileID: 7423306588075001960}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Bullet
@@ -263,7 +263,7 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 0.99999994, y: 1}
   m_Direction: 1
---- !u!114 &3814479776228184795
+--- !u!114 &7423306588075001960
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -272,6 +272,51 @@ MonoBehaviour:
   m_GameObject: {fileID: 8235175216327177896}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6177735c3683ebb4dbc9d49a5de4da02, type: 3}
+  m_Script: {fileID: 11500000, guid: 6ed12efc4b9225643a34f866b06d3945, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  triggerTags:
+  - Player
+  - Enemy
+  onTriggerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onTriggerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onCollisionEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onCollisionExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyTriggerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyTriggerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyCollisionEnter:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7423306588075001960}
+        m_TargetAssemblyTypeName: Trigger, Assembly-CSharp
+        m_MethodName: DestroyGameObject
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 8235175216327177896}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onAnyCollisionExit:
+    m_PersistentCalls:
+      m_Calls: []
+  collidersInTrigger: 0
+  healthAmount: -1
+  maxHealthAmount: 0
+  uses: 1
+  cooldown: 0
+  overrideCooldown: 1

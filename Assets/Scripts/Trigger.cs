@@ -11,6 +11,11 @@ public class Trigger : MonoBehaviour
     [SerializeField] UnityEvent onTriggerExit;
     [SerializeField] UnityEvent onCollisionEnter;
     [SerializeField] UnityEvent onCollisionExit;
+
+    [SerializeField] UnityEvent onAnyTriggerEnter;
+    [SerializeField] UnityEvent onAnyTriggerExit;
+    [SerializeField] UnityEvent onAnyCollisionEnter;
+    [SerializeField] UnityEvent onAnyCollisionExit;
     public int collidersInTrigger = 0;
 
     private void Start()
@@ -57,25 +62,34 @@ public class Trigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        onAnyTriggerEnter?.Invoke();
         if (tagHashSet.Count == 0 || tagHashSet.Contains(collision.tag))
             TriggerEnter(collision);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        onAnyTriggerExit?.Invoke();
         if (tagHashSet.Count == 0 || tagHashSet.Contains(collision.tag))
             TriggerExit(collision);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        onAnyCollisionEnter?.Invoke();
         if (tagHashSet.Count == 0 || tagHashSet.Contains(collision.transform.tag))
             CollisionEnter(collision);
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
+        onAnyCollisionExit?.Invoke();
         if (tagHashSet.Count == 0 || tagHashSet.Contains(collision.transform.tag))
             CollisionExit(collision);
+    }
+
+    public void DestroyGameObject(GameObject toDestroy)
+    {
+        Destroy(toDestroy);
     }
 }

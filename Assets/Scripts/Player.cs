@@ -14,9 +14,11 @@ public class Player : MonoBehaviour
     [SerializeField] float runSpeed = 5f;
     [SerializeField] float crouchSpeed = 1f;
     [SerializeField] float jumpVelocity = 2f;
+    [SerializeField] float coyoteTime = 0.1f;
+    float airTime = 0;
     bool isGrounded = false;
     Vector2 moveVelocity;
-
+    bool canCoyoteJump = false;
     bool canDoubleJump = false;
 
     [SerializeField] float dashSpeed = 10;
@@ -56,7 +58,7 @@ public class Player : MonoBehaviour
         // Add listeners
         playerInput.Player.Crouch.performed += Crouch;
         playerInput.Player.Crouch.canceled += Uncrouch;
-        playerInput.Player.Jump.performed += CheckDoubleJump;
+        playerInput.Player.Jump.performed += DoubleJump;
         playerInput.Player.Fire.performed += Fire;
     }
 
@@ -70,7 +72,7 @@ public class Player : MonoBehaviour
         // Remove listeners
         playerInput.Player.Crouch.performed -= Crouch;
         playerInput.Player.Crouch.canceled -= Uncrouch;
-        playerInput.Player.Jump.performed -= CheckDoubleJump;
+        playerInput.Player.Jump.performed -= DoubleJump;
         playerInput.Player.Fire.performed -= Fire;
     }
 
@@ -176,6 +178,9 @@ public class Player : MonoBehaviour
             {
                 tryDash = false;
             }
+
+            if(!isGrounded)
+                airTime += Time.deltaTime;
         }
     }
 
@@ -201,21 +206,22 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
-        if (Time.timeScale > 0 && isGrounded && dashVelocity == Vector2.zero)
+        if(Time.timeScale > 0 && dashVelocity == Vector2.zero && (isGrounded || (canCoyoteJump && airTime <= coyoteTime)))
         {
-            if (rb.velocity.y == 0)
+            canCoyoteJump = false;
+            if (isGrounded)
                 movementAudio.PlayJump(ground.tag);
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
         }
     }
 
-    void CheckDoubleJump(InputAction.CallbackContext context)
+    void DoubleJump(InputAction.CallbackContext context)
     {
-        if (Time.timeScale > 0 && !isGrounded && canDoubleJump && dashVelocity == Vector2.zero)
+        if (Time.timeScale > 0 && !isGrounded && canDoubleJump && (airTime > coyoteTime || !canCoyoteJump) && dashVelocity == Vector2.zero)
         {
+            canDoubleJump = false;
             movementAudio.PlayDoubleJump();
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
-            canDoubleJump = false;
         }
     }
 
@@ -350,14 +356,19 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!collision.transform.name.Contains("Trap") && Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
+        if (!collision.transform.name.Contains("Trap"))
         {
-            ground = collision.transform;
-            if (!isGrounded)
-                movementAudio.PlayLand(ground.tag, Mathf.Abs(collision.relativeVelocity.y) * 0.1f);
-            isGrounded = true;
-            canDoubleJump = true;
-            rb.sharedMaterial.friction = 0.5f; // Prevent player from sliding off ramps and flying super far
+            if(Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
+            {
+                ground = collision.transform;
+                if (!isGrounded)
+                    movementAudio.PlayLand(ground.tag, Mathf.Abs(collision.relativeVelocity.y) * 0.1f);
+                isGrounded = true;
+                canDoubleJump = true;
+                canCoyoteJump = true;
+                airTime = 0;
+                rb.sharedMaterial.friction = 0.5f; // Prevent player from sliding off ramps and flying super far
+            }
         }
         switch (collision.transform.tag)
         {
@@ -373,7 +384,7 @@ public class Player : MonoBehaviour
         {
             isGrounded = false;
             ground = null;
-            rb.sharedMaterial.friction = 0; // Prevent player from hanging in the air on sides of platforms
+            rb.sharedMaterial.friction = 0; // Prevent player from hanging onto edges of platforms
         }
     }
 

@@ -12,6 +12,7 @@ public class HealthSystem : MonoBehaviour
     [SerializeField] float healthBarFadeSpeed = 1f;
     [SerializeField] bool healthBarAlwaysVisible = false;
     [SerializeField] Vector3 healthBarScale;
+    public bool PlayerNearby { get; set; }
     Coroutine fadeCoroutine;
 
     [SerializeField] UnityEvent<float> onHealthUpdate;
@@ -91,7 +92,8 @@ public class HealthSystem : MonoBehaviour
                 newColor.a = 1;
                 sprite.color = newColor;
             }
-            FadeHealthBarOut(1f);
+            if (!PlayerNearby)
+                FadeHealthBarOut(1f);
         }
         return true;
     }
@@ -124,7 +126,8 @@ public class HealthSystem : MonoBehaviour
                 newColor.a = 1;
                 sprite.color = newColor;
             }
-            FadeHealthBarOut(1f);
+            if(!PlayerNearby)
+                FadeHealthBarOut(1f);
         }
         return true;
     }
@@ -148,7 +151,7 @@ public class HealthSystem : MonoBehaviour
 
     public void FadeHealthBarIn(float delay)
     {
-        if (!healthBarAlwaysVisible)
+        if (!healthBarAlwaysVisible && gameObject.activeInHierarchy)
         {
             if (fadeCoroutine != null)
                 StopCoroutine(fadeCoroutine);
@@ -158,7 +161,7 @@ public class HealthSystem : MonoBehaviour
 
     public void FadeHealthBarOut(float delay)
     {
-        if (!healthBarAlwaysVisible)
+        if (!healthBarAlwaysVisible && gameObject.activeInHierarchy)
         {
             if (fadeCoroutine != null)
                 StopCoroutine(fadeCoroutine);

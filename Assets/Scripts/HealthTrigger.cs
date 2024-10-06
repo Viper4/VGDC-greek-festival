@@ -21,8 +21,6 @@ public class HealthTrigger : Trigger
 
     void Use()
     {
-        if (!triggerHealthSystem.gameObject.activeSelf)
-            return;
         bool changedMaxHealth = triggerHealthSystem.AddMaxHealth(maxHealthAmount, cooldown, overrideCooldown);
         bool changedHealth = triggerHealthSystem.AddHealth(healthAmount, cooldown, overrideCooldown);
         if (changedHealth || changedMaxHealth)
