@@ -6,6 +6,15 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
+    public bool isWallSliding;
+    public float wallSlidingSpeed = 2f;
+
+    private bool isWallJumping;
+    private float wallJumpingDirection;
+    private float wallJumpingTime = 0.2f;
+    private float wallJumpingCounter;
+    private Vector2 wallJumpingPower = new Vector2(8f, 16f);
+
     public static PlayerInput playerInput;
     Rigidbody2D rb;
     SpriteRenderer spriteRenderer;
@@ -14,7 +23,9 @@ public class Player : MonoBehaviour
     [SerializeField] float walkSpeed = 2f;
     [SerializeField] float runSpeed = 5f;
     [SerializeField] float crouchSpeed = 1f;
-    [SerializeField] float jumpVelocity = 2f;
+    [SerializeField] float jumpVelocity = 5f;
+    [SerializeField] private Transform wallCheck;
+    [SerializeField] private LayerMask wallLayer;
     bool isGrounded = false;
     Vector2 moveVelocity;
 
@@ -39,7 +50,7 @@ public class Player : MonoBehaviour
     public int deaths = 0;
     [SerializeField] float deathTime = 1f;
     bool dying = false;
-    
+
     [SerializeField] StatsUI statsUI;
 
     // Called before Start()
@@ -84,7 +95,7 @@ public class Player : MonoBehaviour
     // Called every time the Physics engine updates (not tied to framerate, fixed rate)
     private void FixedUpdate()
     {
-        if(Time.timeScale > 0)
+        if (Time.timeScale > 0)
         {
             if (dashVelocity != Vector2.zero)
             {
@@ -96,11 +107,11 @@ public class Player : MonoBehaviour
             }
             if (rb.velocity.y > 0)
             {
-                rb.gravityScale = 1;
+                rb.gravityScale = 3;
             }
             else
             {
-                rb.gravityScale = 2;
+                rb.gravityScale = 3;
             }
         }
     }
@@ -108,7 +119,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Time.timeScale > 0)
+        if (Time.timeScale > 0)
         {
             // Read player input for movement
             bool crouching = playerInput.Player.Crouch.ReadValue<float>() >= 1f;
@@ -159,12 +170,15 @@ public class Player : MonoBehaviour
             {
                 Jump();
             }
+
+            wallSlide();
+            WallJump();
         }
     }
 
     void Crouch(InputAction.CallbackContext context)
     {
-        if(Time.timeScale > 0)
+        if (Time.timeScale > 0)
         {
             movementAudio.PlayCrouch();
             transform.localScale = new Vector3(1, 0.5f, 1);
@@ -230,10 +244,76 @@ public class Player : MonoBehaviour
 
     void Fire(InputAction.CallbackContext context)
     {
-        if(Time.timeScale > 0)
+        if (Time.timeScale > 0)
             gun.Fire(rb.velocity);
     }
 
+    //Checks if player touches wall
+    private bool isWalled()
+    {
+        return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer);
+    }
+
+    //If player is off ground and is touching a wall then allows for wall sliding
+    private void wallSlide()
+    {
+        if (isWalled() && !isGrounded)
+        {
+            isWallSliding = true;
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
+        }
+        else
+        {
+            isWallSliding = false;
+        }
+    }
+
+    private void WallJump()
+    {
+        if (isWallSliding)
+        {
+            isWallJumping = false;
+            if (transform.localRotation.y >= 180)
+            {
+                wallJumpingDirection = 0;
+                CancelInvoke(nameof(StopWallJumping));
+            }
+            else
+            {
+                wallJumpingDirection = 180;
+                CancelInvoke(nameof(StopWallJumping));
+            }
+
+            wallJumpingCounter = wallJumpingTime;
+
+        }
+        else
+        {
+            wallJumpingCounter -= Time.deltaTime;
+        }
+        if (playerInput.Player.Dash.ReadValue<float>() >= 1f && wallJumpingCounter > 0f)
+        {
+            isWallJumping = true;
+            rb.velocity = new Vector2(wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
+            wallJumpingCounter = 0f;
+
+            // if (transform.localRotation.y != wallJumpingDirection)
+            // {
+            //     transform.rotation = Quaternion.AxisAngle;
+
+            // }
+        }
+
+        Invoke(nameof(StopWallJumping), wallJumpingDirection);
+
+
+    }
+
+    private void StopWallJumping()
+    {
+        isWallJumping = false;
+    }
+        
     public void KillPlayer()
     {
         if(!dying)
