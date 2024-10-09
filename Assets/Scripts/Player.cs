@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,6 +17,7 @@ public class Player : MonoBehaviour
     [SerializeField] float jumpVelocity = 2f;
     bool isGrounded = false;
     Vector2 moveVelocity;
+
 
     bool canDoubleJump = false;
 
@@ -237,6 +240,15 @@ public class Player : MonoBehaviour
         
     }
 */
+    [SerializeField] public Transform Nail_Hitbox_Final;
+    [SerializeField] public float NailKnockback = 20f;
+
+    public void ApplyNailKnockback(){
+        var PlayerXpos = transform.position.x;
+        var NailXpos = Nail_Hitbox_Final.transform.position.x;
+        var KnockbackDirection = PlayerXpos - NailXpos;
+
+    }
 
     public void KillPlayer()
     {
