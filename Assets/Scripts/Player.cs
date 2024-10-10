@@ -48,6 +48,7 @@ public class Player : BaseMovement
         // Add listeners
         playerInput.Player.Crouch.performed += Crouch;
         playerInput.Player.Crouch.canceled += Uncrouch;
+
         playerInput.Player.Jump.performed += DoubleJump;
         playerInput.Player.Fire.performed += Fire;
     }
@@ -62,6 +63,7 @@ public class Player : BaseMovement
         // Remove listeners
         playerInput.Player.Crouch.performed -= Crouch;
         playerInput.Player.Crouch.canceled -= Uncrouch;
+
         playerInput.Player.Jump.performed -= DoubleJump;
         playerInput.Player.Fire.performed -= Fire;
     }
@@ -230,12 +232,15 @@ public class Player : BaseMovement
         dashIndicator.color = Color.green;
         canDash = true;
     }
-
+/*
     void Fire(InputAction.CallbackContext context)
     {
+        
         if(Time.timeScale > 0)
             gun.Fire(rb.velocity);
+        
     }
+*/
 
     public void KillPlayer()
     {
