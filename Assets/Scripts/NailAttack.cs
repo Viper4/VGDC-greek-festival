@@ -21,12 +21,14 @@ public class NailAttack : MonoBehaviour
     [SerializeField] LayerMask HitLayers;
     Collider2D[]hits = new Collider2D[10];
 
+    [SerializeField] public float NailKnockbackDuration = .5f;
+
     private int HitsTally = 0;
 
     public Player targetScript;
-
-    [SerializeField] public float NailKnockback = 20f;
-
+    [SerializeField] public float NailKnockback = 1f;
+    [SerializeField] public float NailDrag = 1f;
+    Coroutine KnockbackRoutine;
     public void Attack(){
         
         if (cooldown.IsCoolingDown) return;
@@ -35,12 +37,15 @@ public class NailAttack : MonoBehaviour
         NailHitbox.OverlapCollider(Filter, hits);
 
         for(int i=0; i < NailHitbox.OverlapCollider(Filter, hits); i++){
-            Debug.Log(hits[i].name);
+            //Debug.Log(hits[i].name);
             HitsTally += 1;
         }
 
         if (HitsTally != 0){
-            targetScript.ApplyNailKnockback();
+            Vector2 direction = -(NailHitbox.transform.position - transform.position).normalized;
+            direction.y = 0;
+            if (KnockbackRoutine != null) StopCoroutine(KnockbackRoutine);
+            KnockbackRoutine = StartCoroutine(targetScript.ApplyNailKnockback(direction * NailKnockback, NailKnockbackDuration, NailDrag));
         }
         
         cooldown.StartCooldown();

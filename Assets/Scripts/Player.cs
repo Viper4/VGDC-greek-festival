@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using Unity.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -104,7 +106,10 @@ public class Player : MonoBehaviour
             {
                 rb.gravityScale = 2;
             }
+            rb.velocity += additionalVelocity;
+            if (additionalVelocity!=Vector2.zero) Debug.Log(additionalVelocity);
         }
+        
     }
 
     // Update is called once per frame
@@ -240,14 +245,42 @@ public class Player : MonoBehaviour
         
     }
 */
-    [SerializeField] public Transform Nail_Hitbox_Final;
-    [SerializeField] public float NailKnockback = 20f;
 
+//    public bool doInitialTime = true;
+//    public float InitialTime;
+    public Vector2 additionalVelocity;
+
+/*
     public void ApplyNailKnockback(){
         var PlayerXpos = transform.position.x;
         var NailXpos = Nail_Hitbox_Final.transform.position.x;
         var KnockbackDirection = PlayerXpos - NailXpos;
+        Vector2 NailKnockbackDir = new Vector2(KnockbackDirection * NailKnockback, 0);
 
+        if(doInitialTime == true){
+            InitialTime = timePlayed;
+            InitialTime += .5f;
+            doInitialTime = false;
+        }
+
+        if(InitialTime > timePlayed){
+            additionalVelocity = NailKnockbackDir;
+        }  
+        else {
+            additionalVelocity = Vector2.zero;
+            doInitialTime = true;
+        }
+    }
+*/
+    public IEnumerator ApplyNailKnockback(Vector2 velocity, float KnockbackDuration, float drag){
+        additionalVelocity = velocity;
+        float timer = KnockbackDuration;
+        while(timer > 0){
+            additionalVelocity = Vector2.Lerp(additionalVelocity, Vector2.zero, Time.deltaTime*drag);
+            timer -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        additionalVelocity = Vector2.zero;
     }
 
     public void KillPlayer()
