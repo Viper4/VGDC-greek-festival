@@ -3,37 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Player : MonoBehaviour
+public class Player : BaseMovement
 {
     public static PlayerInput playerInput;
-    Rigidbody2D rb;
     SpriteRenderer spriteRenderer;
+    HealthSystem healthSystem;
 
-    [SerializeField] float walkSpeed = 2f;
-    [SerializeField] float runSpeed = 5f;
-    [SerializeField] float crouchSpeed = 1f;
-    [SerializeField] float jumpVelocity = 2f;
-    bool isGrounded = false;
+    [SerializeField] float coyoteTime = 0.1f;
+    float airTime = 0;
     Vector2 moveVelocity;
-
+    bool canCoyoteJump = false;
     bool canDoubleJump = false;
 
     [SerializeField] float dashSpeed = 10;
     [SerializeField] float dashDuration = 0.25f;
     [SerializeField] float dashCooldown = 0.5f;
+    [SerializeField] float dashDrag = 0.5f;
     [SerializeField] SpriteRenderer dashIndicator;
     bool canDash = true;
+    bool tryDash = false;
     Vector2 dashVelocity = Vector2.zero;
 
     [SerializeField] Gun gun;
 
-    [SerializeField] MovementAudio movementAudio;
-    Transform ground;
-    float footstepTimer = 0;
-
     Checkpoint lastCheckpoint;
     public List<Soul> followingSouls = new List<Soul>();
-    public float timePlayed = 0;
     public int soulsSaved = 0;
     public int deaths = 0;
     [SerializeField] float deathTime = 1f;
@@ -54,9 +48,9 @@ public class Player : MonoBehaviour
         // Add listeners
         playerInput.Player.Crouch.performed += Crouch;
         playerInput.Player.Crouch.canceled += Uncrouch;
-        playerInput.Player.Jump.performed += CheckDoubleJump;
-        //playerInput.Player.Fire.performed += Fire;
-        //playerInput.Player.Nail.performed += Nail;
+
+        playerInput.Player.Jump.performed += DoubleJump;
+        playerInput.Player.Fire.performed += Fire;
     }
 
     private void OnDisable()
@@ -69,15 +63,17 @@ public class Player : MonoBehaviour
         // Remove listeners
         playerInput.Player.Crouch.performed -= Crouch;
         playerInput.Player.Crouch.canceled -= Uncrouch;
-        playerInput.Player.Jump.performed -= CheckDoubleJump;
-        //playerInput.Player.Fire.performed -= Fire;
+
+        playerInput.Player.Jump.performed -= DoubleJump;
+        playerInput.Player.Fire.performed -= Fire;
     }
 
     // Start is called before the first frame update
-    void Start()
+    public override void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        base.Start();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        healthSystem = GetComponent<HealthSystem>();
     }
 
     // Called every time the Physics engine updates (not tied to framerate, fixed rate)
@@ -85,41 +81,43 @@ public class Player : MonoBehaviour
     {
         if(Time.timeScale > 0)
         {
+            Vector2 newVelocity;
             if (dashVelocity != Vector2.zero)
             {
-                rb.velocity = dashVelocity;
+                newVelocity = dashVelocity;
+                if (dashVelocity.y == 0 && (dashVelocity.x > 0 && moveVelocity.x < 0 || dashVelocity.x < 0 && moveVelocity.x > 0))
+                {
+                    dashVelocity = Vector2.zero;
+                    newVelocity = moveVelocity;
+                }
             }
             else
             {
-                rb.velocity = moveVelocity + new Vector2(0, rb.velocity.y);
+                newVelocity = moveVelocity;
             }
-            if (rb.velocity.y > 0)
-            {
-                rb.gravityScale = 1;
-            }
-            else
-            {
-                rb.gravityScale = 2;
-            }
+            if (!Climbing && dashVelocity.y == 0)
+                newVelocity += new Vector2(0, rb.velocity.y);
+
+            rb.velocity = newVelocity;
         }
     }
 
     // Update is called once per frame
-    void Update()
+    public override void Update()
     {
+        base.Update();
         if(Time.timeScale > 0)
         {
             // Read player input for movement
-            bool crouching = playerInput.Player.Crouch.ReadValue<float>() >= 1f;
-            bool walking = !crouching && playerInput.Player.Walk.ReadValue<float>() >= 1f;
+            Crouching = playerInput.Player.Crouch.ReadValue<float>() >= 1f;
+            Walking = !Crouching && playerInput.Player.Walk.ReadValue<float>() >= 1f;
             Vector2 moveInput = playerInput.Player.Move.ReadValue<Vector2>();
             moveVelocity = moveInput;
-            moveVelocity.y = 0; // Prevent player from becoming a rocket
-            if (walking)
+            if (Walking)
             {
                 moveVelocity *= walkSpeed;
             }
-            else if (crouching)
+            else if (Crouching)
             {
                 moveVelocity *= crouchSpeed;
             }
@@ -128,38 +126,36 @@ public class Player : MonoBehaviour
                 moveVelocity *= runSpeed;
             }
 
-            // When we're moving
-            if (moveVelocity != Vector2.zero)
-            {
-                // Rotate player in direction of movement
-                transform.right = new Vector2(moveVelocity.x, 0);
+            if (Climbing)
+                moveVelocity.y = moveInput.y * climbSpeed;
+            else
+                moveVelocity.y = 0;
 
-                // Handle footsteps
-                if (isGrounded && !crouching)
-                {
-                    float stepInterval = walking ? movementAudio.walkStepInterval : movementAudio.runStepInterval;
-                    if (footstepTimer >= stepInterval)
-                    {
-                        movementAudio.PlayFootstep(ground.tag, walking);
-                        footstepTimer = 0;
-                    }
-
-                    footstepTimer += Time.deltaTime;
-                }
-            }
-
-            // Check for dash
-            if (canDash && playerInput.Player.Dash.ReadValue<float>() >= 1f && moveInput != Vector2.zero)
-            {
-                Dash(moveInput);
-            }
-
-            if (playerInput.Player.Jump.ReadValue<float>() >= 1f)
+            if (playerInput.Player.Jump.ReadValue<float>() >= 1f && canCoyoteJump)
             {
                 Jump();
             }
 
-            timePlayed += Time.deltaTime;
+            // Check for dash
+            if (playerInput.Player.Dash.ReadValue<float>() >= 1f && moveInput != Vector2.zero)
+            {
+                tryDash = true;
+                if(canDash)
+                    StartCoroutine(Dash(moveInput));
+            }
+            else
+            {
+                tryDash = false;
+            }
+
+            if(!IsGrounded)
+                airTime += Time.deltaTime;
+
+            if(stairs != null && moveInput.y < 0)
+            {
+                stairs.Descend(myCollider);
+                stairs = null;
+            }
         }
     }
 
@@ -185,46 +181,54 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
-        if (Time.timeScale > 0 && isGrounded && dashVelocity == Vector2.zero)
+        if(Time.timeScale > 0 && dashVelocity == Vector2.zero && (IsGrounded || (canCoyoteJump && airTime <= coyoteTime)))
         {
-            if (rb.velocity.y == 0)
+            canCoyoteJump = false;
+            if(IsGrounded)
                 movementAudio.PlayJump(ground.tag);
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
         }
     }
 
-    void CheckDoubleJump(InputAction.CallbackContext context)
+    void DoubleJump(InputAction.CallbackContext context)
     {
-        if (Time.timeScale > 0 && !isGrounded && canDoubleJump && dashVelocity == Vector2.zero)
+        if (Time.timeScale > 0 && !IsGrounded && canDoubleJump && (airTime > coyoteTime || !canCoyoteJump) && dashVelocity == Vector2.zero)
         {
+            canDoubleJump = false;
             movementAudio.PlayDoubleJump();
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
-            canDoubleJump = false;
         }
     }
 
-    void Dash(Vector2 moveInput)
-    {
-        if (Time.timeScale > 0)
-        {
-            movementAudio.PlayDash();
-            dashVelocity = moveInput * dashSpeed;
-            StartCoroutine(DashCooldown());
-        }
-    }
-
-    IEnumerator DashCooldown()
+    IEnumerator Dash(Vector2 moveInput)
     {
         canDash = false;
+        movementAudio.PlayDash();
+        dashVelocity = moveInput * dashSpeed;
         dashIndicator.color = Color.red;
         yield return new WaitForSeconds(dashDuration);
-        rb.velocity = Vector2.zero;
-        dashVelocity = Vector2.zero;
-        yield return new WaitForSeconds(dashCooldown - dashDuration);
-        while (!isGrounded)
+        if (!tryDash || IsGrounded)
         {
+            // Stop dash momentum if we aren't bunny hopping
+            dashVelocity = Vector2.zero;
+            rb.velocity = Vector2.zero;
+        }
+        else
+        {
+            // If we're bunny hopping, preserve x velocity but stop vertical dash momentum
+            if(dashVelocity.y != 0)
+            {
+                dashVelocity.y = 0;
+                rb.velocity = new Vector2(rb.velocity.x, 0);
+            }
+        }
+        yield return new WaitForSeconds(dashCooldown - dashDuration);
+        while (!IsGrounded)
+        {
+            dashVelocity.x = Mathf.Lerp(dashVelocity.x, 0, Time.deltaTime * dashDrag);
             yield return new WaitForFixedUpdate();
         }
+        dashVelocity = Vector2.zero;
         dashIndicator.color = Color.green;
         canDash = true;
     }
@@ -267,27 +271,77 @@ public class Player : MonoBehaviour
         deaths++;
         statsUI.PopupUI(deaths, soulsSaved, 0.5f); // Show stats
         dying = false;
+        IsGrounded = false;
+        ground = null;
+        healthSystem.ResetHealth();
+    }
+
+    public void SetCheckpoint(Checkpoint checkpoint)
+    {
+        checkpoint.Save(followingSouls.Count);
+
+        foreach (Soul followingSoul in followingSouls)
+        {
+            soulsSaved++;
+            followingSoul.Fade();
+        }
+        // If we saved new souls show stats
+        if (followingSouls.Count > 0)
+            statsUI.PopupUI(deaths, soulsSaved, 0.5f);
+        followingSouls.Clear();
+
+        // If we're setting a new checkpoint
+        if (lastCheckpoint != checkpoint)
+        {
+            // Show stats
+            statsUI.PopupUI(deaths, soulsSaved, 0.5f);
+
+            // If the last checkpoint isn't null, unselect it
+            if (lastCheckpoint != null)
+                lastCheckpoint.Deselect();
+
+            // Select this checkpoint
+            lastCheckpoint = checkpoint;
+        }
+    }
+
+    public void PickupSoul(Soul soul)
+    {
+        if (soul.target == null)
+        {
+            if (followingSouls.Count > 0)
+            {
+                // Get this soul to start following the last soul in the chain
+                soul.StartFollow(followingSouls[^1].transform);
+                followingSouls.Add(soul);
+            }
+            else
+            {
+                // This soul is the first soul so its first in the chain and follows the player
+                soul.StartFollow(transform);
+                followingSouls.Add(soul);
+            }
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.transform.CompareTag("DeathZone"))
-        {
-            KillPlayer();
-            return;
-        }
-
-        // Recharge isGrounded if the thing we land on isn't a trap and isn't too steep
         if (!collision.transform.name.Contains("Trap"))
         {
-            if (Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
+            if(Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
             {
-                ground = collision.transform;
-                if (!isGrounded)
-                    movementAudio.PlayLand(ground.tag, Mathf.Abs(collision.relativeVelocity.y) * 0.1f);
-                isGrounded = true;
+                Land(collision);
                 canDoubleJump = true;
+                canCoyoteJump = true;
+                airTime = 0;
+                rb.sharedMaterial.friction = 0.5f; // Prevent player from sliding off ramps and flying super far
             }
+        }
+        switch (collision.transform.tag)
+        {
+            case "DeathZone":
+                KillPlayer();
+                break;
         }
     }
 
@@ -295,8 +349,8 @@ public class Player : MonoBehaviour
     {
         if(ground == collision.transform)
         {
-            isGrounded = false;
-            ground = null;
+            ExitGround();
+            rb.sharedMaterial.friction = 0; // Prevent player from hanging onto edges of platforms
         }
     }
 
@@ -304,52 +358,6 @@ public class Player : MonoBehaviour
     {
         switch(other.tag)
         {
-            case "Soul":
-                Soul soul = other.GetComponent<Soul>();
-                if (soul.target == null)
-                {
-                    if (followingSouls.Count > 0)
-                    {
-                        // Get this soul to start following the last soul in the chain
-                        soul.StartFollow(followingSouls[^1].transform);
-                        followingSouls.Add(soul);
-                    }
-                    else
-                    {
-                        // This soul is the first soul so its first in the chain and follows the player
-                        soul.StartFollow(transform);
-                        followingSouls.Add(soul);
-                    }
-                }
-                break;
-            case "Checkpoint":
-                Checkpoint checkpoint = other.GetComponent<Checkpoint>();
-                checkpoint.Save(followingSouls.Count);
-
-                foreach (Soul followingSoul in followingSouls)
-                {
-                    soulsSaved++;
-                    followingSoul.Fade();
-                }
-                // If we saved new souls show stats
-                if(followingSouls.Count > 0)
-                    statsUI.PopupUI(deaths, soulsSaved, 0.5f);
-                followingSouls.Clear();
-
-                // If we're setting a new checkpoint
-                if (lastCheckpoint != checkpoint)
-                {
-                    // Show stats
-                    statsUI.PopupUI(deaths, soulsSaved, 0.5f);
-
-                    // If the last checkpoint isn't null, unselect it
-                    if (lastCheckpoint != null)
-                        lastCheckpoint.Deselect();
-
-                    // Select this checkpoint
-                    lastCheckpoint = checkpoint;
-                }
-                break;
             case "DeathZone":
                 KillPlayer();
                 break;
