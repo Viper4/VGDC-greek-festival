@@ -50,7 +50,6 @@ public class Player : BaseMovement
         playerInput.Player.Crouch.canceled += Uncrouch;
 
         playerInput.Player.Jump.performed += DoubleJump;
-        playerInput.Player.Fire.performed += Fire;
     }
 
     private void OnDisable()
@@ -65,7 +64,6 @@ public class Player : BaseMovement
         playerInput.Player.Crouch.canceled -= Uncrouch;
 
         playerInput.Player.Jump.performed -= DoubleJump;
-        playerInput.Player.Fire.performed -= Fire;
     }
 
     // Start is called before the first frame update
