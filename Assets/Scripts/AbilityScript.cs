@@ -11,16 +11,17 @@ public class AbilityScript : MonoBehaviour
     public Transform ThreeLaunchOffset;
     public GameObject ProjectilePrefab;
     public float ProjectileSpeed = 20f;
-    public float AbilityCooldown = 3f;
 
     void OnEnable(){
         Player.playerInput.Player.Ability1.performed += AbilityOneScript;
     }
 
+[SerializeField] private Cooldown cooldown;
 
     void AbilityOneScript(InputAction.CallbackContext context){
         
-        
+        if (cooldown.IsCoolingDown) return;
+
         Collider2D cloneOne = Instantiate(ProjectilePrefab,LaunchOffset.position,LaunchOffset.rotation).GetComponent<Collider2D>();
         Collider2D cloneTwo = Instantiate(ProjectilePrefab,TwoLaunchOffset.position, TwoLaunchOffset.rotation).GetComponent<Collider2D>();
         Collider2D cloneThree = Instantiate(ProjectilePrefab,ThreeLaunchOffset.position,ThreeLaunchOffset.rotation).GetComponent<Collider2D>();
@@ -34,6 +35,7 @@ public class AbilityScript : MonoBehaviour
         cloneTwo.GetComponent<Rigidbody2D>().velocity=InitialVelocity + new Vector2(TwoLaunchOffset.up.x, TwoLaunchOffset.up.y) * ProjectileSpeed;
         cloneThree.GetComponent<Rigidbody2D>().velocity=InitialVelocity + new Vector2(ThreeLaunchOffset.up.x, ThreeLaunchOffset.up.y) * ProjectileSpeed;
         
+        cooldown.StartCooldown();
     }
 
 }

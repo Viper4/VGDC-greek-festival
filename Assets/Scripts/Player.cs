@@ -1,5 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
+using Unity.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +16,7 @@ public class Player : BaseMovement
     [SerializeField] float coyoteTime = 0.1f;
     float airTime = 0;
     Vector2 moveVelocity;
+
     bool canCoyoteJump = false;
     bool canDoubleJump = false;
 
@@ -23,6 +28,7 @@ public class Player : BaseMovement
     bool canDash = true;
     bool tryDash = false;
     Vector2 dashVelocity = Vector2.zero;
+    Vector2 knockbackVelocity;
 
     [SerializeField] Gun gun;
 
@@ -93,11 +99,14 @@ public class Player : BaseMovement
             {
                 newVelocity = moveVelocity;
             }
+
             if (!Climbing && dashVelocity.y == 0)
                 newVelocity += new Vector2(0, rb.velocity.y);
+            newVelocity += knockbackVelocity
 
             rb.velocity = newVelocity;
         }
+        
     }
 
     // Update is called once per frame
@@ -230,15 +239,17 @@ public class Player : BaseMovement
         dashIndicator.color = Color.green;
         canDash = true;
     }
-/*
-    void Fire(InputAction.CallbackContext context)
-    {
-        
-        if(Time.timeScale > 0)
-            gun.Fire(rb.velocity);
-        
+
+    public IEnumerator ApplyNailKnockback(Vector2 velocity, float KnockbackDuration, float drag){
+        knockbackVelocity = velocity;
+        float timer = KnockbackDuration;
+        while(timer > 0){
+            knockbackVelocity = Vector2.Lerp(knockbackVelocity, Vector2.zero, Time.deltaTime*drag);
+            timer -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        knockbackVelocity = Vector2.zero;
     }
-*/
 
     public void KillPlayer()
     {

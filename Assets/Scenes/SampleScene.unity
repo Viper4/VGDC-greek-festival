@@ -6086,6 +6086,7 @@ MonoBehaviour:
   deaths: 0
   deathTime: 1
   statsUI: {fileID: 373059517}
+  additionalVelocity: {x: 0, y: 0}
 --- !u!70 &1623497984
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
