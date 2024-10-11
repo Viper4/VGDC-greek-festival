@@ -16,6 +16,7 @@ TagManager:
   - DeathZone
   - Checkpoint
   - Soul
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -25,9 +26,9 @@ TagManager:
   - UI
   - Ground
   - Enemies
-  - 
-  - 
-  - 
+  - Player
+  - Soul
+  - IgnoreCharacters
   - 
   - 
   - 

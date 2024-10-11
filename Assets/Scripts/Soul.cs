@@ -20,6 +20,8 @@ public class Soul : MonoBehaviour
     [SerializeField] float fadeTime = 0.5f;
     bool fading = false;
 
+    [SerializeField] SimpleBob simpleBob;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -55,6 +57,10 @@ public class Soul : MonoBehaviour
             rb.velocity = Vector2.zero;
             ground = collision.transform;
         }
+        if (collision.CompareTag("Player"))
+        {
+            collision.GetComponent<Player>().PickupSoul(this);
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -67,6 +73,7 @@ public class Soul : MonoBehaviour
 
     public void StartFollow(Transform target)
     {
+        simpleBob.enabled = false;
         this.target = target;
         spriteRenderer.color = followingColor;
     }
@@ -76,6 +83,7 @@ public class Soul : MonoBehaviour
         target = null;
         spriteRenderer.color = startColor;
         transform.position = startPosition;
+        simpleBob.enabled = true;
     }
 
     public void Fade()
