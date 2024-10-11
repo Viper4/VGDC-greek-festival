@@ -1,9 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
-using Unity.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,7 +11,6 @@ public class Player : BaseMovement
 
     [SerializeField] float coyoteTime = 0.1f;
     float airTime = 0;
-    Vector2 moveVelocity;
 
     bool canCoyoteJump = false;
     bool canDoubleJump = false;
@@ -28,9 +23,6 @@ public class Player : BaseMovement
     bool canDash = true;
     bool tryDash = false;
     Vector2 dashVelocity = Vector2.zero;
-    Vector2 knockbackVelocity;
-
-    [SerializeField] Gun gun;
 
     Checkpoint lastCheckpoint;
     public List<Soul> followingSouls = new List<Soul>();
@@ -54,7 +46,6 @@ public class Player : BaseMovement
         // Add listeners
         playerInput.Player.Crouch.performed += Crouch;
         playerInput.Player.Crouch.canceled += Uncrouch;
-
         playerInput.Player.Jump.performed += DoubleJump;
     }
 
@@ -68,7 +59,6 @@ public class Player : BaseMovement
         // Remove listeners
         playerInput.Player.Crouch.performed -= Crouch;
         playerInput.Player.Crouch.canceled -= Uncrouch;
-
         playerInput.Player.Jump.performed -= DoubleJump;
     }
 
@@ -102,7 +92,7 @@ public class Player : BaseMovement
 
             if (!Climbing && dashVelocity.y == 0)
                 newVelocity += new Vector2(0, rb.velocity.y);
-            newVelocity += knockbackVelocity
+            newVelocity += knockbackVelocity;
 
             rb.velocity = newVelocity;
         }
@@ -192,7 +182,7 @@ public class Player : BaseMovement
         {
             canCoyoteJump = false;
             if(IsGrounded)
-                movementAudio.PlayJump(ground.tag);
+                PlayJumpSound();
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
         }
     }
@@ -240,17 +230,6 @@ public class Player : BaseMovement
         canDash = true;
     }
 
-    public IEnumerator ApplyNailKnockback(Vector2 velocity, float KnockbackDuration, float drag){
-        knockbackVelocity = velocity;
-        float timer = KnockbackDuration;
-        while(timer > 0){
-            knockbackVelocity = Vector2.Lerp(knockbackVelocity, Vector2.zero, Time.deltaTime*drag);
-            timer -= Time.deltaTime;
-            yield return new WaitForEndOfFrame();
-        }
-        knockbackVelocity = Vector2.zero;
-    }
-
     public void KillPlayer()
     {
         if(!dying)
@@ -281,7 +260,6 @@ public class Player : BaseMovement
         statsUI.PopupUI(deaths, soulsSaved, 0.5f); // Show stats
         dying = false;
         IsGrounded = false;
-        ground = null;
         healthSystem.ResetHealth();
     }
 
@@ -356,9 +334,8 @@ public class Player : BaseMovement
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if(ground == collision.transform)
+        if(TryExitGround(collision))
         {
-            ExitGround();
             rb.sharedMaterial.friction = 0; // Prevent player from hanging onto edges of platforms
         }
     }

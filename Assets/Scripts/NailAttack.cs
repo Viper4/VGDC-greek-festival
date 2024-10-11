@@ -1,54 +1,66 @@
-using System.Collections;
-using System.Collections.Generic;
-using JetBrains.Annotations;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
 public class NailAttack : MonoBehaviour
 {
-    void OnEnable(){
-        Player.playerInput.Player.Nail.performed += NailAttackScript;
-    }
-
-    void NailAttackScript(InputAction.CallbackContext context){
-        Attack();
-    }
-
-    [SerializeField] private Cooldown cooldown;
-
-    [SerializeField] Collider2D NailHitbox;
+    [SerializeField] Collider2D hitbox;
 
     [SerializeField] LayerMask HitLayers;
-    Collider2D[]hits = new Collider2D[10];
+    Collider2D[] hits = new Collider2D[10];
 
-    [SerializeField] public float NailKnockbackDuration = .5f;
+    [SerializeField] float knockbackDuration = .5f;
 
-    private int HitsTally = 0;
+    public BaseMovement knockbackTarget;
+    [SerializeField] float knockback = 1f;
+    [SerializeField] float drag = 1f;
+    [SerializeField] float cooldown = 3f;
+    Coroutine knockbackRoutine;
+    float timer = 0;
 
-    public Player targetScript;
-    [SerializeField] public float NailKnockback = 1f;
-    [SerializeField] public float NailDrag = 1f;
-    Coroutine KnockbackRoutine;
-    public void Attack(){
-        
-        if (cooldown.IsCoolingDown) return;
+    [SerializeField] float damage = 1f;
 
-        ContactFilter2D Filter = new ContactFilter2D(){layerMask=HitLayers, useLayerMask=true};
-        NailHitbox.OverlapCollider(Filter, hits);
+    void OnEnable()
+    {
+        Player.playerInput.Player.Nail.performed += Attack;
+    }
 
-        for(int i=0; i < NailHitbox.OverlapCollider(Filter, hits); i++){
-            //Debug.Log(hits[i].name);
-            HitsTally += 1;
+    private void OnDisable()
+    {
+        Player.playerInput.Player.Nail.performed -= Attack;
+    }
+
+    private void Start()
+    {
+        timer = cooldown;
+    }
+
+    private void Update()
+    {
+        timer += Time.deltaTime;
+    }
+
+    void Attack(InputAction.CallbackContext context)
+    {
+        if (timer >= cooldown)
+        {
+            timer = 0;
+            ContactFilter2D Filter = new ContactFilter2D() { layerMask = HitLayers, useLayerMask = true };
+            int numHits = hitbox.OverlapCollider(Filter, hits);
+            for(int i = 0; i < numHits; i++)
+            {
+                if (hits[i].TryGetComponent(out HealthSystem healthSystem))
+                {
+                    healthSystem.AddHealth(-damage, 0, true);
+                }
+            }
+
+            if (numHits > 0)
+            {
+                Vector2 direction = -(hitbox.transform.position - transform.position).normalized;
+                direction.y = 0;
+                if (knockbackRoutine != null) StopCoroutine(knockbackRoutine);
+                knockbackRoutine = StartCoroutine(knockbackTarget.ApplyKnockback(direction * knockback, knockbackDuration, drag));
+            }
         }
-
-        if (HitsTally != 0){
-            Vector2 direction = -(NailHitbox.transform.position - transform.position).normalized;
-            direction.y = 0;
-            if (KnockbackRoutine != null) StopCoroutine(KnockbackRoutine);
-            KnockbackRoutine = StartCoroutine(targetScript.ApplyNailKnockback(direction * NailKnockback, NailKnockbackDuration, NailDrag));
-        }
-        
-        cooldown.StartCooldown();
-        HitsTally = 0;
     }
 }

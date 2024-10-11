@@ -40,16 +40,14 @@ public class SceneLoader : MonoBehaviour
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(buildIndex);
         asyncLoad.allowSceneActivation = false;
         // Async load progress goes from 0 to 0.9
-        float normalizedProgress = asyncLoad.progress / 0.9f;
-        Debug.Log("Start");
-        while (normalizedProgress < 0.9f)
+        float progress = asyncLoad.progress / 0.9f;
+        while (progress < 0.9f)
         {
-            normalizedProgress = asyncLoad.progress / 0.9f;
-            loadingBar.value = normalizedProgress;
-            loadingText.text = Mathf.RoundToInt(normalizedProgress * 100f) + "%";
+            progress = asyncLoad.progress / 0.9f;
+            loadingBar.value = progress;
+            loadingText.text = Mathf.RoundToInt(progress * 100f) + "%";
             yield return new WaitForEndOfFrame();
         }
-        Debug.Log("End");
         loadingScreen.SetActive(false);
         loadingBar.value = 1;
         loadingText.text = "100%";

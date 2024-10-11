@@ -15,9 +15,23 @@ public class BaseMovement : MonoBehaviour
     public float jumpVelocity = 2f;
     public bool Walking { get; set; }
     public bool Crouching { get; set; }
+    public Vector2 moveVelocity;
 
-    [HideInInspector] public Transform ground;
-    public bool IsGrounded { get; set; }
+    Transform ground;
+    bool isGrounded = false;
+    public bool IsGrounded 
+    { 
+        get
+        { 
+            return isGrounded;
+        } 
+        set
+        {
+            if (!value)
+                ground = null;
+            isGrounded = value;
+        } 
+    }
 
     public MovementAudio movementAudio;
     float footstepTimer = 0;
@@ -40,6 +54,8 @@ public class BaseMovement : MonoBehaviour
         } 
     }
 
+    public Vector2 knockbackVelocity;
+
     public virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -52,13 +68,13 @@ public class BaseMovement : MonoBehaviour
         if (Time.timeScale > 0)
         {
             // When we're moving
-            if (rb.velocity.x != 0)
+            if (Mathf.Abs(moveVelocity.x) > 0.1f)
             {
                 // Rotate in direction of movement
-                transform.right = new Vector2(rb.velocity.x, 0);
+                transform.right = new Vector2(moveVelocity.x, 0);
 
                 // Handle footsteps
-                if (movementAudio != null && IsGrounded && !Crouching)
+                if (movementAudio != null && isGrounded && !Crouching)
                 {
                     float stepInterval = Walking ? movementAudio.walkStepInterval : movementAudio.runStepInterval;
                     if (footstepTimer >= stepInterval)
@@ -85,15 +101,38 @@ public class BaseMovement : MonoBehaviour
     public void Land(Collision2D collision)
     {
         ground = collision.transform;
-        if (movementAudio != null && !IsGrounded)
+        if (movementAudio != null && !isGrounded)
             movementAudio.PlayLand(ground.tag, Mathf.Abs(collision.relativeVelocity.y) * 0.1f);
-        IsGrounded = true;
+        isGrounded = true;
     }
 
-    public void ExitGround()
+    public void PlayJumpSound()
     {
-        IsGrounded = false;
-        ground = null;
+        movementAudio.PlayJump(ground.tag);
+    }
+
+    public bool TryExitGround(Collision2D collision)
+    {
+        if(collision.transform == ground)
+        {
+            isGrounded = false;
+            ground = null;
+            return true;
+        }
+        return false;
+    }
+
+    public IEnumerator ApplyKnockback(Vector2 velocity, float duration, float drag)
+    {
+        knockbackVelocity = velocity;
+        float timer = duration;
+        while (timer > 0)
+        {
+            knockbackVelocity = Vector2.Lerp(knockbackVelocity, Vector2.zero, Time.deltaTime * drag);
+            timer -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        knockbackVelocity = Vector2.zero;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -109,9 +148,6 @@ public class BaseMovement : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (ground == collision.transform)
-        {
-            ExitGround();
-        }
+        TryExitGround(collision);
     }
 }
