@@ -31,7 +31,9 @@ public class CollectedSoul : BaseMovement
     [SerializeField] GameObject dialogueBox;
     [SerializeField] TextMeshProUGUI dialogueText;
     [SerializeField] float dialogueClearDelay = 1f;
+    [SerializeField] float dialogueClearSpeed = 0.025f;
     [SerializeField] string[] dialogue;
+    [SerializeField] float[] timesPerChar;
     int dialogueIndex = 0;
     Coroutine dialogueAnimationRoutine = null;
     Coroutine clearDialogueRoutine = null;
@@ -85,7 +87,7 @@ public class CollectedSoul : BaseMovement
                         rb.velocity = new Vector2(moveVelocity.x * walkSpeed, rb.velocity.y);
                     }
 
-                    if ((destinations[^1] - new Vector2(transform.position.x, transform.position.y)).sqrMagnitude < 1)
+                    if ((destinations[^1] - new Vector2(transform.position.x, transform.position.y)).sqrMagnitude < 0.5f)
                     {
                         if(destinations.Count == 1)
                         {
@@ -189,6 +191,16 @@ public class CollectedSoul : BaseMovement
         dialogueAnimationRoutine = null;
     }
 
+    void SkipDialogue(int index)
+    {
+        StopCoroutine(dialogueAnimationRoutine);
+        dialogueText.text = "";
+        for (int i = 0; i < index; i++)
+        {
+            dialogueText.text += dialogue[i] + "\n";
+        }
+    }
+
     public void EnterDialogue()
     {
         dialogueIndex = 0;
@@ -201,19 +213,9 @@ public class CollectedSoul : BaseMovement
         if (dialogue.Length > 0)
         {
             dialogueText.text = "";
-            if(dialogueAnimationRoutine != null)
+            if (dialogueAnimationRoutine != null)
                 StopCoroutine(dialogueAnimationRoutine);
-            dialogueAnimationRoutine = StartCoroutine(AnimatedDialogue(dialogue[0], 0.1f));
-        }
-    }
-
-    void SkipDialogue(int index)
-    {
-        StopCoroutine(dialogueAnimationRoutine);
-        dialogueText.text = "";
-        for (int i = 0; i < index; i++)
-        {
-            dialogueText.text += dialogue[i] + "\n";
+            dialogueAnimationRoutine = StartCoroutine(AnimatedDialogue(dialogue[0], timesPerChar[0]));
         }
     }
 
@@ -231,7 +233,7 @@ public class CollectedSoul : BaseMovement
                 {
                     dialogueText.text += "\n";
                 }
-                dialogueAnimationRoutine = StartCoroutine(AnimatedDialogue(dialogue[dialogueIndex], 0.1f));
+                dialogueAnimationRoutine = StartCoroutine(AnimatedDialogue(dialogue[dialogueIndex], timesPerChar[dialogueIndex]));
             }
         }
     }
@@ -245,9 +247,9 @@ public class CollectedSoul : BaseMovement
             if (dialogueAnimationRoutine != null)
                 StopCoroutine(dialogueAnimationRoutine);
             dialogueText.text = "";
-            dialogueAnimationRoutine = StartCoroutine(AnimatedDialogue(dialogue[^1], 0.1f));
+            dialogueAnimationRoutine = StartCoroutine(AnimatedDialogue(dialogue[^1], timesPerChar[^1]));
         }
-        clearDialogueRoutine = StartCoroutine(ClearDialogue(dialogueClearDelay, 0.05f));
+        clearDialogueRoutine = StartCoroutine(ClearDialogue(dialogueClearDelay, dialogueClearSpeed));
     }
 
     IEnumerator ClearDialogue(float delay, float timerPerChar)

@@ -313,7 +313,7 @@ public class Player : BaseMovement
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!collision.transform.name.Contains("Trap"))
+        if (!collision.transform.CompareTag("Trap"))
         {
             if(Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
             {

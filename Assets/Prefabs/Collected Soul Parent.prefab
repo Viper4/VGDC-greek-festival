@@ -798,12 +798,19 @@ MonoBehaviour:
   dialogueBox: {fileID: 3698100488062495612}
   dialogueText: {fileID: 6729555994970404894}
   dialogueClearDelay: 1
+  dialogueClearSpeed: 0.025
   dialogue:
   - Hello!
   - I'm a soul you collected.
   - This place is the hub.
   - If you walk into the yellow diamond you go to the sample level.
   - Goodbye.
+  timesPerChar:
+  - 0.05
+  - 0.05
+  - 0.05
+  - 0.05
+  - 0.05
 --- !u!114 &4515525036801978312
 MonoBehaviour:
   m_ObjectHideFlags: 0
