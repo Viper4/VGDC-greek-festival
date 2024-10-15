@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Player : MonoBehaviour
+public class Player : BaseMovement
 {
     public bool isWallSliding;
     public float wallSlidingSpeed = 0.2f;
@@ -14,36 +13,28 @@ public class Player : MonoBehaviour
     public float wallSlideCounter;
     public float wallJumpAmount = 3f;
     public Vector2 wallJumpingPower = new Vector2(10f, 12f);
-
+    [SerializeField] private Transform wallCheck;
+    [SerializeField] private LayerMask wallLayer;
+    
     public static PlayerInput playerInput;
-    Rigidbody2D rb;
     SpriteRenderer spriteRenderer;
     HealthSystem healthSystem;
 
-    [SerializeField] float walkSpeed = 2f;
-    [SerializeField] float runSpeed = 5f;
-    [SerializeField] float crouchSpeed = 1f;
-    [SerializeField] float jumpVelocity = 5f;
-    [SerializeField] private Transform wallCheck;
-    [SerializeField] private LayerMask wallLayer;
-    bool isGrounded = false;
-    Vector2 moveVelocity;
+    [SerializeField] float coyoteTime = 0.1f;
+    float airTime = 0;
 
+    bool canCoyoteJump = false;
     bool canDoubleJump = false;
 
     [SerializeField] float dashSpeed = 15;
     [SerializeField] float dashDuration = 0.25f;
     [SerializeField] float dashCooldown = 0.5f;
+    [SerializeField] float dashDrag = 0.5f;
     [SerializeField] SpriteRenderer dashIndicator;
     bool canDash = true;
+    bool tryDash = false;
     Vector2 dashVelocity = Vector2.zero;
     Vector2 wallJumpVelocity = Vector2.zero;
-
-    [SerializeField] Gun gun;
-
-    [SerializeField] MovementAudio movementAudio;
-    Transform ground;
-    float footstepTimer = 0;
 
     Checkpoint lastCheckpoint;
     public List<Soul> followingSouls = new List<Soul>();
@@ -67,8 +58,7 @@ public class Player : MonoBehaviour
         // Add listeners
         playerInput.Player.Crouch.performed += Crouch;
         playerInput.Player.Crouch.canceled += Uncrouch;
-        playerInput.Player.Jump.performed += CheckDoubleJump;
-        playerInput.Player.Fire.performed += Fire;
+        playerInput.Player.Jump.performed += DoubleJump;
     }
 
     private void OnDisable()
@@ -81,14 +71,13 @@ public class Player : MonoBehaviour
         // Remove listeners
         playerInput.Player.Crouch.performed -= Crouch;
         playerInput.Player.Crouch.canceled -= Uncrouch;
-        playerInput.Player.Jump.performed -= CheckDoubleJump;
-        playerInput.Player.Fire.performed -= Fire;
+        playerInput.Player.Jump.performed -= DoubleJump;
     }
 
     // Start is called before the first frame update
-    void Start()
+    public override void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        base.Start();
         spriteRenderer = GetComponent<SpriteRenderer>();
         healthSystem = GetComponent<HealthSystem>();
     }
@@ -98,46 +87,50 @@ public class Player : MonoBehaviour
     {
         if (Time.timeScale > 0)
         {
+            Vector2 newVelocity;
             if (dashVelocity != Vector2.zero)
             {
-                rb.velocity = dashVelocity;
+                newVelocity = dashVelocity;
+                if (dashVelocity.y == 0 && (dashVelocity.x > 0 && moveVelocity.x < 0 || dashVelocity.x < 0 && moveVelocity.x > 0))
+                {
+                    dashVelocity = Vector2.zero;
+                    newVelocity = moveVelocity;
+                }
             }
-            else if (wallJumpVelocity != Vector2.zero)
+            else if(wallJumpVelocity != Vector2.zero)
             {
-                rb.velocity = wallJumpVelocity;
-                
+                newVelocity = wallJumpVelocity;
             }
             else
             {
-                rb.velocity = moveVelocity + new Vector2(0, rb.velocity.y);
+                newVelocity = moveVelocity;
             }
-            if (rb.velocity.y > 0)
-            {
-                rb.gravityScale = 3;
-            }
-            else
-            {
-                rb.gravityScale = 3;
-            }
+
+            if (!Climbing && dashVelocity.y == 0)
+                newVelocity += new Vector2(0, rb.velocity.y);
+            newVelocity += knockbackVelocity;
+
+            rb.velocity = newVelocity;
         }
+        
     }
 
     // Update is called once per frame
-    void Update()
+    public override void Update()
     {
-        if (Time.timeScale > 0)
+        base.Update();
+        if(Time.timeScale > 0)
         {
             // Read player input for movement
-            bool crouching = playerInput.Player.Crouch.ReadValue<float>() >= 1f;
-            bool walking = !crouching && playerInput.Player.Walk.ReadValue<float>() >= 1f;
+            Crouching = playerInput.Player.Crouch.ReadValue<float>() >= 1f;
+            Walking = !Crouching && playerInput.Player.Walk.ReadValue<float>() >= 1f;
             Vector2 moveInput = playerInput.Player.Move.ReadValue<Vector2>();
             moveVelocity = moveInput;
-            moveVelocity.y = 0; // Prevent player from becoming a rocket
-            if (walking && isWallJumping != true)
+            if (Walking)
             {
                 moveVelocity *= walkSpeed;
             }
-            else if (crouching)
+            else if (Crouching)
             {
                 moveVelocity *= crouchSpeed;
             }
@@ -152,35 +145,36 @@ public class Player : MonoBehaviour
                 wallJumpAmount = 3;
                 isWallJumping = false;
             }
-            // When we're moving
-            if (moveVelocity != Vector2.zero)
+
+            if (Climbing)
+                moveVelocity.y = moveInput.y * climbSpeed;
+            else
+                moveVelocity.y = 0;
+
+            if (playerInput.Player.Jump.ReadValue<float>() >= 1f && canCoyoteJump)
             {
-                // Rotate player in direction of movement
-                transform.right = new Vector2(moveVelocity.x, 0);
-
-                // Handle footsteps
-                if (isGrounded && !crouching)
-                {
-                    float stepInterval = walking ? movementAudio.walkStepInterval : movementAudio.runStepInterval;
-                    if (footstepTimer >= stepInterval)
-                    {
-                        movementAudio.PlayFootstep(ground.tag, walking);
-                        footstepTimer = 0;
-                    }
-
-                    footstepTimer += Time.deltaTime;
-                }
+                Jump();
             }
 
             // Check for dash
-            if (canDash && playerInput.Player.Dash.ReadValue<float>() >= 1f && moveInput != Vector2.zero)
+            if (playerInput.Player.Dash.ReadValue<float>() >= 1f && moveInput != Vector2.zero)
             {
-                Dash(moveInput);
+                tryDash = true;
+                if(canDash)
+                    StartCoroutine(Dash(moveInput));
+            }
+            else
+            {
+                tryDash = false;
             }
 
-            if (playerInput.Player.Jump.ReadValue<float>() >= 1f)
+            if(!IsGrounded)
+                airTime += Time.deltaTime;
+
+            if(stairs != null && moveInput.y < 0)
             {
-                Jump();
+                stairs.Descend(myCollider);
+                stairs = null;
             }
 
             wallSlide();
@@ -210,54 +204,56 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
-        if (Time.timeScale > 0 && isGrounded && dashVelocity == Vector2.zero)
+        if(Time.timeScale > 0 && dashVelocity == Vector2.zero && (IsGrounded || (canCoyoteJump && airTime <= coyoteTime)))
         {
-            if (rb.velocity.y == 0)
-                movementAudio.PlayJump(ground.tag);
+            canCoyoteJump = false;
+            if(IsGrounded)
+                PlayJumpSound();
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
         }
     }
 
-    void CheckDoubleJump(InputAction.CallbackContext context)
+    void DoubleJump(InputAction.CallbackContext context)
     {
-        if (Time.timeScale > 0 && !isGrounded && canDoubleJump && dashVelocity == Vector2.zero)
+        if (Time.timeScale > 0 && !IsGrounded && canDoubleJump && (airTime > coyoteTime || !canCoyoteJump) && dashVelocity == Vector2.zero)
         {
+            canDoubleJump = false;
             movementAudio.PlayDoubleJump();
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
-            canDoubleJump = false;
         }
     }
 
-    void Dash(Vector2 moveInput)
-    {
-        if (Time.timeScale > 0)
-        {
-            movementAudio.PlayDash();
-            dashVelocity = moveInput * dashSpeed;
-            StartCoroutine(DashCooldown());
-        }
-    }
-
-    IEnumerator DashCooldown()
+    IEnumerator Dash(Vector2 moveInput)
     {
         canDash = false;
+        movementAudio.PlayDash();
+        dashVelocity = moveInput * dashSpeed;
         dashIndicator.color = Color.red;
         yield return new WaitForSeconds(dashDuration);
-        rb.velocity = Vector2.zero;
-        dashVelocity = Vector2.zero;
-        yield return new WaitForSeconds(dashCooldown - dashDuration);
-        while (!isGrounded)
+        if (!tryDash || IsGrounded)
         {
+            // Stop dash momentum if we aren't bunny hopping
+            dashVelocity = Vector2.zero;
+            rb.velocity = Vector2.zero;
+        }
+        else
+        {
+            // If we're bunny hopping, preserve x velocity but stop vertical dash momentum
+            if(dashVelocity.y != 0)
+            {
+                dashVelocity.y = 0;
+                rb.velocity = new Vector2(rb.velocity.x, 0);
+            }
+        }
+        yield return new WaitForSeconds(dashCooldown - dashDuration);
+        while (!IsGrounded)
+        {
+            dashVelocity.x = Mathf.Lerp(dashVelocity.x, 0, Time.deltaTime * dashDrag);
             yield return new WaitForFixedUpdate();
         }
+        dashVelocity = Vector2.zero;
         dashIndicator.color = Color.green;
         canDash = true;
-    }
-
-    void Fire(InputAction.CallbackContext context)
-    {
-        if (Time.timeScale > 0)
-            gun.Fire(rb.velocity);
     }
 
     //Checks if player touches wall
@@ -343,8 +339,7 @@ public class Player : MonoBehaviour
         deaths++;
         statsUI.PopupUI(deaths, soulsSaved, 0.5f); // Show stats
         dying = false;
-        isGrounded = false;
-        ground = null;
+        IsGrounded = false;
         healthSystem.ResetHealth();
     }
 
@@ -398,13 +393,16 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!collision.transform.name.Contains("Trap") && Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
+        if (!collision.transform.CompareTag("Trap"))
         {
-            ground = collision.transform;
-            if (!isGrounded)
-                movementAudio.PlayLand(ground.tag, Mathf.Abs(collision.relativeVelocity.y) * 0.1f);
-            isGrounded = true;
-            canDoubleJump = true;
+            if(Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
+            {
+                Land(collision);
+                canDoubleJump = true;
+                canCoyoteJump = true;
+                airTime = 0;
+                rb.sharedMaterial.friction = 0.5f; // Prevent player from sliding off ramps and flying super far
+            }
         }
         switch (collision.transform.tag)
         {
@@ -416,10 +414,9 @@ public class Player : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (ground == collision.transform)
+        if(TryExitGround(collision))
         {
-            isGrounded = false;
-            ground = null;
+            rb.sharedMaterial.friction = 0; // Prevent player from hanging onto edges of platforms
         }
     }
 

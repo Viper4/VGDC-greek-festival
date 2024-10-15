@@ -144,6 +144,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ed12efc4b9225643a34f866b06d3945, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  triggerTags:
+  - Player
   healthAmount: 1
   maxHealthAmount: 0
   uses: 1

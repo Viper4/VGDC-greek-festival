@@ -6,7 +6,6 @@ public class Parallax : MonoBehaviour
 {
     float length;
     float startPosition;
-    [SerializeField] Transform cameraTransform;
     [SerializeField] float parallaxEffect;
 
     // Start is called before the first frame update
@@ -19,8 +18,8 @@ public class Parallax : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float temp = cameraTransform.position.x * (1 - parallaxEffect);
-        float distance = cameraTransform.position.x * parallaxEffect;
+        float temp = Camera.main.transform.position.x * (1 - parallaxEffect);
+        float distance = Camera.main.transform.position.x * parallaxEffect;
         transform.position = new Vector3(startPosition + distance, transform.position.y, transform.position.z);
 
         if(temp > startPosition + length)
