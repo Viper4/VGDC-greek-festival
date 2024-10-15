@@ -7,13 +7,13 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     public bool isWallSliding;
-    public float wallSlidingSpeed = 2f;
-
+    public float wallSlidingSpeed = 0.2f;
+    private float wallJumpDuration = 0.2f;
     private bool isWallJumping;
     private float wallJumpingDirection;
-    private float wallJumpingTime = 0.2f;
-    private float wallJumpingCounter;
-    private Vector2 wallJumpingPower = new Vector2(8f, 16f);
+    public float wallSlideCounter;
+    public float wallJumpAmount = 3f;
+    public Vector2 wallJumpingPower = new Vector2(10f, 12f);
 
     public static PlayerInput playerInput;
     Rigidbody2D rb;
@@ -31,12 +31,13 @@ public class Player : MonoBehaviour
 
     bool canDoubleJump = false;
 
-    [SerializeField] float dashSpeed = 10;
+    [SerializeField] float dashSpeed = 15;
     [SerializeField] float dashDuration = 0.25f;
     [SerializeField] float dashCooldown = 0.5f;
     [SerializeField] SpriteRenderer dashIndicator;
     bool canDash = true;
     Vector2 dashVelocity = Vector2.zero;
+    Vector2 wallJumpVelocity = Vector2.zero;
 
     [SerializeField] Gun gun;
 
@@ -101,6 +102,11 @@ public class Player : MonoBehaviour
             {
                 rb.velocity = dashVelocity;
             }
+            else if (wallJumpVelocity != Vector2.zero)
+            {
+                rb.velocity = wallJumpVelocity;
+                
+            }
             else
             {
                 rb.velocity = moveVelocity + new Vector2(0, rb.velocity.y);
@@ -127,7 +133,7 @@ public class Player : MonoBehaviour
             Vector2 moveInput = playerInput.Player.Move.ReadValue<Vector2>();
             moveVelocity = moveInput;
             moveVelocity.y = 0; // Prevent player from becoming a rocket
-            if (walking)
+            if (walking && isWallJumping != true)
             {
                 moveVelocity *= walkSpeed;
             }
@@ -140,6 +146,12 @@ public class Player : MonoBehaviour
                 moveVelocity *= runSpeed;
             }
 
+            if (wallJumpVelocity == Vector2.zero && isGrounded)
+            {
+                wallSlideCounter = 2f;
+                wallJumpAmount = 3;
+                isWallJumping = false;
+            }
             // When we're moving
             if (moveVelocity != Vector2.zero)
             {
@@ -257,7 +269,7 @@ public class Player : MonoBehaviour
     //If player is off ground and is touching a wall then allows for wall sliding
     private void wallSlide()
     {
-        if (isWalled() && !isGrounded)
+        if (isWalled() && !isGrounded && wallSlideCounter >= 0)
         {
             isWallSliding = true;
             rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
@@ -272,51 +284,39 @@ public class Player : MonoBehaviour
     {
         if (isWallSliding)
         {
+            wallSlideCounter -= Time.deltaTime;
             isWallJumping = false;
-            if (transform.localRotation.y >= 180)
+            if (transform.rotation.eulerAngles.y >= 180)
             {
-                wallJumpingDirection = 0;
-                CancelInvoke(nameof(StopWallJumping));
+                wallJumpingDirection = 1f;
             }
             else
             {
-                wallJumpingDirection = 180;
-                CancelInvoke(nameof(StopWallJumping));
+                wallJumpingDirection = -1f;
             }
-
-            wallJumpingCounter = wallJumpingTime;
-
+            CancelInvoke(nameof(StopWallJumping));
+            if (playerInput.Player.Jump.ReadValue<float>() >= 1f && wallSlideCounter >= 0f && isWallSliding == true && wallJumpAmount > 0)
+            {
+                wallJumpVelocity = new Vector2(wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
+                
+                Invoke(nameof(StopWallJumping), wallJumpDuration);
+            }
         }
-        else
-        {
-            wallJumpingCounter -= Time.deltaTime;
-        }
-        if (playerInput.Player.Dash.ReadValue<float>() >= 1f && wallJumpingCounter > 0f)
-        {
-            isWallJumping = true;
-            rb.velocity = new Vector2(wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
-            wallJumpingCounter = 0f;
-
-            // if (transform.localRotation.y != wallJumpingDirection)
-            // {
-            //     transform.rotation = Quaternion.AxisAngle;
-
-            // }
-        }
-
-        Invoke(nameof(StopWallJumping), wallJumpingDirection);
-
+     
 
     }
 
     private void StopWallJumping()
     {
-        isWallJumping = false;
-    }
         
+        wallJumpVelocity = Vector2.zero;
+        wallJumpAmount -= 1f;
+        isWallJumping = true;
+    }
+
     public void KillPlayer()
     {
-        if(!dying)
+        if (!dying)
             StartCoroutine(DieAnimation());
     }
 
@@ -416,7 +416,7 @@ public class Player : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if(ground == collision.transform)
+        if (ground == collision.transform)
         {
             isGrounded = false;
             ground = null;
@@ -425,7 +425,7 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        switch(other.tag)
+        switch (other.tag)
         {
             case "DeathZone":
                 KillPlayer();
