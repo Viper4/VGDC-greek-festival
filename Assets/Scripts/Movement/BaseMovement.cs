@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
+using UnityEngine.UI;
 
 public class BaseMovement : MonoBehaviour
 {
@@ -15,7 +17,7 @@ public class BaseMovement : MonoBehaviour
     public float jumpVelocity = 2f;
     public bool Walking { get; set; }
     public bool Crouching { get; set; }
-    public Vector2 moveVelocity;
+    [HideInInspector] public Vector2 moveVelocity;
 
     Transform ground;
     bool isGrounded = false;
@@ -32,9 +34,6 @@ public class BaseMovement : MonoBehaviour
             isGrounded = value;
         } 
     }
-
-    public MovementAudio movementAudio;
-    float footstepTimer = 0;
 
     public float climbSpeed = 2f;
     bool climbing = false;
@@ -54,7 +53,12 @@ public class BaseMovement : MonoBehaviour
         } 
     }
 
-    public Vector2 knockbackVelocity;
+    public MovementAudio movementAudio;
+    float footstepTimer = 0;
+
+    [HideInInspector] public Vector2 knockbackVelocity;
+
+    [HideInInspector] public Transform wall;
 
     public virtual void Start()
     {
@@ -89,6 +93,11 @@ public class BaseMovement : MonoBehaviour
         }
     }
 
+    public void PlayJumpSound()
+    {
+        movementAudio.PlayJump(ground.tag);
+    }
+
     public void GoDown()
     {
         if(stairs != null)
@@ -98,28 +107,44 @@ public class BaseMovement : MonoBehaviour
         }
     }
 
-    public void Land(Collision2D collision)
+    public bool TryLand(Collision2D collision)
     {
-        ground = collision.transform;
-        if (movementAudio != null && !isGrounded)
-            movementAudio.PlayLand(ground.tag, Mathf.Abs(collision.relativeVelocity.y) * 0.1f);
-        isGrounded = true;
+        if (!collision.transform.CompareTag("Trap"))
+        {
+            if (Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
+            {
+                ground = collision.transform;
+                if (movementAudio != null && !isGrounded)
+                    movementAudio.PlayLand(ground.tag, Mathf.Abs(collision.relativeVelocity.y) * 0.1f);
+                isGrounded = true;
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void PlayJumpSound()
+    public void CheckWall(Collision2D collision)
     {
-        movementAudio.PlayJump(ground.tag);
+        if (!collision.transform.CompareTag("Trap"))
+        {
+            if (Vector2.Angle(collision.GetContact(0).normal, Vector2.up) > 80)
+            {
+                wall = collision.transform;
+            }
+        }
     }
 
-    public bool TryExitGround(Collision2D collision)
+    public void ExitCollision(Collision2D collision)
     {
         if(collision.transform == ground)
         {
             isGrounded = false;
             ground = null;
-            return true;
         }
-        return false;
+        else if(collision.transform == wall)
+        {
+            wall = null;
+        }
     }
 
     public IEnumerator ApplyKnockback(Vector2 velocity, float duration, float drag)
@@ -137,17 +162,12 @@ public class BaseMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!collision.transform.name.Contains("Trap"))
-        {
-            if (Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
-            {
-                Land(collision);
-            }
-        }
+        TryLand(collision);
+        CheckWall(collision);
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        TryExitGround(collision);
+        ExitCollision(collision);
     }
 }

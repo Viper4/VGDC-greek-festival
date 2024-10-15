@@ -143,7 +143,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4199239097242750045}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Abilities
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -904,7 +904,7 @@ GameObject:
   m_Component:
   - component: {fileID: 85926686107846718}
   - component: {fileID: 7558589841173660248}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Nail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -942,7 +942,7 @@ MonoBehaviour:
   hitbox: {fileID: 8861101491974765743}
   HitLayers:
     serializedVersion: 2
-    m_Bits: 129
+    m_Bits: 449
   knockbackDuration: 0.25
   knockbackTarget: {fileID: 8913142879628579271}
   knockback: 8
@@ -1545,7 +1545,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1146258004389412327}
   - component: {fileID: 350476612653116990}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Dash Indicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1937,7 +1937,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8624130383307706024}
   - component: {fileID: 8243280492254820738}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Shotgun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3179,7 +3179,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3217938052281927909}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Launch Offset
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3212,7 +3212,7 @@ GameObject:
   - component: {fileID: 4719773342919196723}
   - component: {fileID: 8034250044913728957}
   - component: {fileID: 8861101491974765743}
-  m_Layer: 2
+  m_Layer: 9
   m_Name: Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3364,7 +3364,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3055023435420540101}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4306,13 +4306,15 @@ GameObject:
   - component: {fileID: 1399390001140983904}
   - component: {fileID: 8824225593619536561}
   - component: {fileID: 8913142879628579271}
+  - component: {fileID: 7853303006011264248}
+  - component: {fileID: 5857443152791070776}
   - component: {fileID: 8188443158377112316}
   - component: {fileID: 7173882381029784539}
   - component: {fileID: 3310414760287612847}
   - component: {fileID: 8339625888759171136}
   - component: {fileID: 3016146244513728964}
   - component: {fileID: 7466795169192890462}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Player Controller
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -4408,20 +4410,54 @@ MonoBehaviour:
   crouchSpeed: 2
   jumpVelocity: 8
   moveVelocity: {x: 0, y: 0}
-  movementAudio: {fileID: 7173882381029784539}
   climbSpeed: 4
+  movementAudio: {fileID: 7173882381029784539}
   knockbackVelocity: {x: 0, y: 0}
+  wall: {fileID: 0}
+  wallLayers:
+    serializedVersion: 2
+    m_Bits: 128
   coyoteTime: 0.35
-  dashSpeed: 25
-  dashDuration: 0.25
-  dashCooldown: 0.5
-  dashDrag: 1
-  dashIndicator: {fileID: 350476612653116990}
   followingSouls: []
-  soulsSaved: 0
+  soulsCollected: 0
   deaths: 0
   deathTime: 1
   statsUI: {fileID: 2629752551155893318}
+--- !u!114 &7853303006011264248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9202725978975512340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff4c2a9da9aeaa64b8b66801f0a4ff43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dashSpeed: 25
+  dashDuration: 0.25
+  dashCooldown: 0.5
+  dashDrag: 0.5
+  dashIndicator: {fileID: 350476612653116990}
+  velocity: {x: 0, y: 0}
+--- !u!114 &5857443152791070776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9202725978975512340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cec7e7984465dfb409323668bf2f2f9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slideSpeed: 0.2
+  jumpDuration: 0.2
+  slideTime: 2
+  maxJumps: 3
+  jumpPower: {x: 12, y: 18}
 --- !u!114 &8188443158377112316
 MonoBehaviour:
   m_ObjectHideFlags: 0
