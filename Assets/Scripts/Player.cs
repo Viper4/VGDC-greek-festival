@@ -5,6 +5,17 @@ using UnityEngine.InputSystem;
 
 public class Player : BaseMovement
 {
+    public bool isWallSliding;
+    public float wallSlidingSpeed = 0.2f;
+    private float wallJumpDuration = 0.2f;
+    private bool isWallJumping;
+    private float wallJumpingDirection;
+    public float wallSlideCounter;
+    public float wallJumpAmount = 3f;
+    public Vector2 wallJumpingPower = new Vector2(10f, 12f);
+    [SerializeField] private Transform wallCheck;
+    [SerializeField] private LayerMask wallLayer;
+    
     public static PlayerInput playerInput;
     SpriteRenderer spriteRenderer;
     HealthSystem healthSystem;
@@ -15,7 +26,7 @@ public class Player : BaseMovement
     bool canCoyoteJump = false;
     bool canDoubleJump = false;
 
-    [SerializeField] float dashSpeed = 10;
+    [SerializeField] float dashSpeed = 15;
     [SerializeField] float dashDuration = 0.25f;
     [SerializeField] float dashCooldown = 0.5f;
     [SerializeField] float dashDrag = 0.5f;
@@ -23,6 +34,7 @@ public class Player : BaseMovement
     bool canDash = true;
     bool tryDash = false;
     Vector2 dashVelocity = Vector2.zero;
+    Vector2 wallJumpVelocity = Vector2.zero;
 
     Checkpoint lastCheckpoint;
     public List<Soul> followingSouls = new List<Soul>();
@@ -30,7 +42,7 @@ public class Player : BaseMovement
     public int deaths = 0;
     [SerializeField] float deathTime = 1f;
     bool dying = false;
-    
+
     [SerializeField] StatsUI statsUI;
 
     // Called before Start()
@@ -73,7 +85,7 @@ public class Player : BaseMovement
     // Called every time the Physics engine updates (not tied to framerate, fixed rate)
     private void FixedUpdate()
     {
-        if(Time.timeScale > 0)
+        if (Time.timeScale > 0)
         {
             Vector2 newVelocity;
             if (dashVelocity != Vector2.zero)
@@ -84,6 +96,10 @@ public class Player : BaseMovement
                     dashVelocity = Vector2.zero;
                     newVelocity = moveVelocity;
                 }
+            }
+            else if(wallJumpVelocity != Vector2.zero)
+            {
+                newVelocity = wallJumpVelocity;
             }
             else
             {
@@ -123,6 +139,13 @@ public class Player : BaseMovement
                 moveVelocity *= runSpeed;
             }
 
+            if (wallJumpVelocity == Vector2.zero && isGrounded)
+            {
+                wallSlideCounter = 2f;
+                wallJumpAmount = 3;
+                isWallJumping = false;
+            }
+
             if (Climbing)
                 moveVelocity.y = moveInput.y * climbSpeed;
             else
@@ -153,12 +176,15 @@ public class Player : BaseMovement
                 stairs.Descend(myCollider);
                 stairs = null;
             }
+
+            wallSlide();
+            WallJump();
         }
     }
 
     void Crouch(InputAction.CallbackContext context)
     {
-        if(Time.timeScale > 0)
+        if (Time.timeScale > 0)
         {
             movementAudio.PlayCrouch();
             transform.localScale = new Vector3(1, 0.5f, 1);
@@ -230,9 +256,63 @@ public class Player : BaseMovement
         canDash = true;
     }
 
+    //Checks if player touches wall
+    private bool isWalled()
+    {
+        return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer);
+    }
+
+    //If player is off ground and is touching a wall then allows for wall sliding
+    private void wallSlide()
+    {
+        if (isWalled() && !isGrounded && wallSlideCounter >= 0)
+        {
+            isWallSliding = true;
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
+        }
+        else
+        {
+            isWallSliding = false;
+        }
+    }
+
+    private void WallJump()
+    {
+        if (isWallSliding)
+        {
+            wallSlideCounter -= Time.deltaTime;
+            isWallJumping = false;
+            if (transform.rotation.eulerAngles.y >= 180)
+            {
+                wallJumpingDirection = 1f;
+            }
+            else
+            {
+                wallJumpingDirection = -1f;
+            }
+            CancelInvoke(nameof(StopWallJumping));
+            if (playerInput.Player.Jump.ReadValue<float>() >= 1f && wallSlideCounter >= 0f && isWallSliding == true && wallJumpAmount > 0)
+            {
+                wallJumpVelocity = new Vector2(wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
+                
+                Invoke(nameof(StopWallJumping), wallJumpDuration);
+            }
+        }
+     
+
+    }
+
+    private void StopWallJumping()
+    {
+        
+        wallJumpVelocity = Vector2.zero;
+        wallJumpAmount -= 1f;
+        isWallJumping = true;
+    }
+
     public void KillPlayer()
     {
-        if(!dying)
+        if (!dying)
             StartCoroutine(DieAnimation());
     }
 
@@ -342,7 +422,7 @@ public class Player : BaseMovement
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        switch(other.tag)
+        switch (other.tag)
         {
             case "DeathZone":
                 KillPlayer();
