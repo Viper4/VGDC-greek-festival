@@ -1,44 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
-using Unity.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class Player : BaseMovement
 {
     public static PlayerInput playerInput;
-    SpriteRenderer spriteRenderer;
-    HealthSystem healthSystem;
+    private SpriteRenderer spriteRenderer;
+    private HealthSystem healthSystem;
 
+    // Coyote time and double jumping
     [SerializeField] float coyoteTime = 0.1f;
-    float airTime = 0;
-    Vector2 moveVelocity;
+    private float airTime = 0;
+    private bool canCoyoteJump = false;
+    private bool canDoubleJump = false;
 
-    bool canCoyoteJump = false;
-    bool canDoubleJump = false;
+    private WallJumping wallJumping;
+    private Dashing dashing;
 
-    [SerializeField] float dashSpeed = 10;
-    [SerializeField] float dashDuration = 0.25f;
-    [SerializeField] float dashCooldown = 0.5f;
-    [SerializeField] float dashDrag = 0.5f;
-    [SerializeField] SpriteRenderer dashIndicator;
-    bool canDash = true;
-    bool tryDash = false;
-    Vector2 dashVelocity = Vector2.zero;
-    Vector2 knockbackVelocity;
-
-    [SerializeField] Gun gun;
-
-    Checkpoint lastCheckpoint;
+    // Checkpoints, souls, and stats
+    private Checkpoint lastCheckpoint;
     public List<Soul> followingSouls = new List<Soul>();
-    public int soulsSaved = 0;
+    public int soulsCollected = 0;
     public int deaths = 0;
     [SerializeField] float deathTime = 1f;
-    bool dying = false;
-    
+    private bool dying = false;
     [SerializeField] StatsUI statsUI;
 
     // Called before Start()
@@ -54,7 +40,6 @@ public class Player : BaseMovement
         // Add listeners
         playerInput.Player.Crouch.performed += Crouch;
         playerInput.Player.Crouch.canceled += Uncrouch;
-
         playerInput.Player.Jump.performed += DoubleJump;
     }
 
@@ -68,7 +53,6 @@ public class Player : BaseMovement
         // Remove listeners
         playerInput.Player.Crouch.performed -= Crouch;
         playerInput.Player.Crouch.canceled -= Uncrouch;
-
         playerInput.Player.Jump.performed -= DoubleJump;
     }
 
@@ -78,35 +62,47 @@ public class Player : BaseMovement
         base.Start();
         spriteRenderer = GetComponent<SpriteRenderer>();
         healthSystem = GetComponent<HealthSystem>();
+        wallJumping = GetComponent<WallJumping>();
+        dashing = GetComponent<Dashing>();
     }
 
     // Called every time the Physics engine updates (not tied to framerate, fixed rate)
     private void FixedUpdate()
     {
-        if(Time.timeScale > 0)
+        if (Time.timeScale > 0)
         {
             Vector2 newVelocity;
-            if (dashVelocity != Vector2.zero)
+            if (dashing.velocity != Vector2.zero)
             {
-                newVelocity = dashVelocity;
-                if (dashVelocity.y == 0 && (dashVelocity.x > 0 && moveVelocity.x < 0 || dashVelocity.x < 0 && moveVelocity.x > 0))
+                newVelocity = dashing.velocity;
+                if (dashing.velocity.y == 0 && (dashing.velocity.x > 0 && moveVelocity.x < 0 || dashing.velocity.x < 0 && moveVelocity.x > 0))
                 {
-                    dashVelocity = Vector2.zero;
+                    dashing.velocity = Vector2.zero;
                     newVelocity = moveVelocity;
                 }
+            }
+            else if(wallJumping.IsJumping)
+            {
+                newVelocity = rb.velocity;
             }
             else
             {
                 newVelocity = moveVelocity;
             }
 
-            if (!Climbing && dashVelocity.y == 0)
+            if (!Climbing && dashing.velocity.y == 0 && !wallJumping.IsJumping)
                 newVelocity += new Vector2(0, rb.velocity.y);
-            newVelocity += knockbackVelocity
+
+            if (wallJumping.IsSliding)
+            {
+                if(newVelocity.y < -wallJumping.slideSpeed)
+                    newVelocity.y = -wallJumping.slideSpeed;
+            }
+
+            newVelocity += knockbackVelocity;
 
             rb.velocity = newVelocity;
         }
-        
     }
 
     // Update is called once per frame
@@ -138,21 +134,9 @@ public class Player : BaseMovement
             else
                 moveVelocity.y = 0;
 
-            if (playerInput.Player.Jump.ReadValue<float>() >= 1f && canCoyoteJump)
+            if (playerInput.Player.Jump.ReadValue<float>() >= 1f)
             {
                 Jump();
-            }
-
-            // Check for dash
-            if (playerInput.Player.Dash.ReadValue<float>() >= 1f && moveInput != Vector2.zero)
-            {
-                tryDash = true;
-                if(canDash)
-                    StartCoroutine(Dash(moveInput));
-            }
-            else
-            {
-                tryDash = false;
             }
 
             if(!IsGrounded)
@@ -168,7 +152,7 @@ public class Player : BaseMovement
 
     void Crouch(InputAction.CallbackContext context)
     {
-        if(Time.timeScale > 0)
+        if (Time.timeScale > 0)
         {
             movementAudio.PlayCrouch();
             transform.localScale = new Vector3(1, 0.5f, 1);
@@ -188,18 +172,18 @@ public class Player : BaseMovement
 
     void Jump()
     {
-        if(Time.timeScale > 0 && dashVelocity == Vector2.zero && (IsGrounded || (canCoyoteJump && airTime <= coyoteTime)))
+        if(Time.timeScale > 0 && dashing.velocity == Vector2.zero && rb.velocity.y <= 0 && (IsGrounded || (canCoyoteJump && airTime <= coyoteTime)))
         {
             canCoyoteJump = false;
             if(IsGrounded)
-                movementAudio.PlayJump(ground.tag);
+                PlayJumpSound();
             rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
         }
     }
 
     void DoubleJump(InputAction.CallbackContext context)
     {
-        if (Time.timeScale > 0 && !IsGrounded && canDoubleJump && (airTime > coyoteTime || !canCoyoteJump) && dashVelocity == Vector2.zero)
+        if (Time.timeScale > 0 && !IsGrounded && canDoubleJump && (airTime > coyoteTime || !canCoyoteJump) && dashing.velocity == Vector2.zero)
         {
             canDoubleJump = false;
             movementAudio.PlayDoubleJump();
@@ -207,53 +191,9 @@ public class Player : BaseMovement
         }
     }
 
-    IEnumerator Dash(Vector2 moveInput)
-    {
-        canDash = false;
-        movementAudio.PlayDash();
-        dashVelocity = moveInput * dashSpeed;
-        dashIndicator.color = Color.red;
-        yield return new WaitForSeconds(dashDuration);
-        if (!tryDash || IsGrounded)
-        {
-            // Stop dash momentum if we aren't bunny hopping
-            dashVelocity = Vector2.zero;
-            rb.velocity = Vector2.zero;
-        }
-        else
-        {
-            // If we're bunny hopping, preserve x velocity but stop vertical dash momentum
-            if(dashVelocity.y != 0)
-            {
-                dashVelocity.y = 0;
-                rb.velocity = new Vector2(rb.velocity.x, 0);
-            }
-        }
-        yield return new WaitForSeconds(dashCooldown - dashDuration);
-        while (!IsGrounded)
-        {
-            dashVelocity.x = Mathf.Lerp(dashVelocity.x, 0, Time.deltaTime * dashDrag);
-            yield return new WaitForFixedUpdate();
-        }
-        dashVelocity = Vector2.zero;
-        dashIndicator.color = Color.green;
-        canDash = true;
-    }
-
-    public IEnumerator ApplyNailKnockback(Vector2 velocity, float KnockbackDuration, float drag){
-        knockbackVelocity = velocity;
-        float timer = KnockbackDuration;
-        while(timer > 0){
-            knockbackVelocity = Vector2.Lerp(knockbackVelocity, Vector2.zero, Time.deltaTime*drag);
-            timer -= Time.deltaTime;
-            yield return new WaitForEndOfFrame();
-        }
-        knockbackVelocity = Vector2.zero;
-    }
-
     public void KillPlayer()
     {
-        if(!dying)
+        if (!dying)
             StartCoroutine(DieAnimation());
     }
 
@@ -278,10 +218,9 @@ public class Player : BaseMovement
         }
         followingSouls.Clear();
         deaths++;
-        statsUI.PopupUI(deaths, soulsSaved, 0.5f); // Show stats
+        statsUI.PopupUI(deaths, soulsCollected, 0.5f); // Show stats
         dying = false;
         IsGrounded = false;
-        ground = null;
         healthSystem.ResetHealth();
     }
 
@@ -291,19 +230,19 @@ public class Player : BaseMovement
 
         foreach (Soul followingSoul in followingSouls)
         {
-            soulsSaved++;
+            soulsCollected++;
             followingSoul.Fade();
         }
         // If we saved new souls show stats
         if (followingSouls.Count > 0)
-            statsUI.PopupUI(deaths, soulsSaved, 0.5f);
+            statsUI.PopupUI(deaths, soulsCollected, 0.5f);
         followingSouls.Clear();
 
         // If we're setting a new checkpoint
         if (lastCheckpoint != checkpoint)
         {
             // Show stats
-            statsUI.PopupUI(deaths, soulsSaved, 0.5f);
+            statsUI.PopupUI(deaths, soulsCollected, 0.5f);
 
             // If the last checkpoint isn't null, unselect it
             if (lastCheckpoint != null)
@@ -335,17 +274,15 @@ public class Player : BaseMovement
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!collision.transform.name.Contains("Trap"))
+        if(TryLand(collision))
         {
-            if(Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
-            {
-                Land(collision);
-                canDoubleJump = true;
-                canCoyoteJump = true;
-                airTime = 0;
-                rb.sharedMaterial.friction = 0.5f; // Prevent player from sliding off ramps and flying super far
-            }
+            canDoubleJump = true;
+            canCoyoteJump = true;
+            airTime = 0;
+            wallJumping.ResetJumps();
         }
+        CheckWall(collision);
+
         switch (collision.transform.tag)
         {
             case "DeathZone":
@@ -356,16 +293,12 @@ public class Player : BaseMovement
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if(ground == collision.transform)
-        {
-            ExitGround();
-            rb.sharedMaterial.friction = 0; // Prevent player from hanging onto edges of platforms
-        }
+        ExitCollision(collision);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        switch(other.tag)
+        switch (other.tag)
         {
             case "DeathZone":
                 KillPlayer();

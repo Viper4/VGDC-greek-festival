@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8206424831666339355}
   m_Layer: 6
   m_Name: Trap Floor
-  m_TagString: Untagged
+  m_TagString: Trap
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -159,6 +159,18 @@ MonoBehaviour:
   onCollisionExit:
     m_PersistentCalls:
       m_Calls: []
+  onAnyTriggerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyTriggerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyCollisionEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyCollisionExit:
+    m_PersistentCalls:
+      m_Calls: []
   collidersInTrigger: 0
   breakParticles: {fileID: 6605176929219956787, guid: bbf874826e03cfa45bbb90c8273142da, type: 3}
 --- !u!82 &-5273440863710809869
@@ -293,6 +305,18 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onCollisionExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyTriggerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyTriggerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyCollisionEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyCollisionExit:
     m_PersistentCalls:
       m_Calls: []
   collidersInTrigger: 0

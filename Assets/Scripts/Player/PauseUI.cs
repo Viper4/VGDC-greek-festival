@@ -41,7 +41,7 @@ public class PauseUI : MonoBehaviour
         {
             timePlayedText.text = "Time played: " + Time.time.ToString("0.00");
             deathsText.text = "X " + player.deaths.ToString();
-            soulsText.text = "X " + player.soulsSaved.ToString();
+            soulsText.text = "X " + player.soulsCollected.ToString();
             Time.timeScale = 0;
             screenBlur.SetActive(true);
             pauseMenu.SetActive(true);

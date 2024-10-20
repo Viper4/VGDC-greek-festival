@@ -17,6 +17,7 @@ TagManager:
   - Checkpoint
   - Soul
   - Enemy
+  - Trap
   layers:
   - Default
   - TransparentFX
@@ -24,12 +25,12 @@ TagManager:
   - 
   - Water
   - UI
-  - Ground
-  - Enemies
+  - 
+  - 
+  - Enemy
   - Player
   - Soul
   - IgnoreCharacters
-  - 
   - 
   - 
   - 
