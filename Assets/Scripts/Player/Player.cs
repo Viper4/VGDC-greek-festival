@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class Player : BaseMovement
 {
     public static PlayerInput playerInput;
+
+    public static Player player;
     private SpriteRenderer spriteRenderer;
     private HealthSystem healthSystem;
 
@@ -31,6 +34,8 @@ public class Player : BaseMovement
     private void OnEnable()
     {
         playerInput = new PlayerInput();
+
+        player = this;
 
         foreach (InputAction action in playerInput)
         {

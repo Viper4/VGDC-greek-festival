@@ -942,12 +942,12 @@ MonoBehaviour:
   hitbox: {fileID: 8861101491974765743}
   HitLayers:
     serializedVersion: 2
-    m_Bits: 449
+    m_Bits: 257
   knockbackDuration: 0.25
   knockbackTarget: {fileID: 8913142879628579271}
-  knockback: 8
+  knockback: 13
   drag: 1
-  cooldown: 3
+  cooldown: 0.4
   damage: 1
 --- !u!1 &2172163241395074571
 GameObject:
@@ -4408,15 +4408,12 @@ MonoBehaviour:
   runSpeed: 10
   walkSpeed: 5
   crouchSpeed: 2
-  jumpVelocity: 8
+  jumpVelocity: 15
   moveVelocity: {x: 0, y: 0}
   climbSpeed: 4
   movementAudio: {fileID: 7173882381029784539}
   knockbackVelocity: {x: 0, y: 0}
   wall: {fileID: 0}
-  wallLayers:
-    serializedVersion: 2
-    m_Bits: 128
   coyoteTime: 0.35
   followingSouls: []
   soulsCollected: 0
