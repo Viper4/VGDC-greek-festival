@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 [RequireComponent(typeof(Player))]
@@ -11,6 +12,8 @@ public class Dashing : MonoBehaviour
     [SerializeField] float dashCooldown = 0.5f;
     [SerializeField] float dashDrag = 0.5f;
     [SerializeField] SpriteRenderer dashIndicator;
+
+    private Vector2 lastInput;
     private bool canDash = true;
     private bool tryDash = false;
     [HideInInspector] public Vector2 velocity = Vector2.zero;
@@ -27,23 +30,35 @@ public class Dashing : MonoBehaviour
         if(Time.timeScale > 0)
         {
             Vector2 moveInput = Player.playerInput.Player.Move.ReadValue<Vector2>();
-            if (Player.playerInput.Player.Dash.ReadValue<float>() >= 1f && moveInput != Vector2.zero)
+            if (Player.playerInput.Player.Dash.ReadValue<float>() >= 1f)
             {
+                if (moveInput != Vector2.zero){
+                    tryDash = true;
+                    if (canDash && !player.GroundPounding)
+                    StartCoroutine(Dash(moveInput));
+                }
+                else if (lastInput != Vector2.zero){
                 tryDash = true;
-                if (canDash)
+                if (canDash && !player.GroundPounding){
+                    StartCoroutine(Dash(lastInput));
+                }
+                }
+                tryDash = true;
+                if (canDash && !player.GroundPounding)
                     StartCoroutine(Dash(moveInput));
             }
             else
             {
                 tryDash = false;
             }
+            if (moveInput != Vector2.zero) lastInput = moveInput;
         }
     }
 
     IEnumerator Dash(Vector2 moveInput)
     {
         canDash = false;
-        player.movementAudio.PlayDash();
+        //player.movementAudio.PlayDash();
         velocity = moveInput * dashSpeed;
         dashIndicator.color = Color.red;
         yield return new WaitForSeconds(dashDuration);

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -29,6 +30,10 @@ public class Player : BaseMovement
     [SerializeField] float deathTime = 1f;
     private bool dying = false;
     [SerializeField] StatsUI statsUI;
+    
+    public bool GroundPounding;
+
+    [SerializeField] private float GroundPoundSpeed = 10f;
 
     // Called before Start()
     private void OnEnable()
@@ -159,10 +164,22 @@ public class Player : BaseMovement
     {
         if (Time.timeScale > 0)
         {
-            movementAudio.PlayCrouch();
+            //movementAudio.PlayCrouch();
             transform.localScale = new Vector3(1, 0.5f, 1);
             transform.position -= new Vector3(0, 0.5f);
+            if(!IsGrounded & !GroundPounding) StartCoroutine(GroundPound());
         }
+    }
+
+    IEnumerator GroundPound(){
+        while(!IsGrounded){
+            GroundPounding = true;
+            moveVelocity.y = -GroundPoundSpeed;
+            moveVelocity.x = 0f;
+            rb.velocity = moveVelocity;
+            yield return new WaitForEndOfFrame();
+        }
+        if(IsGrounded) GroundPounding = false;
     }
 
     void Uncrouch(InputAction.CallbackContext context)
