@@ -767,23 +767,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 0}
-  myCollider: {fileID: 0}
+  _collider: {fileID: 0}
   stairs: {fileID: 0}
   runSpeed: 5
-  walkSpeed: 4
+  walkSpeed: 4.5
   crouchSpeed: 1
-  jumpVelocity: 2
+  jumpSpeed: 2
   moveVelocity: {x: 0, y: 0}
   climbSpeed: 3
   movementAudio: {fileID: 4515525036801978312}
   knockbackVelocity: {x: 0, y: 0}
   wall: {fileID: 0}
-  moveState: 1
-  wanderTime: {x: 3, y: 5}
-  obstacleAvoidance: 2
   collisionLayers:
     serializedVersion: 2
     m_Bits: 1
+  moveState: 1
+  wanderTime: {x: 3, y: 5}
+  obstacleAvoidance: 2
   verticalPoints:
   - {fileID: 0}
   - {fileID: 0}

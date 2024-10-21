@@ -1,20 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
-using UnityEngine.UI;
 
 public class BaseMovement : MonoBehaviour
 {
     [HideInInspector] public Rigidbody2D rb;
-    [HideInInspector] public Collider2D myCollider;
+    [HideInInspector] public Collider2D _collider;
     [HideInInspector] public Stairs stairs;
 
     float gravityScale = 1f;
     public float runSpeed = 5f;
     public float walkSpeed = 2f;
     public float crouchSpeed = 1f;
-    public float jumpVelocity = 2f;
+    public float jumpSpeed = 2f;
     public bool Walking { get; set; }
     public bool Crouching { get; set; }
     [HideInInspector] public Vector2 moveVelocity;
@@ -56,14 +54,31 @@ public class BaseMovement : MonoBehaviour
     public MovementAudio movementAudio;
     float footstepTimer = 0;
 
+    [System.Serializable]
+    public struct KnockbackInfo
+    {
+        public Vector2 velocity;
+        public float duration;
+        public float drag;
+
+        public KnockbackInfo(Vector2 velocity, float duration, float drag)
+        {
+            this.velocity = velocity;
+            this.duration = duration;
+            this.drag = drag;
+        }
+    }
     [HideInInspector] public Vector2 knockbackVelocity;
+    Coroutine knockbackRoutine;
 
     [HideInInspector] public Transform wall;
+
+    public LayerMask collisionLayers;
 
     public virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        myCollider = GetComponent<Collider2D>();
+        _collider = GetComponent<Collider2D>();
         gravityScale = rb.gravityScale;
     }
 
@@ -102,16 +117,16 @@ public class BaseMovement : MonoBehaviour
     {
         if(stairs != null)
         {
-            stairs.Descend(myCollider);
+            stairs.Descend(_collider);
             stairs = null;
         }
     }
 
-    public bool TryLand(Collision2D collision)
+    public bool TryLand(Collision2D collision, float angle)
     {
         if (!collision.transform.CompareTag("Trap"))
         {
-            if (Vector2.Angle(collision.GetContact(0).normal, Vector2.up) < 80)
+            if (angle < 80)
             {
                 ground = collision.transform;
                 if (movementAudio != null && !isGrounded)
@@ -123,11 +138,11 @@ public class BaseMovement : MonoBehaviour
         return false;
     }
 
-    public void CheckWall(Collision2D collision)
+    public void CheckWall(Collision2D collision, float angle)
     {
         if (!collision.transform.CompareTag("Trap"))
         {
-            if (Vector2.Angle(collision.GetContact(0).normal, Vector2.up) > 80)
+            if (angle > 80 && angle < 120)
             {
                 wall = collision.transform;
             }
@@ -147,13 +162,20 @@ public class BaseMovement : MonoBehaviour
         }
     }
 
-    public IEnumerator ApplyKnockback(Vector2 velocity, float duration, float drag)
+    public void ApplyKnockback(KnockbackInfo knockback)
     {
-        knockbackVelocity = velocity;
-        float timer = duration;
+        if (knockbackRoutine != null)
+            StopCoroutine(knockbackRoutine);
+        knockbackRoutine = StartCoroutine(Knockback(knockback));
+    }
+
+    private IEnumerator Knockback(KnockbackInfo knockback)
+    {
+        knockbackVelocity = knockback.velocity;
+        float timer = knockback.duration;
         while (timer > 0)
         {
-            knockbackVelocity = Vector2.Lerp(knockbackVelocity, Vector2.zero, Time.deltaTime * drag);
+            knockbackVelocity = Vector2.Lerp(knockbackVelocity, Vector2.zero, Time.deltaTime * knockback.drag);
             timer -= Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
@@ -162,12 +184,38 @@ public class BaseMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        TryLand(collision);
-        CheckWall(collision);
+        float normalAngle = Vector2.Angle(collision.GetContact(0).normal, Vector2.up);
+        TryLand(collision, normalAngle);
+        CheckWall(collision, normalAngle);
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
         ExitCollision(collision);
+    }
+
+    public RaycastHit2D GetObstruction(Vector2 direction)
+    {
+        Vector2 futurePosition = _collider.bounds.center + new Vector3((_collider.bounds.extents.x + 0.1f) * direction.x, (_collider.bounds.extents.y + 0.1f) * direction.y);
+        return Physics2D.Linecast(transform.position, futurePosition, collisionLayers);
+    }
+
+    public void ApplyVelocity(Vector2 newVelocity)
+    {
+        RaycastHit2D obstruction = GetObstruction(newVelocity.normalized);
+        if (obstruction.transform != null && obstruction.transform.TryGetComponent(out Pushable pushable))
+        {
+            if (pushable.immovable)
+            {
+                newVelocity = Vector2.zero;
+            }
+            else
+            {
+                Vector2 resistancePercentage = new Vector2(Mathf.Clamp01(pushable.resistance / Mathf.Abs(newVelocity.x)), Mathf.Clamp01(pushable.resistance / Mathf.Abs(newVelocity.y)));
+                newVelocity.x *= 1 - resistancePercentage.x;
+                newVelocity.y *= 1 - resistancePercentage.y;
+            }
+        }
+        rb.velocity = newVelocity;
     }
 }

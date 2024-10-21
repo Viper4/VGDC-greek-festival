@@ -36,7 +36,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -0.8}
+  m_AnchoredPosition: {x: 0, y: -0.7}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2104933783859067535
@@ -134,9 +134,34 @@ MonoBehaviour:
   triggerTags:
   - Player
   - Enemy
+  onTriggerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onTriggerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onCollisionEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onCollisionExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyTriggerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyTriggerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyCollisionEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyCollisionExit:
+    m_PersistentCalls:
+      m_Calls: []
+  collidersInTrigger: 0
   delay: 1
   spikeSpeed: 2
-  retractedPosition: {x: 0, y: -0.8}
+  retractedPosition: {x: 0, y: -0.7}
   extendedPosition: {x: 0, y: 0}
   spikeParent: {fileID: 4728091942376880316}
 --- !u!1 &3132484575482358968

@@ -19,7 +19,6 @@ public class CollectedSoul : BaseMovement
     [SerializeField] Vector2 wanderTime = new Vector2(3, 5);
 
     [SerializeField] float obstacleAvoidance = 2f;
-    [SerializeField] LayerMask collisionLayers;
 
     [SerializeField] Transform[] verticalPoints;
     [SerializeField] Transform[] endPoints;
@@ -40,12 +39,12 @@ public class CollectedSoul : BaseMovement
 
     private void OnEnable()
     {
-        Player.playerInput.Player.Dialogue.performed += NextDialogue;
+        Player.instance.input.Player.Dialogue.performed += NextDialogue;
     }
 
     private void OnDisable()
     {
-        Player.playerInput.Player.Dialogue.performed -= NextDialogue;
+        Player.instance.input.Player.Dialogue.performed -= NextDialogue;
     }
 
     // Start is called before the first frame update
@@ -65,7 +64,7 @@ public class CollectedSoul : BaseMovement
             case MoveState.Wander:
                 if (moveVelocity != Vector2.zero)
                 {
-                    rb.velocity = new Vector2(moveVelocity.x * walkSpeed, rb.velocity.y);
+                    ApplyVelocity(new Vector2(moveVelocity.x * walkSpeed, rb.velocity.y));
                     RaycastHit2D hit = Physics2D.Raycast(transform.position, moveVelocity, obstacleAvoidance, collisionLayers);
                     if (hit.transform != null)
                     {
@@ -80,11 +79,11 @@ public class CollectedSoul : BaseMovement
                     moveVelocity = (destinations[^1] - new Vector2(transform.position.x, transform.position.y)).normalized;
                     if (Climbing)
                     {
-                        rb.velocity = new Vector2(moveVelocity.x * walkSpeed, moveVelocity.y * climbSpeed);
+                        ApplyVelocity(new Vector2(moveVelocity.x * walkSpeed, moveVelocity.y * climbSpeed));
                     }
                     else
                     {
-                        rb.velocity = new Vector2(moveVelocity.x * walkSpeed, rb.velocity.y);
+                        ApplyVelocity(new Vector2(moveVelocity.x * walkSpeed, rb.velocity.y));
                     }
 
                     if ((destinations[^1] - new Vector2(transform.position.x, transform.position.y)).sqrMagnitude < 0.5f)

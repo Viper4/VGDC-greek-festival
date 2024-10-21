@@ -271,11 +271,11 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 5
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: c66f14b7327a24b4483bcabb79f295bf, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -528,7 +528,7 @@ GameObject:
   - component: {fileID: 244733593}
   - component: {fileID: 244733595}
   - component: {fileID: 244733594}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Mud Floor
   m_TagString: Mud
   m_Icon: {fileID: 0}
@@ -747,7 +747,7 @@ GameObject:
   m_Component:
   - component: {fileID: 318929636}
   - component: {fileID: 318929637}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Selection Indicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -809,7 +809,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -1038,7 +1038,7 @@ GameObject:
   - component: {fileID: 393039834}
   - component: {fileID: 393039836}
   - component: {fileID: 393039835}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Tile
   m_Icon: {fileID: 0}
@@ -1173,7 +1173,7 @@ GameObject:
   - component: {fileID: 468963754}
   - component: {fileID: 468963756}
   - component: {fileID: 468963755}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Gravel Floor (2)
   m_TagString: Gravel
   m_Icon: {fileID: 0}
@@ -1463,7 +1463,7 @@ GameObject:
   - component: {fileID: 558651992}
   - component: {fileID: 558651994}
   - component: {fileID: 558651993}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Metal Floor
   m_TagString: MetalV1
   m_Icon: {fileID: 0}
@@ -1598,7 +1598,7 @@ GameObject:
   - component: {fileID: 588217302}
   - component: {fileID: 588217301}
   - component: {fileID: 588217300}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Tile Floor
   m_TagString: Tile
   m_Icon: {fileID: 0}
@@ -1986,7 +1986,7 @@ GameObject:
   - component: {fileID: 721166760}
   - component: {fileID: 721166762}
   - component: {fileID: 721166761}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Dirt Floor
   m_TagString: Dirt
   m_Icon: {fileID: 0}
@@ -2173,6 +2173,7 @@ GameObject:
   - component: {fileID: 863163518}
   - component: {fileID: 863163517}
   - component: {fileID: 863163519}
+  - component: {fileID: 863163520}
   m_Layer: 8
   m_Name: Enemy
   m_TagString: Enemy
@@ -2299,7 +2300,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: c66f14b7327a24b4483bcabb79f295bf, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2363,6 +2364,20 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &863163520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 863163514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 433b4de7a40ed534b9687ca1563fcd2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  immovable: 0
+  resistance: 5
 --- !u!1 &876460779
 GameObject:
   m_ObjectHideFlags: 0
@@ -3130,7 +3145,7 @@ GameObject:
   - component: {fileID: 1169505850}
   - component: {fileID: 1169505852}
   - component: {fileID: 1169505851}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall 2
   m_TagString: Tile
   m_Icon: {fileID: 0}
@@ -3598,7 +3613,7 @@ GameObject:
   - component: {fileID: 1488603766}
   - component: {fileID: 1488603768}
   - component: {fileID: 1488603767}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Gravel Floor (1)
   m_TagString: Dirt
   m_Icon: {fileID: 0}
@@ -3812,7 +3827,7 @@ GameObject:
   - component: {fileID: 1525518738}
   - component: {fileID: 1525518740}
   - component: {fileID: 1525518739}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Gravel Floor
   m_TagString: Gravel
   m_Icon: {fileID: 0}
@@ -3947,7 +3962,7 @@ GameObject:
   - component: {fileID: 1733425697}
   - component: {fileID: 1733425699}
   - component: {fileID: 1733425698}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Gravel Floor (3)
   m_TagString: Gravel
   m_Icon: {fileID: 0}
@@ -4079,7 +4094,7 @@ GameObject:
   - component: {fileID: 1812731696}
   - component: {fileID: 1812731697}
   - component: {fileID: 1812731698}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: 1
   m_TagString: Checkpoint
   m_Icon: {fileID: 0}
@@ -4095,7 +4110,7 @@ Transform:
   m_GameObject: {fileID: 1812731691}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -0.03000021, y: -0.00000053644175, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4564,10 +4579,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Trap Floor
       objectReference: {fileID: 0}
-    - target: {fileID: 1056939760838679055, guid: f19312cf70f596547a82beea13497b92, type: 3}
-      propertyPath: m_TagString
-      value: Rock
-      objectReference: {fileID: 0}
     - target: {fileID: 8180270210306012804, guid: f19312cf70f596547a82beea13497b92, type: 3}
       propertyPath: m_LocalScale.x
       value: 4
@@ -4896,6 +4907,10 @@ PrefabInstance:
     - target: {fileID: 8413491891202077799, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8913142879628579271, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
+      propertyPath: jumpVelocity
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

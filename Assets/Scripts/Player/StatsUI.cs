@@ -25,15 +25,19 @@ public class StatsUI : MonoBehaviour
     private void Start()
     {
         deathsStartColor = deathsIcon.color;
+        deathsStartColor.a = 1;
         deathsEndColor = deathsStartColor;
         deathsEndColor.a = 0;
 
         soulsStartColor = soulsIcon.color;
+        soulsStartColor.a = 1;
         soulsEndColor = soulsStartColor;
         soulsEndColor.a = 0;
 
         deathsIcon.color = deathsEndColor;
+        deathsText.color = deathsEndColor;
         soulsIcon.color = soulsEndColor;
+        soulsText.color = soulsEndColor;
     }
 
     public void SetHealth(float healthPercent)
