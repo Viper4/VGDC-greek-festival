@@ -12,11 +12,16 @@ public class Boss_One : BaseMovement
         Jump, Charge, Slash
     }
 
+    [SerializeField] float bossHP = 50f;
     [SerializeField] float minWalk = 0.5f;
     [SerializeField] float maxWalk = 2f;
     [SerializeField] float TotalIdleTime = 2.5f;
 
     private float OriginalTotalIdleTime;
+
+    private float Waiting = 0f;
+
+    private float WaitingConst;
 
     [SerializeField] float SlashIdleTime = 1.0f;
 
@@ -56,6 +61,10 @@ public class Boss_One : BaseMovement
 
     private float attackCount = 0;
 
+    [SerializeField] Collider2D SwordCollider;
+
+    [SerializeField] GameObject shield;
+
     void Start()
     {
         OriginalTotalIdleTime = TotalIdleTime;
@@ -73,7 +82,23 @@ public class Boss_One : BaseMovement
     IEnumerator StartIdle(){
         yield return new WaitForEndOfFrame();
         Physics2D.IgnoreCollision(Player.player.myCollider, myCollider, false);
+        shield.GetComponent<Renderer>().material.color = Color.white;
         RotateTowardsPlayer();
+        BossState RandomState = GetRandomEnum<BossState>(); //picks random attack (used later)
+        while(RandomState == LastAttack && RandomState!=BossState.Slash){ // Doesn't pick the same attack in a row (besides slash)
+            RandomState = GetRandomEnum<BossState>();
+        }
+            switch(RandomState){ //Sets reaction time values to each attack
+            case BossState.Slash:
+                WaitingConst = .4f;
+            break;
+            case BossState.Jump:
+                WaitingConst = .5f;
+            break;
+            case BossState.Charge:
+                WaitingConst = .5f;
+            break;
+            }
         Vector2 Direction = UnityEngine.Random.Range(0,2) ==0? Vector2.right:Vector2.left;
         moveVelocity = Direction * walkSpeed;
         float walkTime = UnityEngine.Random.Range(Mathf.Min(minWalk, TotalIdleTime), Mathf.Max(maxWalk, TotalIdleTime));
@@ -82,14 +107,42 @@ public class Boss_One : BaseMovement
             rb.velocity = new Vector2(moveVelocity.x, rb.velocity.y);
             yield return new WaitForEndOfFrame();
             walkTime -= Time.deltaTime;
+            Waiting += Time.deltaTime;
+            if (Waiting + WaitingConst >= TotalIdleTime){
+                switch(RandomState){ //fixes color of shield
+                case BossState.Slash:
+                    shield.GetComponent<Renderer>().material.color = Color.red;
+                break;
+                case BossState.Jump:
+                    shield.GetComponent<Renderer>().material.color = Color.yellow;
+                break;
+                case BossState.Charge:
+                    shield.GetComponent<Renderer>().material.color = Color.black;
+                break;
+                }
+            }
+        }  
+        while(waitTime>0){
+            yield return new WaitForEndOfFrame();
+            waitTime -= Time.deltaTime;
+            Waiting += Time.deltaTime;
+            if (Waiting + WaitingConst >= TotalIdleTime){
+                switch(RandomState){ //fixes color of shield
+                case BossState.Slash:
+                    shield.GetComponent<Renderer>().material.color = Color.red;
+                break;
+                case BossState.Jump:
+                    shield.GetComponent<Renderer>().material.color = Color.yellow;
+                break;
+                case BossState.Charge:
+                    shield.GetComponent<Renderer>().material.color = Color.black;
+                break;
+                }
+            }
         }
-        yield return new WaitForSeconds(waitTime);
-        BossState RandomState = GetRandomEnum<BossState>();
-        while(RandomState == LastAttack && RandomState!=BossState.Slash){
-            RandomState = GetRandomEnum<BossState>();
-        }
+        Waiting = 0;
         attackCount += 1;
-        switch(RandomState){
+        switch(RandomState){ //runs coroutine of correct attack
             case BossState.Slash:
                 TotalIdleTime = SlashIdleTime;
                 LastAttack = BossState.Slash;
@@ -143,11 +196,9 @@ public class Boss_One : BaseMovement
         animator.SetTrigger("Slash");
         yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
         StartCoroutine(StartIdle());
-
     }
 
     IEnumerator Jump(){
-        Physics2D.IgnoreCollision(Player.player.myCollider, myCollider, true);
         float distanceX = Player.player.transform.position.x - transform.position.x;
         float distanceY = Player.player.transform.position.y - transform.position.y;
         float velocityX = distanceX / arcTime;
