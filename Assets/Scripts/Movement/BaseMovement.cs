@@ -9,6 +9,7 @@ public class BaseMovement : MonoBehaviour
     [HideInInspector] public Stairs stairs;
 
     float gravityScale = 1f;
+    [Header("BaseMovement")]
     public float runSpeed = 5f;
     public float walkSpeed = 2f;
     public float crouchSpeed = 1f;
@@ -16,6 +17,8 @@ public class BaseMovement : MonoBehaviour
     public bool Walking { get; set; }
     public bool Crouching { get; set; }
     [HideInInspector] public Vector2 moveVelocity;
+    public bool rotateWithMovement = true;
+    [SerializeField, Tooltip("Seconds in the future to predict for falling, obstructions, etc.")] float predictionTime = 0.5f;
 
     Transform ground;
     bool isGrounded = false;
@@ -32,6 +35,7 @@ public class BaseMovement : MonoBehaviour
             isGrounded = value;
         } 
     }
+    [SerializeField] float fallCheckDistance = 3f;
 
     public float climbSpeed = 2f;
     bool climbing = false;
@@ -82,7 +86,7 @@ public class BaseMovement : MonoBehaviour
         gravityScale = rb.gravityScale;
     }
 
-    public virtual void Update()
+    public virtual void MovementUpdate()
     {
         if (Time.timeScale > 0)
         {
@@ -90,7 +94,8 @@ public class BaseMovement : MonoBehaviour
             if (Mathf.Abs(moveVelocity.x) > 0.1f)
             {
                 // Rotate in direction of movement
-                transform.right = new Vector2(moveVelocity.x, 0);
+                if(rotateWithMovement)
+                    transform.right = new Vector2(moveVelocity.x, 0);
 
                 // Handle footsteps
                 if (movementAudio != null && isGrounded && !Crouching)
@@ -124,7 +129,7 @@ public class BaseMovement : MonoBehaviour
 
     public bool TryLand(Collision2D collision, float angle)
     {
-        if (!collision.transform.CompareTag("Trap"))
+        if (!collision.transform.CompareTag("Trap") && !collision.transform.CompareTag("Bullet"))
         {
             if (angle < 80)
             {
@@ -140,7 +145,7 @@ public class BaseMovement : MonoBehaviour
 
     public void CheckWall(Collision2D collision, float angle)
     {
-        if (!collision.transform.CompareTag("Trap"))
+        if (!collision.transform.CompareTag("Trap") && !collision.transform.CompareTag("Bullet"))
         {
             if (angle > 80 && angle < 120)
             {
@@ -182,19 +187,25 @@ public class BaseMovement : MonoBehaviour
         knockbackVelocity = Vector2.zero;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    public virtual void OnCollisionEnter2D(Collision2D collision)
     {
         float normalAngle = Vector2.Angle(collision.GetContact(0).normal, Vector2.up);
         TryLand(collision, normalAngle);
         CheckWall(collision, normalAngle);
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    public virtual void OnCollisionExit2D(Collision2D collision)
     {
         ExitCollision(collision);
     }
 
-    public RaycastHit2D GetObstruction(Vector2 direction)
+    public RaycastHit2D GetFutureObstruction(Vector3 velocity)
+    {
+        Vector2 futurePosition = transform.position + (velocity * predictionTime);
+        return Physics2D.Linecast(transform.position, futurePosition, collisionLayers);
+    }
+
+    public RaycastHit2D GetContactObstruction(Vector2 direction)
     {
         Vector2 futurePosition = _collider.bounds.center + new Vector3((_collider.bounds.extents.x + 0.1f) * direction.x, (_collider.bounds.extents.y + 0.1f) * direction.y);
         return Physics2D.Linecast(transform.position, futurePosition, collisionLayers);
@@ -202,7 +213,7 @@ public class BaseMovement : MonoBehaviour
 
     public void ApplyVelocity(Vector2 newVelocity)
     {
-        RaycastHit2D obstruction = GetObstruction(newVelocity.normalized);
+        RaycastHit2D obstruction = GetContactObstruction(newVelocity.normalized);
         if (obstruction.transform != null && obstruction.transform.TryGetComponent(out Pushable pushable))
         {
             if (pushable.immovable)
@@ -217,5 +228,13 @@ public class BaseMovement : MonoBehaviour
             }
         }
         rb.velocity = newVelocity;
+    }
+
+    public RaycastHit2D CheckFall(Vector3 velocity)
+    {
+        Vector2 futurePosition = transform.position + (velocity * predictionTime);
+        RaycastHit2D groundHit = Physics2D.Linecast(futurePosition, futurePosition + new Vector2(0, -fallCheckDistance), collisionLayers);
+        Debug.DrawLine(futurePosition, futurePosition + new Vector2(0, -fallCheckDistance), Color.green, 1f);
+        return groundHit;
     }
 }

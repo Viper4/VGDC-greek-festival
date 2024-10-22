@@ -149,8 +149,34 @@ MonoBehaviour:
   triggerTags:
   - Player
   - Enemy
+  onTriggerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onTriggerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onCollisionEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onCollisionExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyTriggerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyTriggerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyCollisionEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onAnyCollisionExit:
+    m_PersistentCalls:
+      m_Calls: []
+  collidersInTrigger: 0
   healthAmount: -1
   maxHealthAmount: 0
   uses: -1
+  healthSystemCooldown: 0.5
   cooldown: 0.5
-  overrideCooldown: 0
+  overrideHealthSystemCooldown: 0

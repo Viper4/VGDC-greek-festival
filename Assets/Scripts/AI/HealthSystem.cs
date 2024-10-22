@@ -6,8 +6,9 @@ using UnityEngine.Events;
 public class HealthSystem : MonoBehaviour
 {
     float originalMaxHealth;
-    [SerializeField] float maxHealth = 10;
-    [SerializeField] float health;
+    [SerializeField] bool invincible = false;
+    public float maxHealth = 10;
+    public float health;
     [SerializeField] SpriteRenderer[] healthBarSprites;
     [SerializeField] float healthBarFadeSpeed = 1f;
     [SerializeField] bool healthBarAlwaysVisible = false;
@@ -63,7 +64,7 @@ public class HealthSystem : MonoBehaviour
 
     public bool AddHealth(float amount, float cooldown, bool overrideCooldown = false)
     {
-        if (immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
+        if (invincible || immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
             return false;
         float previousHealth = health;
         health += amount;
@@ -100,7 +101,7 @@ public class HealthSystem : MonoBehaviour
 
     public bool AddMaxHealth(float amount, float cooldown, bool overrideCooldown = false)
     {
-        if (immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
+        if (invincible || immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
             return false;
         StartCoroutine(HealthCooldown(cooldown));
         maxHealth += amount;

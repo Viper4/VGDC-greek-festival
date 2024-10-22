@@ -11,6 +11,7 @@ public class Player : BaseMovement
     private HealthSystem healthSystem;
 
     // Coyote time and double jumping
+    [Header("Player")]
     [SerializeField] float coyoteTime = 0.1f;
     private float airTime = 0;
     private bool canCoyoteJump = false;
@@ -124,9 +125,9 @@ public class Player : BaseMovement
     }
 
     // Update is called once per frame
-    public override void Update()
+    private void Update()
     {
-        base.Update();
+        base.MovementUpdate();
         if(Time.timeScale > 0)
         {
             // Read player input for movement
@@ -290,7 +291,7 @@ public class Player : BaseMovement
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    public override void OnCollisionEnter2D(Collision2D collision)
     {
         float normalAngle = Vector2.Angle(collision.GetContact(0).normal, Vector2.up);
         if (TryLand(collision, normalAngle))
@@ -310,7 +311,7 @@ public class Player : BaseMovement
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    public override void OnCollisionExit2D(Collision2D collision)
     {
         ExitCollision(collision);
     }

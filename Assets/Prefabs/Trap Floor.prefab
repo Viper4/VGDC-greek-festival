@@ -147,6 +147,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   triggerTags:
   - Player
+  - Enemy
   onTriggerEnter:
     m_PersistentCalls:
       m_Calls: []
