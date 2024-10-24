@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6643116220401888727}
   - component: {fileID: -5273440863710809869}
   - component: {fileID: 8206424831666339355}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Trap Floor
   m_TagString: Trap
   m_Icon: {fileID: 0}
@@ -147,6 +147,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   triggerTags:
   - Player
+  - Enemy
   onTriggerEnter:
     m_PersistentCalls:
       m_Calls: []

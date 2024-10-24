@@ -25,13 +25,12 @@ TagManager:
   - 
   - Water
   - UI
-  - Ground
-  - Wall
-  - Enemies
+  - 
+  - 
+  - Enemy
   - Player
   - Soul
   - IgnoreCharacters
-  - 
   - 
   - 
   - 
