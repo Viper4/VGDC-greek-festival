@@ -53,6 +53,8 @@ public class Boss_One : BaseMovement
 
     [SerializeField] float ChargeXConst = 50f;
 
+    public float ImmunityTime = .3f;
+
     BossState State;
 
     BossState LastAttack;
@@ -65,9 +67,13 @@ public class Boss_One : BaseMovement
 
     [SerializeField] GameObject shield;
 
+    float timer = 0;
+
     void Start()
     {
         OriginalTotalIdleTime = TotalIdleTime;
+        timer = ImmunityTime;
+        
 
         base.Start();
         StartCoroutine(StartIdle());
@@ -76,7 +82,7 @@ public class Boss_One : BaseMovement
     // Update is called once per frame
     void Update()
     {
-
+        timer += Time.deltaTime;
     }
 
     IEnumerator StartIdle(){
@@ -103,7 +109,7 @@ public class Boss_One : BaseMovement
         moveVelocity = Direction * walkSpeed;
         float walkTime = UnityEngine.Random.Range(Mathf.Min(minWalk, TotalIdleTime), Mathf.Max(maxWalk, TotalIdleTime));
         float waitTime = TotalIdleTime-walkTime;
-        while(walkTime>0){
+        while(walkTime>0){ //walks while idle
             rb.velocity = new Vector2(moveVelocity.x, rb.velocity.y);
             yield return new WaitForEndOfFrame();
             walkTime -= Time.deltaTime;
@@ -121,6 +127,16 @@ public class Boss_One : BaseMovement
                 break;
                 }
             }
+            if(myCollider.bounds.Intersects(Player.player.myCollider.bounds) && timer>ImmunityTime){ //Body knockback
+            timer = 0;
+            Vector2 Knockback = Player.player.transform.position-transform.position;
+            Knockback.y = 0f;
+            Knockback.Normalize();
+            Knockback.y = YKnockback;
+            Knockback *= KnockbackSpeed;
+            StartCoroutine(Player.player.ApplyKnockback(Knockback, KnockbackDuration, KnockbackDrag));
+            yield return new WaitForSeconds(KnockbackDuration);
+            } 
         }  
         while(waitTime>0){
             yield return new WaitForEndOfFrame();
@@ -139,6 +155,16 @@ public class Boss_One : BaseMovement
                 break;
                 }
             }
+            if(myCollider.bounds.Intersects(Player.player.myCollider.bounds) && timer>ImmunityTime){ //Body knockback
+            timer = 0;
+            Vector2 Knockback = Player.player.transform.position-transform.position;
+            Knockback.y = 0f;
+            Knockback.Normalize();
+            Knockback.y = YKnockback;
+            Knockback *= KnockbackSpeed;
+            StartCoroutine(Player.player.ApplyKnockback(Knockback, KnockbackDuration, KnockbackDrag));
+            yield return new WaitForSeconds(KnockbackDuration);
+            } 
         }
         Waiting = 0;
         attackCount += 1;

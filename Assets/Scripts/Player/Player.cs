@@ -103,7 +103,7 @@ public class Player : BaseMovement
             if (!Climbing && dashing.velocity.y == 0 && !wallJumping.IsJumping)
                 newVelocity += new Vector2(0, rb.velocity.y);
 
-            if (wallJumping.IsSliding)
+            if (wallJumping.IsSliding && !GroundPounding)
             {
                 if(newVelocity.y < -wallJumping.slideSpeed)
                     newVelocity.y = -wallJumping.slideSpeed;

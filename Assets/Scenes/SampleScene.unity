@@ -4251,6 +4251,7 @@ MonoBehaviour:
   ChargeKnockbackDuration: 0.3
   ChargeDrag: 1
   ChargeXConst: 3.5
+  ImmunityTime: 0.3
   PlayerTransform: {fileID: 50594017}
   SwordCollider: {fileID: 586865920}
   shield: {fileID: 454547711}
