@@ -12,12 +12,12 @@ TagManager:
   - Rock
   - Sand
   - Tile
-  - Bullet
   - DeathZone
   - Checkpoint
   - Soul
   - Enemy
   - Trap
+  - Projectile
   layers:
   - Default
   - TransparentFX

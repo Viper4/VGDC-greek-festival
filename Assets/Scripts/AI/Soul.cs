@@ -30,7 +30,7 @@ public class Soul : MonoBehaviour
         startPosition = transform.position;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (!fading)
         {
@@ -49,23 +49,23 @@ public class Soul : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if(!fading && ground == null)
+        if(!other.isTrigger && !fading && ground == null)
         {
             rb.gravityScale = 0;
             rb.velocity = Vector2.zero;
-            ground = collision.transform;
+            ground = other.transform;
         }
-        if (collision.CompareTag("Player"))
+        if (other.CompareTag("Player"))
         {
-            collision.GetComponent<Player>().PickupSoul(this);
+            other.GetComponent<Player>().PickupSoul(this);
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnTriggerExit2D(Collider2D other)
     {
-        if(!fading && ground == collision.transform)
+        if(!other.isTrigger && !fading && ground == other.transform)
         {
             ground = null;
         }

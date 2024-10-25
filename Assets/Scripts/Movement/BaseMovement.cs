@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class BaseMovement : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class BaseMovement : MonoBehaviour
     public bool rotateWithMovement = true;
     [SerializeField, Tooltip("Seconds in the future to predict for falling, obstructions, etc.")] float predictionTime = 0.5f;
 
+    [SerializeField] string[] nonGroundTags = new string[] { "Trap", "Enemy", "Projectile", "Soul" };
+    HashSet<string> nonGroundTagsSet = new HashSet<string>();
     Transform ground;
     bool isGrounded = false;
     public bool IsGrounded 
@@ -75,12 +78,28 @@ public class BaseMovement : MonoBehaviour
     [HideInInspector] public Vector2 knockbackVelocity;
     Coroutine knockbackRoutine;
 
+    [SerializeField] string[] nonWallTags = new string[] { "Trap", "Enemy", "Projectile", "Soul" };
+    HashSet<string> nonWallTagsSet = new HashSet<string>();
     [HideInInspector] public Transform wall;
 
     public LayerMask collisionLayers;
 
     public virtual void Start()
     {
+        foreach(string tag in nonGroundTags)
+        {
+            if (!nonGroundTagsSet.Contains(tag))
+            {
+                nonGroundTagsSet.Add(tag);
+            }
+        }
+        foreach(string tag in nonWallTags)
+        {
+            if (!nonWallTagsSet.Contains(tag))
+            {
+                nonWallTagsSet.Add(tag);
+            }
+        }
         rb = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
         gravityScale = rb.gravityScale;
@@ -129,7 +148,7 @@ public class BaseMovement : MonoBehaviour
 
     public bool TryLand(Collision2D collision, float angle)
     {
-        if (!collision.transform.CompareTag("Trap") && !collision.transform.CompareTag("Bullet"))
+        if (!nonGroundTagsSet.Contains(collision.transform.tag))
         {
             if (angle < 80)
             {
@@ -145,7 +164,7 @@ public class BaseMovement : MonoBehaviour
 
     public void CheckWall(Collision2D collision, float angle)
     {
-        if (!collision.transform.CompareTag("Trap") && !collision.transform.CompareTag("Bullet"))
+        if (!nonWallTagsSet.Contains(collision.transform.tag))
         {
             if (angle > 80 && angle < 120)
             {
