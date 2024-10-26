@@ -4416,7 +4416,7 @@ MonoBehaviour:
   runSpeed: 10
   walkSpeed: 5
   crouchSpeed: 2
-  jumpSpeed: 16
+  jumpSpeed: 15
   moveVelocity: {x: 0, y: 0}
   climbSpeed: 4
   movementAudio: {fileID: 7173882381029784539}

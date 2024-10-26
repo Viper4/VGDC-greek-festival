@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Dashing : MonoBehaviour
@@ -8,6 +9,8 @@ public class Dashing : MonoBehaviour
     [SerializeField] float dashCooldown = 0.5f;
     [SerializeField] float dashDrag = 0.5f;
     [SerializeField] SpriteRenderer dashIndicator;
+
+    private Vector2 lastInput;
     private bool canDash = true;
     private bool tryDash = false;
     [HideInInspector] public Vector2 velocity = Vector2.zero;
