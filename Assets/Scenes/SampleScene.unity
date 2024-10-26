@@ -658,7 +658,7 @@ GameObject:
   - component: {fileID: 244733593}
   - component: {fileID: 244733595}
   - component: {fileID: 244733594}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Mud Floor
   m_TagString: Mud
   m_Icon: {fileID: 0}
@@ -1034,7 +1034,7 @@ GameObject:
   - component: {fileID: 393039834}
   - component: {fileID: 393039836}
   - component: {fileID: 393039835}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Tile
   m_Icon: {fileID: 0}
@@ -1433,7 +1433,7 @@ GameObject:
   - component: {fileID: 468963754}
   - component: {fileID: 468963756}
   - component: {fileID: 468963755}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Gravel Floor (2)
   m_TagString: Gravel
   m_Icon: {fileID: 0}
@@ -1754,7 +1754,7 @@ GameObject:
   - component: {fileID: 558651992}
   - component: {fileID: 558651994}
   - component: {fileID: 558651993}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Metal Floor
   m_TagString: MetalV1
   m_Icon: {fileID: 0}
@@ -2077,7 +2077,7 @@ GameObject:
   - component: {fileID: 588217302}
   - component: {fileID: 588217301}
   - component: {fileID: 588217300}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Tile Floor
   m_TagString: Tile
   m_Icon: {fileID: 0}
@@ -2730,7 +2730,7 @@ GameObject:
   - component: {fileID: 721166760}
   - component: {fileID: 721166762}
   - component: {fileID: 721166761}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Dirt Floor
   m_TagString: Dirt
   m_Icon: {fileID: 0}
@@ -3525,7 +3525,7 @@ GameObject:
   - component: {fileID: 1169505850}
   - component: {fileID: 1169505852}
   - component: {fileID: 1169505851}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall 2
   m_TagString: Tile
   m_Icon: {fileID: 0}
@@ -4196,7 +4196,7 @@ GameObject:
   - component: {fileID: 1488603766}
   - component: {fileID: 1488603768}
   - component: {fileID: 1488603767}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Gravel Floor (1)
   m_TagString: Dirt
   m_Icon: {fileID: 0}
@@ -4326,7 +4326,7 @@ GameObject:
   - component: {fileID: 1525518738}
   - component: {fileID: 1525518740}
   - component: {fileID: 1525518739}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Gravel Floor
   m_TagString: Gravel
   m_Icon: {fileID: 0}
@@ -4453,6 +4453,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1117624299}
     m_Modifications:
+    - target: {fileID: 3974312357204605953, guid: 87363ecf03821de47b1a48e49d298802, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4616030213830295368, guid: 87363ecf03821de47b1a48e49d298802, type: 3}
       propertyPath: m_Name
       value: Strafing Archer
@@ -4463,7 +4467,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5368369763726324676, guid: 87363ecf03821de47b1a48e49d298802, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.910846
+      value: 2.17
       objectReference: {fileID: 0}
     - target: {fileID: 5368369763726324676, guid: 87363ecf03821de47b1a48e49d298802, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4523,7 +4527,7 @@ GameObject:
   - component: {fileID: 1733425697}
   - component: {fileID: 1733425699}
   - component: {fileID: 1733425698}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Gravel Floor (3)
   m_TagString: Gravel
   m_Icon: {fileID: 0}

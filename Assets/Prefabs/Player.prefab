@@ -943,7 +943,7 @@ MonoBehaviour:
   hitLayers:
     serializedVersion: 2
     m_Bits: 257
-  damage: 1
+  damage: 1.5
   cooldown: 3
   knockback:
     velocity: {x: 6, y: 0}
@@ -2500,6 +2500,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1399390001140983904}
   followSpeed: 6
+  cameraBoundsMin: {x: 0, y: 0}
+  cameraBoundsMax: {x: 0, y: 0}
 --- !u!114 &2982843961935162859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4418,9 +4420,24 @@ MonoBehaviour:
   crouchSpeed: 2
   jumpSpeed: 15
   moveVelocity: {x: 0, y: 0}
+  rotateWithMovement: 1
+  predictionTime: 0.5
+  nonGroundTags:
+  - Trap
+  - Enemy
+  - Projectile
+  - Soul
+  fallCheckDistance: 3
   climbSpeed: 4
   movementAudio: {fileID: 7173882381029784539}
   knockbackVelocity: {x: 0, y: 0}
+  immunityTime: 0.3
+  nonWallTags:
+  - Trap
+  - Enemy
+  - Projectile
+  - Soul
+  - No Slide
   wall: {fileID: 0}
   collisionLayers:
     serializedVersion: 2
@@ -4431,6 +4448,8 @@ MonoBehaviour:
   deaths: 0
   deathTime: 1
   statsUI: {fileID: 2629752551155893318}
+  GroundPounding: 0
+  GroundPoundSpeed: 10
   pauseUI: {fileID: 5315934267357499005}
 --- !u!114 &7853303006011264248
 MonoBehaviour:
@@ -4479,11 +4498,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91137798dd1cf054783e9ee646d3b911, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  invincible: 0
   maxHealth: 3
   health: 3
   healthBarSprites:
   - {fileID: 2991465362390440683}
   - {fileID: 1666694651845179001}
+  bossBarImage: {fileID: 0}
+  bossBarWidth: 0
   healthBarFadeSpeed: 1
   healthBarAlwaysVisible: 1
   healthBarScale: {x: 3, y: 0.3, z: 1}

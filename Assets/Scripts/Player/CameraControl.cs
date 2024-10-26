@@ -10,18 +10,16 @@ public class CameraControl : MonoBehaviour
     [SerializeField] float followSpeed = 1f;
     public Vector2 cameraBoundsMin = new Vector2(0, 0);
     public Vector2 cameraBoundsMax = new Vector2(0, 0);
-    float width;
-    float height;
 
     private void Start()
     {
         _camera = GetComponent<Camera>();
-        height = _camera.orthographicSize;
-        width = height * _camera.aspect;
     }
 
     void FixedUpdate()
     {
+        float height = _camera.orthographicSize;
+        float width = height * _camera.aspect;
         Vector3 newPosition = target.position;
         if (cameraBoundsMin.y != 0 && cameraBoundsMax.y != 0)
         {

@@ -18,6 +18,7 @@ TagManager:
   - Enemy
   - Trap
   - Projectile
+  - No Slide
   layers:
   - Default
   - TransparentFX
