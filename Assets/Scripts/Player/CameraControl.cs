@@ -2,15 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Camera))]
 public class CameraControl : MonoBehaviour
 {
+    Camera _camera;
     [SerializeField] Transform target;
     [SerializeField] float followSpeed = 1f;
+    public Vector2 cameraBoundsMin = new Vector2(0, 0);
+    public Vector2 cameraBoundsMax = new Vector2(0, 0);
+    float width;
+    float height;
+
+    private void Start()
+    {
+        _camera = GetComponent<Camera>();
+        height = _camera.orthographicSize;
+        width = height * _camera.aspect;
+    }
 
     void FixedUpdate()
     {
-        Vector3 newPosition = Vector2.Lerp(transform.position, target.position, followSpeed * Time.deltaTime);
+        Vector3 newPosition = target.position;
+        if (cameraBoundsMin.y != 0 && cameraBoundsMax.y != 0)
+        {
+            float minY = cameraBoundsMin.y + height;
+            float maxY = cameraBoundsMax.y - height;
+            newPosition.y = Mathf.Clamp(newPosition.y, minY, maxY);
+        }
+        if (cameraBoundsMin.x != 0 && cameraBoundsMax.x != 0)
+        {
+            float minX = cameraBoundsMin.x + width;
+            float maxX = cameraBoundsMax.x - width;
+            newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
+        }
         newPosition.z = -1; // Keep the camera above everything so we can see
-        transform.position = newPosition;
+        transform.position = Vector3.Lerp(transform.position, newPosition, followSpeed * Time.deltaTime);
     }
 }

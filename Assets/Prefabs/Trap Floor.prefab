@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6643116220401888727}
   - component: {fileID: -5273440863710809869}
   - component: {fileID: 8206424831666339355}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Trap Floor
   m_TagString: Trap
   m_Icon: {fileID: 0}
@@ -147,6 +147,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   triggerTags:
   - Player
+  - Enemy
   onTriggerEnter:
     m_PersistentCalls:
       m_Calls: []
@@ -172,7 +173,14 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   collidersInTrigger: 0
+  spriteRenderer: {fileID: 363311656710261322}
+  trapCollider: {fileID: 2341004596712530458}
   breakParticles: {fileID: 6605176929219956787, guid: bbf874826e03cfa45bbb90c8273142da, type: 3}
+  breakDelay: 0.4
+  startColor: {r: 0.98039216, g: 0.98039216, b: 0.98039216, a: 1}
+  endColor: {r: 1, g: 0, b: 0, a: 1}
+  mendSpeed: 0.25
+  respawnDelay: 5
 --- !u!82 &-5273440863710809869
 AudioSource:
   m_ObjectHideFlags: 0

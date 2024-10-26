@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 6819902237702633379}
   - component: {fileID: 7423306588075001960}
   - component: {fileID: 2808321119934275595}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Bullet
-  m_TagString: Bullet
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -331,8 +331,9 @@ MonoBehaviour:
   healthAmount: -1
   maxHealthAmount: 0
   uses: 1
+  healthSystemCooldown: 0
   cooldown: 0
-  overrideCooldown: 1
+  overrideHealthSystemCooldown: 1
 --- !u!82 &2808321119934275595
 AudioSource:
   m_ObjectHideFlags: 0

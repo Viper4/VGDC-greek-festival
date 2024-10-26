@@ -9,7 +9,6 @@ public class PauseUI : MonoBehaviour
     [SerializeField] GameObject screenBlur;
     [SerializeField] GameObject pauseMenu;
     [SerializeField] GameObject settingsMenu;
-    [SerializeField] Player player;
     [SerializeField] TextMeshProUGUI timePlayedText;
     [SerializeField] TextMeshProUGUI deathsText;
     [SerializeField] TextMeshProUGUI soulsText;
@@ -19,18 +18,23 @@ public class PauseUI : MonoBehaviour
         holder = transform.Find("Holder").gameObject;
     }
 
-    private void OnEnable()
+    public void AddListener()
     {
-        Player.playerInput.UI.Pause.performed += (context) => TogglePause();
+        Player.instance.input.UI.Pause.performed += (context) => TogglePause();
     }
 
-    private void OnDisable()
+    public void RemoveListener()
     {
-        Player.playerInput.UI.Pause.performed -= (context) => TogglePause();
+        Player.instance.input.UI.Pause.performed -= (context) => TogglePause();
     }
 
     public void TogglePause()
     {
+        if (transform == null)
+        {
+            Destroy(this);
+            return;
+        }
         if (holder.activeSelf)
         {
             Time.timeScale = 1;
@@ -40,8 +44,8 @@ public class PauseUI : MonoBehaviour
         else
         {
             timePlayedText.text = "Time played: " + Time.time.ToString("0.00");
-            deathsText.text = "X " + player.deaths.ToString();
-            soulsText.text = "X " + player.soulsCollected.ToString();
+            deathsText.text = "X " + Player.instance.deaths.ToString();
+            soulsText.text = "X " + Player.instance.soulsCollected.ToString();
             Time.timeScale = 0;
             screenBlur.SetActive(true);
             pauseMenu.SetActive(true);

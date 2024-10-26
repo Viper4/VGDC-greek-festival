@@ -7,13 +7,13 @@ using UnityEngine.InputSystem;
 
 public class Player : BaseMovement
 {
-    public static PlayerInput playerInput;
-
-    public static Player player;
+    public static Player instance;
+    public PlayerInput input;
     private SpriteRenderer spriteRenderer;
     private HealthSystem healthSystem;
 
     // Coyote time and double jumping
+    [Header("Player")]
     [SerializeField] float coyoteTime = 0.1f;
     private float airTime = 0;
     private bool canCoyoteJump = false;
@@ -32,38 +32,52 @@ public class Player : BaseMovement
     [SerializeField] StatsUI statsUI;
     
     public bool GroundPounding;
-
     [SerializeField] private float GroundPoundSpeed = 10f;
+    [SerializeField] PauseUI pauseUI;
 
     // Called before Start()
     private void OnEnable()
     {
-        playerInput = new PlayerInput();
+        if(instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(transform.root.gameObject);
+            input = new PlayerInput();
 
-        player = this;
+            foreach (InputAction action in input)
+            {
+                action.Enable();
+            }
 
         foreach (InputAction action in playerInput)
-        {
-            action.Enable();
+            // Add listeners
+            input.Player.Crouch.performed += Crouch;
+            input.Player.Crouch.canceled += Uncrouch;
+            input.Player.Jump.performed += DoubleJump;
+            pauseUI.AddListener();
         }
-
-        // Add listeners
-        playerInput.Player.Crouch.performed += Crouch;
-        playerInput.Player.Crouch.canceled += Uncrouch;
-        playerInput.Player.Jump.performed += DoubleJump;
+        else
+        {
+            instance.transform.SetPositionAndRotation(transform.position, transform.rotation);
+            Destroy(transform.root.gameObject);
+        }
     }
 
     private void OnDisable()
     {
-        foreach (InputAction action in playerInput)
+        if(instance == this)
         {
-            action.Disable();
-        }
+            foreach (InputAction action in input)
+            {
+                action.Disable();
+            }
 
-        // Remove listeners
-        playerInput.Player.Crouch.performed -= Crouch;
-        playerInput.Player.Crouch.canceled -= Uncrouch;
-        playerInput.Player.Jump.performed -= DoubleJump;
+            // Remove listeners
+            input.Player.Crouch.performed -= Crouch;
+            input.Player.Crouch.canceled -= Uncrouch;
+            input.Player.Jump.performed -= DoubleJump;
+            pauseUI.RemoveListener();
+        }
     }
 
     // Start is called before the first frame update
@@ -82,7 +96,12 @@ public class Player : BaseMovement
         if (Time.timeScale > 0)
         {
             Vector2 newVelocity;
-            if (dashing.velocity != Vector2.zero)
+            if (wallJumping.IsJumping)
+            {
+                newVelocity = rb.velocity;
+                dashing.velocity = Vector2.zero;
+            }
+            else if (dashing.velocity != Vector2.zero)
             {
                 newVelocity = dashing.velocity;
                 if (dashing.velocity.y == 0 && (dashing.velocity.x > 0 && moveVelocity.x < 0 || dashing.velocity.x < 0 && moveVelocity.x > 0))
@@ -90,10 +109,6 @@ public class Player : BaseMovement
                     dashing.velocity = Vector2.zero;
                     newVelocity = moveVelocity;
                 }
-            }
-            else if(wallJumping.IsJumping)
-            {
-                newVelocity = rb.velocity;
             }
             else
             {
@@ -111,20 +126,20 @@ public class Player : BaseMovement
 
             newVelocity += knockbackVelocity;
 
-            rb.velocity = newVelocity;
+            ApplyVelocity(newVelocity);
         }
     }
 
     // Update is called once per frame
-    public override void Update()
+    private void Update()
     {
-        base.Update();
+        base.MovementUpdate();
         if(Time.timeScale > 0)
         {
             // Read player input for movement
-            Crouching = playerInput.Player.Crouch.ReadValue<float>() >= 1f;
-            Walking = !Crouching && playerInput.Player.Walk.ReadValue<float>() >= 1f;
-            Vector2 moveInput = playerInput.Player.Move.ReadValue<Vector2>();
+            Crouching = input.Player.Crouch.ReadValue<float>() >= 1f;
+            Walking = !Crouching && input.Player.Walk.ReadValue<float>() >= 1f;
+            Vector2 moveInput = input.Player.Move.ReadValue<Vector2>();
             moveVelocity = moveInput;
             if (Walking)
             {
@@ -144,7 +159,7 @@ public class Player : BaseMovement
             else
                 moveVelocity.y = 0;
 
-            if (playerInput.Player.Jump.ReadValue<float>() >= 1f)
+            if (input.Player.Jump.ReadValue<float>() >= 1f)
             {
                 Jump();
             }
@@ -154,7 +169,7 @@ public class Player : BaseMovement
 
             if(stairs != null && moveInput.y < 0)
             {
-                stairs.Descend(myCollider);
+                stairs.Descend(_collider);
                 stairs = null;
             }
         }
@@ -194,12 +209,12 @@ public class Player : BaseMovement
 
     void Jump()
     {
-        if(Time.timeScale > 0 && dashing.velocity == Vector2.zero && rb.velocity.y <= 0 && (IsGrounded || (canCoyoteJump && airTime <= coyoteTime)))
+        if(Time.timeScale > 0 && rb.velocity.y <= 0 && (IsGrounded || (canCoyoteJump && airTime <= coyoteTime)))
         {
             canCoyoteJump = false;
             if(IsGrounded)
                 PlayJumpSound();
-            rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
+            rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
         }
     }
 
@@ -209,7 +224,7 @@ public class Player : BaseMovement
         {
             canDoubleJump = false;
             movementAudio.PlayDoubleJump();
-            rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
+            rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
         }
     }
 
@@ -294,16 +309,17 @@ public class Player : BaseMovement
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    public override void OnCollisionEnter2D(Collision2D collision)
     {
-        if(TryLand(collision))
+        float normalAngle = Vector2.Angle(collision.GetContact(0).normal, Vector2.up);
+        if (TryLand(collision, normalAngle))
         {
             canDoubleJump = true;
             canCoyoteJump = true;
             airTime = 0;
             wallJumping.ResetJumps();
         }
-        CheckWall(collision);
+        CheckWall(collision, normalAngle);
 
         switch (collision.transform.tag)
         {
@@ -313,7 +329,7 @@ public class Player : BaseMovement
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    public override void OnCollisionExit2D(Collision2D collision)
     {
         ExitCollision(collision);
     }

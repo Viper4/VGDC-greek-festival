@@ -2,16 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Player))]
 public class WallJumping : MonoBehaviour
 {
-    Player player;
-
     public bool IsSliding 
     { 
         get
         {
-            return player.wall != null && !player.IsGrounded && slideTimer > 0;
+            return Player.instance.wall != null && !Player.instance.IsGrounded && slideTimer > 0;
         }
     }
     public bool IsJumping { get; set; }
@@ -26,7 +23,6 @@ public class WallJumping : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = GetComponent<Player>();
         ResetJumps();
     }
 
@@ -36,7 +32,7 @@ public class WallJumping : MonoBehaviour
         if(Time.timeScale > 0)
         {
             // While player holds space
-            if (Player.playerInput.Player.Jump.ReadValue<float>() >= 1f)
+            if (Player.instance.input.Player.Jump.ReadValue<float>() >= 1f)
             {
                 if (IsSliding && jumpsLeft > 0 && !IsJumping)
                     StartCoroutine(WallJump());
@@ -51,8 +47,8 @@ public class WallJumping : MonoBehaviour
     IEnumerator WallJump()
     {
         IsJumping = true;
-        float direction = transform.position.x > player.wall.position.x ? 1f : -1f;
-        player.rb.velocity = new Vector2(jumpPower.x * direction, jumpPower.y);
+        float direction = transform.position.x > Player.instance.wall.position.x ? 1f : -1f;
+        Player.instance.rb.velocity = new Vector2(jumpPower.x * direction, jumpPower.y);
         yield return new WaitForSeconds(jumpDuration);
         slideTimer = slideTime;
         IsJumping = false;

@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 5858063972416772506}
   - component: {fileID: -4250280097031624711}
   - component: {fileID: 6577362541230408115}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Blue Fireball
-  m_TagString: Untagged
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -217,8 +217,9 @@ MonoBehaviour:
   healthAmount: -1
   maxHealthAmount: 0
   uses: 1
+  healthSystemCooldown: 0
   cooldown: 0
-  overrideCooldown: 1
+  overrideHealthSystemCooldown: 1
 --- !u!82 &6577362541230408115
 AudioSource:
   m_ObjectHideFlags: 0

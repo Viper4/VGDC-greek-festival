@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,9 +10,12 @@ public class HealthTrigger : Trigger
     [SerializeField] float healthAmount = 1;
     [SerializeField] float maxHealthAmount = 0;
     [SerializeField] int uses = 1;
+    [SerializeField] float healthSystemCooldown = 0f;
     [SerializeField] float cooldown = 0.5f;
-    [SerializeField] bool overrideCooldown = false;
+    [SerializeField] bool overrideHealthSystemCooldown = false;
     HealthSystem triggerHealthSystem;
+
+    bool canUse = true;
 
     private void Start()
     {
@@ -19,17 +23,28 @@ public class HealthTrigger : Trigger
         TryGetComponent(out audioSource);
     }
 
+    IEnumerator UseCooldown()
+    {
+        canUse = false;
+        yield return new WaitForSeconds(cooldown);
+        canUse = true;
+    }
+
     void Use()
     {
-        bool changedMaxHealth = triggerHealthSystem.AddMaxHealth(maxHealthAmount, cooldown, overrideCooldown);
-        bool changedHealth = triggerHealthSystem.AddHealth(healthAmount, cooldown, overrideCooldown);
-        if (changedHealth || changedMaxHealth)
+        if (canUse)
         {
-            if (audioSource != null)
-                audioSource.Play();
-            uses--;
-            if (uses == 0)
-                Destroy(gameObject);
+            bool changedMaxHealth = triggerHealthSystem.AddMaxHealth(maxHealthAmount, healthSystemCooldown, overrideHealthSystemCooldown);
+            bool changedHealth = triggerHealthSystem.AddHealth(healthAmount, healthSystemCooldown, overrideHealthSystemCooldown);
+            if (changedHealth || changedMaxHealth)
+            {
+                if (audioSource != null)
+                    audioSource.Play();
+                uses--;
+                if (uses == 0)
+                    Destroy(gameObject);
+            }
+            StartCoroutine(UseCooldown());
         }
     }
 
