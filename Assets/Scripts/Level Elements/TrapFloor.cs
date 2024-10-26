@@ -59,7 +59,7 @@ public class TrapFloor : Trigger
         particleSystem.Play();
         if (breakAudio != null)
             breakAudio.Play();
-        if(respawnDelay < 0)
+        if(respawnDelay <= 0)
         {
             Destroy(particleSystem.gameObject, 5);
             Destroy(gameObject);

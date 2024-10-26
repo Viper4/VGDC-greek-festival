@@ -11,7 +11,7 @@ public class NailAttack : Ability
         Player.instance.input.Player.Nail.performed += OnInput;
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
         Player.instance.input.Player.Nail.performed -= OnInput;
     }
@@ -32,7 +32,7 @@ public class NailAttack : Ability
         {
             Vector2 direction = -(hitbox.transform.position - transform.position).normalized;
             direction.y = 0;
-            owner.ApplyKnockback(new BaseMovement.KnockbackInfo(direction * knockback.velocity, knockback.duration, knockback.drag));
+            owner.ApplyKnockback(new BaseMovement.KnockbackInfo(direction * knockback.velocity, knockback.duration, knockback.drag), true);
         }
     }
 }

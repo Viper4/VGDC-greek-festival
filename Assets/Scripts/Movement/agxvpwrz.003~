@@ -189,16 +189,12 @@ public class BaseMovement : MonoBehaviour
         }
     }
 
-    public void ApplyKnockback(KnockbackInfo knockback, bool overrideImmunity)
+    public void ApplyKnockback(KnockbackInfo knockback)
     {
-        if(overrideImmunity || immunityTimer > immunityTime)
-        {
-            if (knockbackRoutine != null)
-                StopCoroutine(knockbackRoutine);
-            knockbackRoutine = StartCoroutine(Knockback(knockback));
-            if(!overrideImmunity)
-                immunityTime = 0;
-        }
+        if (knockbackRoutine != null)
+            StopCoroutine(knockbackRoutine);
+        knockbackRoutine = StartCoroutine(Knockback(knockback));
+        immunityTime = 0;
     }
 
     private IEnumerator Knockback(KnockbackInfo knockback)

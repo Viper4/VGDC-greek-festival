@@ -16,7 +16,7 @@ public class Archer : Enemy
 
     private void Update()
     {
-        base.MovementUpdate();
+        MovementUpdate();
         if (targets.Count > 0)
         {
             if(selectedTarget == null)

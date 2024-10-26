@@ -15,7 +15,7 @@ public class Shotgun : Ability
         Player.instance.input.Player.Ability1.performed += OnInput;
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
         Player.instance.input.Player.Ability1.performed -= OnInput;
     }

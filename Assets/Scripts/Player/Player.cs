@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -38,7 +36,7 @@ public class Player : BaseMovement
     // Called before Start()
     private void OnEnable()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(transform.root.gameObject);
@@ -49,12 +47,10 @@ public class Player : BaseMovement
                 action.Enable();
             }
 
-        foreach (InputAction action in playerInput)
             // Add listeners
             input.Player.Crouch.performed += Crouch;
             input.Player.Crouch.canceled += Uncrouch;
             input.Player.Jump.performed += DoubleJump;
-            pauseUI.AddListener();
         }
         else
         {
@@ -133,7 +129,7 @@ public class Player : BaseMovement
     // Update is called once per frame
     private void Update()
     {
-        base.MovementUpdate();
+        MovementUpdate();
         if(Time.timeScale > 0)
         {
             // Read player input for movement

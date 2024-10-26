@@ -50,8 +50,8 @@ public class HealthTrigger : Trigger
 
     private void FixedUpdate()
     {
-        // If the player is still triggering this, keep using the health trigger
-        if (triggerHealthSystem != null)
+        // If the target is still triggering this, keep using the health trigger
+        if (triggerHealthSystem != null && cooldown > 0)
         {
             Use();
         }

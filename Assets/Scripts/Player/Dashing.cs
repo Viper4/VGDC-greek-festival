@@ -10,7 +10,6 @@ public class Dashing : MonoBehaviour
     [SerializeField] float dashDrag = 0.5f;
     [SerializeField] SpriteRenderer dashIndicator;
 
-    private Vector2 lastInput;
     private bool canDash = true;
     private bool tryDash = false;
     [HideInInspector] public Vector2 velocity = Vector2.zero;
