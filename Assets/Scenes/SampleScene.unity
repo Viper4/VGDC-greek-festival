@@ -2083,7 +2083,19 @@ MonoBehaviour:
   - Player
   onTriggerEnter:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1307138089}
+        m_TargetAssemblyTypeName: Boss_One, Assembly-CSharp
+        m_MethodName: KnockbackPlayer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onTriggerExit:
     m_PersistentCalls:
       m_Calls: []
@@ -3040,6 +3052,8 @@ MonoBehaviour:
   healthBarSprites:
   - {fileID: 1149465426}
   - {fileID: 1512382469}
+  BossBarImage: {fileID: 0}
+  BossBarWidth: 0
   healthBarFadeSpeed: 1.5
   healthBarAlwaysVisible: 0
   healthBarScale: {x: 3, y: 0.3, z: 1}
@@ -4200,13 +4214,14 @@ GameObject:
   - component: {fileID: 1307138090}
   - component: {fileID: 1307138089}
   - component: {fileID: 1307138094}
+  - component: {fileID: 1307138095}
   m_Layer: 8
   m_Name: Boss_One
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1307138089
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4231,7 +4246,6 @@ MonoBehaviour:
   movementAudio: {fileID: 0}
   knockbackVelocity: {x: 0, y: 0}
   wall: {fileID: 0}
-  bossHP: 50
   minWalk: 0.5
   maxWalk: 2
   TotalIdleTime: 2.5
@@ -4418,6 +4432,35 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &1307138095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1307138088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91137798dd1cf054783e9ee646d3b911, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 50
+  health: 50
+  healthBarSprites: []
+  BossBarImage: {fileID: 1758577125}
+  BossBarWidth: 1920
+  healthBarFadeSpeed: 1
+  healthBarAlwaysVisible: 0
+  healthBarScale: {x: 0, y: 0, z: 0}
+  onHealthUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+  onMaxHealthUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &1347401597
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5023,7 +5066,7 @@ GameObject:
   - component: {fileID: 1758577126}
   - component: {fileID: 1758577125}
   m_Layer: 5
-  m_Name: Image
+  m_Name: BossBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5045,10 +5088,10 @@ RectTransform:
   m_Father: {fileID: 1878977738}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 100}
-  m_Pivot: {x: 0.5, y: 1}
+  m_SizeDelta: {x: 1920, y: 100}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &1758577125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6408,7 +6451,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6717179053623204485, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 7694236456005743555, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: m_AnchorMax.y

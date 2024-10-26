@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -9,6 +10,8 @@ public class HealthSystem : MonoBehaviour
     [SerializeField] float maxHealth = 10;
     [SerializeField] float health;
     [SerializeField] SpriteRenderer[] healthBarSprites;
+    [SerializeField] Image BossBarImage;
+    [SerializeField] float BossBarWidth;
     [SerializeField] float healthBarFadeSpeed = 1f;
     [SerializeField] bool healthBarAlwaysVisible = false;
     [SerializeField] Vector3 healthBarScale;
@@ -85,6 +88,7 @@ public class HealthSystem : MonoBehaviour
         {
             healthBarSprites[0].transform.localScale = new Vector3(healthPercent * healthBarScale.x, healthBarScale.y, healthBarScale.z);
 
+            BossBarImage.rectTransform.sizeDelta = new Vector2(healthPercent * BossBarWidth, BossBarImage.rectTransform.sizeDelta.y);
             // Popup health bar for 1 second then fade it out
             foreach (SpriteRenderer sprite in healthBarSprites)
             {
@@ -118,6 +122,8 @@ public class HealthSystem : MonoBehaviour
         if(healthBarSprites.Length > 0)
         {
             healthBarSprites[0].transform.localScale = new Vector3(healthPercent * healthBarScale.x, healthBarScale.y, healthBarScale.z);
+
+            BossBarImage.rectTransform.sizeDelta = new Vector2(healthPercent * BossBarWidth, BossBarImage.rectTransform.sizeDelta.y);
 
             // Popup health bar for 1 second then fade it out
             foreach (SpriteRenderer sprite in healthBarSprites)

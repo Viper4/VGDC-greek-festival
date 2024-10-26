@@ -3,16 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Animations;
 
 public class Boss_One : BaseMovement
 {
     enum BossState{
-        Jump, Charge, Slash
+        Jump, Charge, Slash, Idle
     }
 
-    [SerializeField] float bossHP = 50f;
+    BossState CurrentState = BossState.Idle;
     [SerializeField] float minWalk = 0.5f;
     [SerializeField] float maxWalk = 2f;
     [SerializeField] float TotalIdleTime = 2.5f;
@@ -83,6 +84,28 @@ public class Boss_One : BaseMovement
     void Update()
     {
         timer += Time.deltaTime;
+
+        if(myCollider.bounds.Intersects(Player.player.myCollider.bounds) && timer>ImmunityTime){
+            timer = 0;
+            Vector2 direction = Player.player.transform.position - transform.position;
+            direction.Normalize();
+            direction.y = 0;
+            switch (CurrentState){
+                case BossState.Slash:
+                    StartCoroutine(Player.player.ApplyKnockback(direction * KnockbackSpeed, KnockbackDuration, KnockbackDrag));
+                    break;
+                case BossState.Jump:
+                    StartCoroutine(Player.player.ApplyKnockback(direction * KnockbackSpeed, KnockbackDuration, KnockbackDrag));
+                break;
+                case BossState.Charge:
+                    Vector2 Knockback = new Vector2(moveVelocity.x * ChargeXConst, ChargeKnockback);
+                    StartCoroutine(Player.player.ApplyKnockback(Knockback, ChargeKnockbackDuration, ChargeDrag));
+                break;
+                case BossState.Idle:
+                    StartCoroutine(Player.player.ApplyKnockback(direction * KnockbackSpeed, KnockbackDuration, KnockbackDrag));
+                break;
+            }
+        } 
     }
 
     IEnumerator StartIdle(){
@@ -90,11 +113,11 @@ public class Boss_One : BaseMovement
         Physics2D.IgnoreCollision(Player.player.myCollider, myCollider, false);
         shield.GetComponent<Renderer>().material.color = Color.white;
         RotateTowardsPlayer();
-        BossState RandomState = GetRandomEnum<BossState>(); //picks random attack (used later)
-        while(RandomState == LastAttack && RandomState!=BossState.Slash){ // Doesn't pick the same attack in a row (besides slash)
-            RandomState = GetRandomEnum<BossState>();
+        CurrentState = GetRandomEnum<BossState>(); //picks random attack (used later)
+        while(CurrentState == LastAttack && CurrentState!=BossState.Slash && CurrentState == BossState.Idle){ // Doesn't pick the same attack in a row (besides slash)
+            CurrentState = GetRandomEnum<BossState>();
         }
-            switch(RandomState){ //Sets reaction time values to each attack
+            switch(CurrentState){ //Sets reaction time values to each attack
             case BossState.Slash:
                 WaitingConst = .4f;
             break;
@@ -115,7 +138,7 @@ public class Boss_One : BaseMovement
             walkTime -= Time.deltaTime;
             Waiting += Time.deltaTime;
             if (Waiting + WaitingConst >= TotalIdleTime){
-                switch(RandomState){ //fixes color of shield
+                switch(CurrentState){ //fixes color of shield
                 case BossState.Slash:
                     shield.GetComponent<Renderer>().material.color = Color.red;
                 break;
@@ -127,23 +150,13 @@ public class Boss_One : BaseMovement
                 break;
                 }
             }
-            if(myCollider.bounds.Intersects(Player.player.myCollider.bounds) && timer>ImmunityTime){ //Body knockback
-            timer = 0;
-            Vector2 Knockback = Player.player.transform.position-transform.position;
-            Knockback.y = 0f;
-            Knockback.Normalize();
-            Knockback.y = YKnockback;
-            Knockback *= KnockbackSpeed;
-            StartCoroutine(Player.player.ApplyKnockback(Knockback, KnockbackDuration, KnockbackDrag));
-            yield return new WaitForSeconds(KnockbackDuration);
-            } 
         }  
         while(waitTime>0){
             yield return new WaitForEndOfFrame();
             waitTime -= Time.deltaTime;
             Waiting += Time.deltaTime;
             if (Waiting + WaitingConst >= TotalIdleTime){
-                switch(RandomState){ //fixes color of shield
+                switch(CurrentState){ //fixes color of shield
                 case BossState.Slash:
                     shield.GetComponent<Renderer>().material.color = Color.red;
                 break;
@@ -155,20 +168,10 @@ public class Boss_One : BaseMovement
                 break;
                 }
             }
-            if(myCollider.bounds.Intersects(Player.player.myCollider.bounds) && timer>ImmunityTime){ //Body knockback
-            timer = 0;
-            Vector2 Knockback = Player.player.transform.position-transform.position;
-            Knockback.y = 0f;
-            Knockback.Normalize();
-            Knockback.y = YKnockback;
-            Knockback *= KnockbackSpeed;
-            StartCoroutine(Player.player.ApplyKnockback(Knockback, KnockbackDuration, KnockbackDrag));
-            yield return new WaitForSeconds(KnockbackDuration);
-            } 
         }
         Waiting = 0;
         attackCount += 1;
-        switch(RandomState){ //runs coroutine of correct attack
+        switch(CurrentState){ //runs coroutine of correct attack
             case BossState.Slash:
                 TotalIdleTime = SlashIdleTime;
                 LastAttack = BossState.Slash;
@@ -197,23 +200,18 @@ public class Boss_One : BaseMovement
     }
 
     IEnumerator Charge(){
-        //Physics2D.IgnoreCollision(Player.player.myCollider, myCollider, true);
         RotateTowardsPlayer();
         moveVelocity = transform.right * ChargeSpeed;
-        float timer = 0;
-        while(timer < AccelTime){
+        float Chargetimer = 0;
+        while(Chargetimer < AccelTime){
             rb.velocity = new Vector2(Mathf.Lerp(0, moveVelocity.x, timer/AccelTime), 0);
-            timer += Time.deltaTime;
+            Chargetimer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
         while(wall == null){
             rb.velocity = moveVelocity;
             yield return new WaitForEndOfFrame();
         }
-        if(myCollider.bounds.Intersects(Player.player.myCollider.bounds)){
-            Vector2 Knockback = new Vector2(moveVelocity.x * ChargeXConst, ChargeKnockback);
-            StartCoroutine(Player.player.ApplyKnockback(Knockback, ChargeKnockbackDuration, ChargeDrag));
-        } 
         yield return new WaitForSeconds(KnockbackDuration);
         StartCoroutine(StartIdle());
     }
@@ -224,7 +222,18 @@ public class Boss_One : BaseMovement
         StartCoroutine(StartIdle());
     }
 
+    public void KnockbackPlayer(){
+        if(timer<ImmunityTime) return;
+        timer = 0;
+        Debug.Log("knockback");
+        Vector2 direction = Player.player.transform.position - transform.position;
+        direction.Normalize();
+        direction.y = 0;
+        StartCoroutine(Player.player.ApplyKnockback(direction*KnockbackSpeed, KnockbackDuration, KnockbackDrag));
+    }
+
     IEnumerator Jump(){
+        Physics2D.IgnoreCollision(Player.player.myCollider, myCollider, true);
         float distanceX = Player.player.transform.position.x - transform.position.x;
         float distanceY = Player.player.transform.position.y - transform.position.y;
         float velocityX = distanceX / arcTime;
@@ -235,15 +244,6 @@ public class Boss_One : BaseMovement
         float animationLength = animator.GetCurrentAnimatorStateInfo(0).length;
         yield return new WaitForSeconds(animationLength);
         yield return new WaitUntil(()=> IsGrounded);
-        if(myCollider.bounds.Intersects(Player.player.myCollider.bounds)){
-            Vector2 Knockback = Player.player.transform.position-transform.position;
-            Knockback.y = 0f;
-            Knockback.Normalize();
-            Knockback.y = YKnockback;
-            Knockback *= KnockbackSpeed;
-            StartCoroutine(Player.player.ApplyKnockback(Knockback, KnockbackDuration, KnockbackDrag));
-        } 
-        yield return new WaitForSeconds(KnockbackDuration);
         StartCoroutine(StartIdle());
     }
 
