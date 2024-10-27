@@ -9,7 +9,7 @@ public abstract class Ability : MonoBehaviour
     public LayerMask hitLayers;
     public float damage = 1f;
 
-    [HideInInspector] public float cooldown;
+    public float cooldown;
     float timer;
 
     public BaseMovement.KnockbackInfo knockback;

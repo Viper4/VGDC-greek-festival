@@ -29,8 +29,8 @@ public class Player : BaseMovement
     private bool dying = false;
     [SerializeField] StatsUI statsUI;
     
-    public bool GroundPounding;
-    [SerializeField] private float GroundPoundSpeed = 10f;
+    public bool groundPounding;
+    [SerializeField] private float groundPoundSpeed = 18f;
     [SerializeField] PauseUI pauseUI;
 
     // Called before Start()
@@ -114,7 +114,7 @@ public class Player : BaseMovement
             if (!Climbing && dashing.velocity.y == 0 && !wallJumping.IsJumping)
                 newVelocity += new Vector2(0, rb.velocity.y);
 
-            if (wallJumping.IsSliding && !GroundPounding)
+            if (wallJumping.IsSliding && !groundPounding)
             {
                 if(newVelocity.y < -wallJumping.slideSpeed)
                     newVelocity.y = -wallJumping.slideSpeed;
@@ -178,19 +178,19 @@ public class Player : BaseMovement
             //movementAudio.PlayCrouch();
             transform.localScale = new Vector3(1, 0.5f, 1);
             transform.position -= new Vector3(0, 0.5f);
-            if(!IsGrounded & !GroundPounding) StartCoroutine(GroundPound());
+            if(!IsGrounded & !groundPounding) StartCoroutine(GroundPound());
         }
     }
 
     IEnumerator GroundPound(){
         while(!IsGrounded){
-            GroundPounding = true;
-            moveVelocity.y = -GroundPoundSpeed;
+            groundPounding = true;
+            moveVelocity.y = -groundPoundSpeed;
             moveVelocity.x = 0f;
             rb.velocity = moveVelocity;
             yield return new WaitForEndOfFrame();
         }
-        if(IsGrounded) GroundPounding = false;
+        if(IsGrounded) groundPounding = false;
     }
 
     void Uncrouch(InputAction.CallbackContext context)

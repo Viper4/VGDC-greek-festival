@@ -10,6 +10,8 @@ public class CameraControl : MonoBehaviour
     [SerializeField] float followSpeed = 1f;
     public Vector2 cameraBoundsMin = new Vector2(0, 0);
     public Vector2 cameraBoundsMax = new Vector2(0, 0);
+    public Vector2 lockedPosition;
+    public bool locked = false;
 
     private void Start()
     {
@@ -18,20 +20,28 @@ public class CameraControl : MonoBehaviour
 
     void FixedUpdate()
     {
-        float height = _camera.orthographicSize;
-        float width = height * _camera.aspect;
-        Vector3 newPosition = target.position;
-        if (cameraBoundsMin.y != 0 && cameraBoundsMax.y != 0)
+        Vector3 newPosition;
+        if (locked)
         {
-            float minY = cameraBoundsMin.y + height;
-            float maxY = cameraBoundsMax.y - height;
-            newPosition.y = Mathf.Clamp(newPosition.y, minY, maxY);
+            newPosition = lockedPosition;
         }
-        if (cameraBoundsMin.x != 0 && cameraBoundsMax.x != 0)
+        else
         {
-            float minX = cameraBoundsMin.x + width;
-            float maxX = cameraBoundsMax.x - width;
-            newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
+            newPosition = target.position;
+            float height = _camera.orthographicSize;
+            float width = height * _camera.aspect;
+            if (cameraBoundsMin.y != 0 && cameraBoundsMax.y != 0)
+            {
+                float minY = cameraBoundsMin.y + height;
+                float maxY = cameraBoundsMax.y - height;
+                newPosition.y = Mathf.Clamp(newPosition.y, minY, maxY);
+            }
+            if (cameraBoundsMin.x != 0 && cameraBoundsMax.x != 0)
+            {
+                float minX = cameraBoundsMin.x + width;
+                float maxX = cameraBoundsMax.x - width;
+                newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
+            }
         }
         newPosition.z = -1; // Keep the camera above everything so we can see
         transform.position = Vector3.Lerp(transform.position, newPosition, followSpeed * Time.deltaTime);

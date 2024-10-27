@@ -919,7 +919,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 4e9669e550f83af4ca1d46e392751607, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4733,7 +4733,7 @@ GameObject:
   - component: {fileID: 1769421418}
   - component: {fileID: 1769421419}
   m_Layer: 2
-  m_Name: Camera Bounds
+  m_Name: Camera Lock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4793,6 +4793,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   collidersInTrigger: 0
+  lockCamera: 1
+  changeOrthoSize: 0
 --- !u!61 &1769421419
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5024,8 +5026,11 @@ MonoBehaviour:
   lockedColor: {r: 0.5849056, g: 0, b: 0, a: 0.54901963}
   unlockedColor: {r: 0, g: 0.5396226, b: 0, a: 0.54901963}
   selectionIndicator: {fileID: 318929637}
+  selectionLight: {fileID: 0}
   unselectedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 0.78431374}
   selectedColor: {r: 0, g: 1, b: 0, a: 0.78431374}
+  unselectedEmission: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  selectedEmission: {r: 0, g: 1, b: 0, a: 1}
   selectSound: {fileID: 8300000, guid: 3db3af243efc8c142b4796ee7b8a418b, type: 3}
 --- !u!61 &1812731697
 BoxCollider2D:

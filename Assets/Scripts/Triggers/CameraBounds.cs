@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class CameraBounds : Trigger
 {
     Collider2D boundsCollider;
+    [SerializeField] bool lockCamera = false;
     [SerializeField] bool changeOrthoSize = false;
     float originalOrthoSize;
     Vector2 boundsMin;
@@ -24,6 +26,11 @@ public class CameraBounds : Trigger
         base.TriggerEnter(collider);
 
         CameraControl cameraControl = Camera.main.GetComponent<CameraControl>();
+        if (lockCamera)
+        {
+            cameraControl.lockedPosition = transform.position;
+            cameraControl.locked = true;
+        }
         cameraControl.cameraBoundsMin = boundsMin;
         cameraControl.cameraBoundsMax = boundsMax;
         if (changeOrthoSize)
@@ -49,7 +56,8 @@ public class CameraBounds : Trigger
         if(changeOrthoSize)
             Camera.main.orthographicSize = originalOrthoSize;
         CameraControl cameraControl = Camera.main.GetComponent<CameraControl>();
-        if(cameraControl.cameraBoundsMin == boundsMin && cameraControl.cameraBoundsMax == boundsMax)
+        cameraControl.locked = false;
+        if (cameraControl.cameraBoundsMin == boundsMin && cameraControl.cameraBoundsMax == boundsMax)
         {
             cameraControl.cameraBoundsMin = Vector2.zero;
             cameraControl.cameraBoundsMax = Vector2.zero;

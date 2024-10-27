@@ -38,7 +38,8 @@ public class Checkpoint : MonoBehaviour
         {
             selectionIndicator.color = selectedColor;
             selectionIndicator.material.SetColor("_EmissionColor", selectedEmission);
-            selectionLight.color = selectedColor;
+            if(selectionLight != null)
+                selectionLight.color = selectedColor;
             audioSource.PlayOneShot(selectSound);
         }
         if (!unlocked)
@@ -58,7 +59,8 @@ public class Checkpoint : MonoBehaviour
     {
         selectionIndicator.color = unselectedColor;
         selectionIndicator.material.SetColor("_EmissionColor", unselectedEmission);
-        selectionLight.color = unselectedColor;
+        if (selectionLight != null)
+            selectionLight.color = unselectedColor;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
