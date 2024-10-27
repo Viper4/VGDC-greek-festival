@@ -1,4 +1,0 @@
-CameraBounds.Start()
-CameraBounds.TriggerEnter(UnityEngine.Collider2D)
-CameraBounds.TriggerExit(UnityEngine.Collider2D)
-CameraBounds.ExitBounds()

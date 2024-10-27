@@ -40,7 +40,8 @@ public class CameraBounds : Trigger
     public override void TriggerExit(Collider2D collider)
     {
         base.TriggerExit(collider);
-        ExitBounds();
+        if (Camera.main != null)
+            ExitBounds();
     }
 
     public void ExitBounds()
