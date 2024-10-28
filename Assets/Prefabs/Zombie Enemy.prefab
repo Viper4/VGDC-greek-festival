@@ -605,21 +605,36 @@ MonoBehaviour:
   rb: {fileID: 0}
   _collider: {fileID: 0}
   stairs: {fileID: 0}
-  runSpeed: 5
+  runSpeed: 4
   walkSpeed: 2
   crouchSpeed: 1
   jumpSpeed: 2
   moveVelocity: {x: 0, y: 0}
+  rotateWithMovement: 1
+  predictionTime: 0.5
+  nonGroundTags:
+  - Trap
+  - Enemy
+  - Projectile
+  - Soul
+  fallCheckDistance: 3
   climbSpeed: 2
   movementAudio: {fileID: 2517661995053869172}
   knockbackVelocity: {x: 0, y: 0}
+  immunityTime: 0.3
+  nonWallTags:
+  - Trap
+  - Enemy
+  - Projectile
+  - Soul
   wall: {fileID: 0}
   collisionLayers:
     serializedVersion: 2
     m_Bits: 513
   targetMode: 0
   damage: 1
-  attackCooldown: 1
+  attackCooldown: 2
+  attackTimer: 0
   targets: []
   selectedTarget: {fileID: 0}
 --- !u!114 &7000880801903414828
@@ -634,11 +649,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91137798dd1cf054783e9ee646d3b911, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  invincible: 0
   maxHealth: 10
   health: 10
   healthBarSprites:
   - {fileID: 2742088376439265977}
   - {fileID: 349499326321031940}
+  bossBarImage: {fileID: 0}
+  bossBarWidth: 0
   healthBarFadeSpeed: 1.5
   healthBarAlwaysVisible: 0
   healthBarScale: {x: 3, y: 0.3, z: 1}
@@ -1315,5 +1333,5 @@ MonoBehaviour:
   maxHealthAmount: 0
   uses: -1
   healthSystemCooldown: 0
-  cooldown: 0.5
+  cooldown: 2
   overrideHealthSystemCooldown: 1

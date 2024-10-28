@@ -8,14 +8,17 @@ public class CameraControl : MonoBehaviour
     Camera _camera;
     [SerializeField] Transform target;
     [SerializeField] float followSpeed = 1f;
-    public Vector2 cameraBoundsMin = new Vector2(0, 0);
-    public Vector2 cameraBoundsMax = new Vector2(0, 0);
+    public CameraBounds bounds;
     public Vector2 lockedPosition;
     public bool locked = false;
+    [HideInInspector] public float originalHeight;
+    [HideInInspector] public float originalWidth;
 
     private void Start()
     {
         _camera = GetComponent<Camera>();
+        originalHeight = _camera.orthographicSize;
+        originalWidth = originalHeight * _camera.aspect;
     }
 
     void FixedUpdate()
@@ -28,19 +31,22 @@ public class CameraControl : MonoBehaviour
         else
         {
             newPosition = target.position;
-            float height = _camera.orthographicSize;
-            float width = height * _camera.aspect;
-            if (cameraBoundsMin.y != 0 && cameraBoundsMax.y != 0)
+            if(bounds != null)
             {
-                float minY = cameraBoundsMin.y + height;
-                float maxY = cameraBoundsMax.y - height;
-                newPosition.y = Mathf.Clamp(newPosition.y, minY, maxY);
-            }
-            if (cameraBoundsMin.x != 0 && cameraBoundsMax.x != 0)
-            {
-                float minX = cameraBoundsMin.x + width;
-                float maxX = cameraBoundsMax.x - width;
-                newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
+                float height = _camera.orthographicSize;
+                float width = height * _camera.aspect;
+                if (bounds.min.y != 0 && bounds.max.y != 0)
+                {
+                    float minY = bounds.min.y + height;
+                    float maxY = bounds.max.y - height;
+                    newPosition.y = Mathf.Clamp(newPosition.y, minY, maxY);
+                }
+                if (bounds.min.x != 0 && bounds.max.x != 0)
+                {
+                    float minX = bounds.min.x + width;
+                    float maxX = bounds.max.x - width;
+                    newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
+                }
             }
         }
         newPosition.z = -1; // Keep the camera above everything so we can see

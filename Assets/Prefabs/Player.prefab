@@ -2462,7 +2462,7 @@ Camera:
   far clip plane: 1000
   field of view: 165
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 16
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2500,8 +2500,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1399390001140983904}
   followSpeed: 6
-  cameraBoundsMin: {x: 0, y: 0}
-  cameraBoundsMax: {x: 0, y: 0}
+  bounds: {fileID: 0}
+  lockedPosition: {x: 0, y: 0}
+  locked: 0
+  originalOrthoSize: 0
 --- !u!114 &2982843961935162859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4448,8 +4450,8 @@ MonoBehaviour:
   deaths: 0
   deathTime: 1
   statsUI: {fileID: 2629752551155893318}
-  GroundPounding: 0
-  GroundPoundSpeed: 10
+  groundPounding: 0
+  groundPoundSpeed: 18
   pauseUI: {fileID: 5315934267357499005}
 --- !u!114 &7853303006011264248
 MonoBehaviour:
@@ -4499,8 +4501,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   invincible: 0
-  maxHealth: 3
-  health: 3
+  maxHealth: 100
+  health: 100
   healthBarSprites:
   - {fileID: 2991465362390440683}
   - {fileID: 1666694651845179001}

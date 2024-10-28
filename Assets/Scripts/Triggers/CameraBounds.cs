@@ -7,18 +7,22 @@ public class CameraBounds : Trigger
 {
     Collider2D boundsCollider;
     [SerializeField] bool lockCamera = false;
-    [SerializeField] bool changeOrthoSize = false;
-    float originalOrthoSize;
-    Vector2 boundsMin;
-    Vector2 boundsMax;
+    public Vector2 min;
+    public Vector2 max;
 
     // Start is called before the first frame update
     void Start()
     {
         InitializeHashSet();
-        boundsCollider = GetComponent<Collider2D>();
-        boundsMin = boundsCollider.bounds.min;
-        boundsMax = boundsCollider.bounds.max;
+        if (!TryGetComponent(out boundsCollider) && min == max)
+        {
+            Debug.LogWarning("No bounds collider found on " + transform.name + " and min = max!");
+        }
+        else
+        {
+            min = boundsCollider.bounds.min;
+            max = boundsCollider.bounds.max;
+        }
     }
 
     public override void TriggerEnter(Collider2D collider)
@@ -31,17 +35,10 @@ public class CameraBounds : Trigger
             cameraControl.lockedPosition = transform.position;
             cameraControl.locked = true;
         }
-        cameraControl.cameraBoundsMin = boundsMin;
-        cameraControl.cameraBoundsMax = boundsMax;
-        if (changeOrthoSize)
-        {
-            originalOrthoSize = Camera.main.orthographicSize;
-            float boundsHeight = (boundsMax.y - boundsMin.y) * 0.5f;
-            if (boundsHeight < Camera.main.orthographicSize)
-            {
-                Camera.main.orthographicSize = boundsHeight;
-            }
-        }
+        cameraControl.bounds = this;
+        float boundsHeight = (max.y - min.y) * 0.5f;
+        float boundsWidth = (max.x - min.x) * 0.5f;
+        Camera.main.orthographicSize = Mathf.Clamp(boundsHeight, 0, cameraControl.originalHeight);
     }
 
     public override void TriggerExit(Collider2D collider)
@@ -53,14 +50,12 @@ public class CameraBounds : Trigger
 
     public void ExitBounds()
     {
-        if(changeOrthoSize)
-            Camera.main.orthographicSize = originalOrthoSize;
         CameraControl cameraControl = Camera.main.GetComponent<CameraControl>();
-        cameraControl.locked = false;
-        if (cameraControl.cameraBoundsMin == boundsMin && cameraControl.cameraBoundsMax == boundsMax)
+        if (cameraControl.bounds == this)
         {
-            cameraControl.cameraBoundsMin = Vector2.zero;
-            cameraControl.cameraBoundsMax = Vector2.zero;
+            cameraControl.locked = false;
+            cameraControl.bounds = null;
+            Camera.main.orthographicSize = cameraControl.originalHeight;
         }
     }
 }
