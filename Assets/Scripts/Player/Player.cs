@@ -111,7 +111,7 @@ public class Player : BaseMovement
                 newVelocity = moveVelocity;
             }
 
-            if (!Climbing && dashing.velocity.y == 0 && !wallJumping.IsJumping)
+            if (!Climbing && dashing.velocity.y == 0 && !wallJumping.IsJumping && knockbackVelocity.y == 0)
                 newVelocity += new Vector2(0, rb.velocity.y);
 
             if (wallJumping.IsSliding && !groundPounding)

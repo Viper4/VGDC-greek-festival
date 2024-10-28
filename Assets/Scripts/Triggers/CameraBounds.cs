@@ -36,8 +36,9 @@ public class CameraBounds : Trigger
             cameraControl.locked = true;
         }
         cameraControl.bounds = this;
-        float boundsHeight = (max.y - min.y) * 0.5f;
         float boundsWidth = (max.x - min.x) * 0.5f;
+        float boundsHeight = Mathf.Min((max.y - min.y) * 0.5f, boundsWidth / Camera.main.aspect);
+
         Camera.main.orthographicSize = Mathf.Clamp(boundsHeight, 0, cameraControl.originalHeight);
     }
 

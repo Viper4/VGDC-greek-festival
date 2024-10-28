@@ -944,7 +944,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 257
   damage: 1.5
-  cooldown: 3
+  cooldown: 0.4
   knockback:
     velocity: {x: 6, y: 0}
     duration: 0.3
@@ -2462,7 +2462,7 @@ Camera:
   far clip plane: 1000
   field of view: 165
   orthographic: 1
-  orthographic size: 16
+  orthographic size: 14
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2503,7 +2503,8 @@ MonoBehaviour:
   bounds: {fileID: 0}
   lockedPosition: {x: 0, y: 0}
   locked: 0
-  originalOrthoSize: 0
+  originalHeight: 0
+  originalWidth: 0
 --- !u!114 &2982843961935162859
 MonoBehaviour:
   m_ObjectHideFlags: 0
