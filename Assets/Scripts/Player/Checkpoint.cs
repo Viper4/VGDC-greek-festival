@@ -2,14 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.Events;
 
 public class Checkpoint : MonoBehaviour
 {
     SpriteRenderer spriteRenderer;
     AudioSource audioSource;
 
-    [SerializeField] Animation nextUnlock;
-    [SerializeField] int soulsForUnlock = 3;
     [SerializeField] Color lockedColor = Color.red;
     [SerializeField] Color unlockedColor = Color.green;
 
@@ -21,7 +20,8 @@ public class Checkpoint : MonoBehaviour
     [SerializeField, ColorUsage(true, true)] Color selectedEmission = Color.green;
     [SerializeField] AudioClip selectSound;
     bool unlocked = false;
-    int soulsSaved = 0;
+    public bool canSaveSouls = true;
+    [SerializeField] UnityEvent<int> onSelect;
 
     private void Start()
     {
@@ -32,7 +32,7 @@ public class Checkpoint : MonoBehaviour
         selectionIndicator.material.SetColor("_EmissionColor", unselectedEmission);
     }
 
-    public void Save(int souls)
+    public void Select(int souls)
     {
         if(selectionIndicator.color != selectedColor)
         {
@@ -44,14 +44,9 @@ public class Checkpoint : MonoBehaviour
         }
         if (!unlocked)
         {
-            soulsSaved += souls;
-            if (soulsSaved >= soulsForUnlock)
-            {
-                if(nextUnlock != null)
-                    nextUnlock.Play();
-                unlocked = true;
-                spriteRenderer.color = unlockedColor;
-            }
+            if (!canSaveSouls)
+                souls = 0;
+            onSelect?.Invoke(souls);
         }
     }
 
@@ -61,6 +56,12 @@ public class Checkpoint : MonoBehaviour
         selectionIndicator.material.SetColor("_EmissionColor", unselectedEmission);
         if (selectionLight != null)
             selectionLight.color = unselectedColor;
+    }
+
+    public void Unlock()
+    {
+        unlocked = true;
+        spriteRenderer.color = unlockedColor;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

@@ -11,9 +11,9 @@ public class InteractionLock : MonoBehaviour
     [SerializeField] UnityEvent onUnlock;
     bool unlocked = false;
 
-    public void AddInteract()
+    public void AddInteract(int amount)
     {
-        numInteracts++;
+        numInteracts += amount;
         if(numInteracts >= interactsForUnlock)
         {
             Unlock();

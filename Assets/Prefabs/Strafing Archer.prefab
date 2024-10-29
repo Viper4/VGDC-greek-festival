@@ -321,6 +321,8 @@ MonoBehaviour:
   healthBarSprites:
   - {fileID: 2985161871941372782}
   - {fileID: 3132979319361893107}
+  bossBarImage: {fileID: 0}
+  bossBarWidth: 0
   healthBarFadeSpeed: 1.5
   healthBarAlwaysVisible: 0
   healthBarScale: {x: 3, y: 0.3, z: 1}
@@ -387,6 +389,12 @@ MonoBehaviour:
   - DeathZone
   onTriggerEnter:
     m_PersistentCalls:
+      m_Calls: []
+  onTriggerExit:
+    m_PersistentCalls:
+      m_Calls: []
+  onCollisionEnter:
+    m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1518343637646720296}
         m_TargetAssemblyTypeName: Trigger, Assembly-CSharp
@@ -400,12 +408,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  onTriggerExit:
-    m_PersistentCalls:
-      m_Calls: []
-  onCollisionEnter:
-    m_PersistentCalls:
-      m_Calls: []
   onCollisionExit:
     m_PersistentCalls:
       m_Calls: []
@@ -444,10 +446,21 @@ MonoBehaviour:
   moveVelocity: {x: 0, y: 0}
   rotateWithMovement: 0
   predictionTime: 0.5
+  nonGroundTags:
+  - Trap
+  - Enemy
+  - Projectile
+  - Soul
   fallCheckDistance: 3
   climbSpeed: 2
   movementAudio: {fileID: 8785383793060710251}
   knockbackVelocity: {x: 0, y: 0}
+  immunityTime: 0.3
+  nonWallTags:
+  - Trap
+  - Enemy
+  - Projectile
+  - Soul
   wall: {fileID: 0}
   collisionLayers:
     serializedVersion: 2

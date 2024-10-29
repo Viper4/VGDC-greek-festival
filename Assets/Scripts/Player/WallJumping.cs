@@ -8,7 +8,7 @@ public class WallJumping : MonoBehaviour
     { 
         get
         {
-            return Player.instance.wall != null && !Player.instance.IsGrounded && slideTimer > 0;
+            return Player.instance.wall != null && Player.instance.rb.velocity.y < 0 && slideTimer > 0;
         }
     }
     public bool IsJumping { get; set; }

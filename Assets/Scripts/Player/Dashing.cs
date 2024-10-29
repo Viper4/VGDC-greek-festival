@@ -20,18 +20,17 @@ public class Dashing : MonoBehaviour
         if(Time.timeScale > 0)
         {
             Vector2 moveInput = Player.instance.input.Player.Move.ReadValue<Vector2>();
-            bool jumping = Player.instance.input.Player.Jump.ReadValue<float>() >= 1f;
             if (Player.instance.input.Player.Dash.ReadValue<float>() >= 1f)
             {
                 if (moveInput != Vector2.zero)
                 {
                     if(canDash)
-                        StartCoroutine(WaitForInput(moveInput, jumping));
+                        StartCoroutine(WaitForInput(moveInput));
                 }
                 else if(lastInput != Vector2.zero)
                 {
                     if(canDash)
-                        StartCoroutine(WaitForInput(lastInput, jumping));
+                        StartCoroutine(WaitForInput(lastInput));
                 }
             }
             if(moveInput != Vector2.zero)
@@ -41,19 +40,22 @@ public class Dashing : MonoBehaviour
         }
     }
 
-    IEnumerator WaitForInput(Vector2 initialInput, bool bunnyHop)
+    IEnumerator WaitForInput(Vector2 initialInput)
     {
+        bool jumped = Player.instance.input.Player.Jump.ReadValue<float>() >= 1f;
         canDash = false;
         yield return new WaitForSecondsRealtime(inputWait);
         Vector2 moveInput = Player.instance.input.Player.Move.ReadValue<Vector2>();
 
-        if(moveInput != Vector2.zero)
+        jumped = jumped || Player.instance.input.Player.Jump.ReadValue<float>() >= 1f;
+
+        if (moveInput != Vector2.zero)
         {
-            StartCoroutine(Dash(moveInput, bunnyHop));
+            StartCoroutine(Dash(moveInput, jumped));
         }
         else
         {
-            StartCoroutine(Dash(initialInput, bunnyHop));
+            StartCoroutine(Dash(initialInput, jumped));
         }
     }
 
