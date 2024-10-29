@@ -1,5 +1,4 @@
 using System.Collections;
-using UnityEditor.Rendering;
 using UnityEngine;
 
 public class Dashing : MonoBehaviour
@@ -12,7 +11,6 @@ public class Dashing : MonoBehaviour
     [SerializeField] SpriteRenderer dashIndicator;
 
     private bool canDash = true;
-    private bool tryDash = false;
     [HideInInspector] public Vector2 velocity = Vector2.zero;
     private Vector2 lastInput;
 
@@ -22,23 +20,19 @@ public class Dashing : MonoBehaviour
         if(Time.timeScale > 0)
         {
             Vector2 moveInput = Player.instance.input.Player.Move.ReadValue<Vector2>();
+            bool jumping = Player.instance.input.Player.Jump.ReadValue<float>() >= 1f;
             if (Player.instance.input.Player.Dash.ReadValue<float>() >= 1f)
             {
                 if (moveInput != Vector2.zero)
                 {
-                    tryDash = true;
                     if(canDash)
-                        StartCoroutine(WaitForInput(moveInput));
+                        StartCoroutine(WaitForInput(moveInput, jumping));
                 }
                 else if(lastInput != Vector2.zero)
                 {
                     if(canDash)
-                        StartCoroutine(WaitForInput(lastInput));
+                        StartCoroutine(WaitForInput(lastInput, jumping));
                 }
-            }
-            else
-            {
-                tryDash = false;
             }
             if(moveInput != Vector2.zero)
             {
@@ -47,7 +41,7 @@ public class Dashing : MonoBehaviour
         }
     }
 
-    IEnumerator WaitForInput(Vector2 initialInput)
+    IEnumerator WaitForInput(Vector2 initialInput, bool bunnyHop)
     {
         canDash = false;
         yield return new WaitForSecondsRealtime(inputWait);
@@ -55,23 +49,24 @@ public class Dashing : MonoBehaviour
 
         if(moveInput != Vector2.zero)
         {
-            StartCoroutine(Dash(moveInput));
+            StartCoroutine(Dash(moveInput, bunnyHop));
         }
         else
         {
-            StartCoroutine(Dash(initialInput));
+            StartCoroutine(Dash(initialInput, bunnyHop));
         }
     }
 
-    IEnumerator Dash(Vector2 moveInput, bool bunnyHop = false)
+    IEnumerator Dash(Vector2 moveInput, bool bunnyHop)
     {
         bool waveDash = moveInput.y < 0 && moveInput.x != 0;
         canDash = false;
         Player.instance.movementAudio.PlayDash();
         velocity = moveInput * dashSpeed;
         dashIndicator.color = Color.red;
-        if(moveInput.y < 0)
+        if (moveInput.y < 0)
         {
+            // Stop downward dash if we hit the ground
             float timer = 0;
             while(timer < dashDuration)
             {
@@ -83,17 +78,26 @@ public class Dashing : MonoBehaviour
                 yield return new WaitForEndOfFrame();
             }
         }
+        else if(moveInput.x != 0)
+        {
+            // Stop horizontal dash if we hit a wall
+            float timer = 0;
+            while (timer < dashDuration)
+            {
+                if (Player.instance.wall != null)
+                {
+                    break;
+                }
+                timer += Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            }
+        }
         else
         {
             yield return new WaitForSeconds(dashDuration);
         }
-        if (!bunnyHop && (!tryDash || Player.instance.IsGrounded))
-        {
-            // Stop dash momentum if we aren't bunny hopping
-            velocity = Vector2.zero;
-            Player.instance.rb.velocity = Vector2.zero;
-        }
-        else
+
+        if(bunnyHop && !Player.instance.IsGrounded)
         {
             // If we're bunny hopping, preserve x velocity but stop vertical dash momentum
             if (velocity.y != 0)
@@ -101,6 +105,12 @@ public class Dashing : MonoBehaviour
                 velocity.y = 0;
                 Player.instance.rb.velocity = new Vector2(Player.instance.rb.velocity.x, 0);
             }
+        }
+        else
+        {
+            // Stop dash momentum if we aren't bunny hopping
+            velocity = Vector2.zero;
+            Player.instance.rb.velocity = Vector2.zero;
         }
 
         if(!waveDash)

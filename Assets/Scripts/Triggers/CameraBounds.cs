@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 public class CameraBounds : Trigger
@@ -9,6 +8,7 @@ public class CameraBounds : Trigger
     [SerializeField] bool lockCamera = false;
     public Vector2 min;
     public Vector2 max;
+    CameraBounds otherBounds;
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +30,7 @@ public class CameraBounds : Trigger
         base.TriggerEnter(collider);
 
         CameraControl cameraControl = Camera.main.GetComponent<CameraControl>();
+        otherBounds = cameraControl.bounds;
         if (lockCamera)
         {
             cameraControl.lockedPosition = transform.position;
@@ -55,8 +56,12 @@ public class CameraBounds : Trigger
         if (cameraControl.bounds == this)
         {
             cameraControl.locked = false;
-            cameraControl.bounds = null;
+            cameraControl.bounds = otherBounds;
             Camera.main.orthographicSize = cameraControl.originalHeight;
+        }
+        else if(cameraControl.bounds.otherBounds == this)
+        {
+            cameraControl.bounds.otherBounds = null;
         }
     }
 }
