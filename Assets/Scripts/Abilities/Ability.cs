@@ -8,11 +8,11 @@ public abstract class Ability : MonoBehaviour
     public BaseMovement owner;
     public LayerMask hitLayers;
     public float damage = 1f;
-
+    public BaseMovement.KnockbackInfo knockback;
     public float cooldown;
     float timer;
 
-    public BaseMovement.KnockbackInfo knockback;
+    public BaseMovement.KnockbackInfo recoilKnockback;
 
     public virtual void Start()
     {

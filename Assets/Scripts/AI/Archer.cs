@@ -22,8 +22,8 @@ public class Archer : Enemy
             if(selectedTarget == null)
                 SelectTarget();
             
-            RaycastHit2D targetHit = Physics2D.Linecast(firePoint.position, selectedTarget.position, collisionLayers);
-            if(targetHit.transform == selectedTarget)
+            RaycastHit2D targetHit = Physics2D.Linecast(transform.position, selectedTarget.position, collisionLayers);
+            if (targetHit.transform == selectedTarget)
             {
                 Vector2 targetDirection = selectedTarget.position - transform.position;
                 launcher.rotation = Quaternion.RotateTowards(launcher.rotation, Quaternion.LookRotation(Vector3.forward, targetDirection), launcherRotateSpeed * Time.deltaTime);

@@ -1,12 +1,13 @@
 using System.Collections;
-using UnityEditor.Experimental.GraphView;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class Dashing : MonoBehaviour
 {
+    [SerializeField] float inputWait = 0.05f;
     [SerializeField] float dashSpeed = 15;
     [SerializeField] float dashDuration = 0.25f;
-    [SerializeField] float dashCooldown = 0.5f;
+    [SerializeField] float dashCooldown = 0.1f;
     [SerializeField] float dashDrag = 0.5f;
     [SerializeField] SpriteRenderer dashIndicator;
 
@@ -27,31 +28,66 @@ public class Dashing : MonoBehaviour
                 {
                     tryDash = true;
                     if(canDash)
-                        StartCoroutine(Dash(moveInput));
+                        StartCoroutine(WaitForInput(moveInput));
                 }
                 else if(lastInput != Vector2.zero)
                 {
                     if(canDash)
-                        StartCoroutine(Dash(lastInput));
+                        StartCoroutine(WaitForInput(lastInput));
                 }
             }
             else
             {
                 tryDash = false;
             }
-            if (moveInput != Vector2.zero)
+            if(moveInput != Vector2.zero)
+            {
                 lastInput = moveInput;
+            }
         }
     }
 
-    IEnumerator Dash(Vector2 moveInput)
+    IEnumerator WaitForInput(Vector2 initialInput)
     {
+        canDash = false;
+        yield return new WaitForSecondsRealtime(inputWait);
+        Vector2 moveInput = Player.instance.input.Player.Move.ReadValue<Vector2>();
+
+        if(moveInput != Vector2.zero)
+        {
+            StartCoroutine(Dash(moveInput));
+        }
+        else
+        {
+            StartCoroutine(Dash(initialInput));
+        }
+    }
+
+    IEnumerator Dash(Vector2 moveInput, bool bunnyHop = false)
+    {
+        bool waveDash = moveInput.y < 0 && moveInput.x != 0;
         canDash = false;
         Player.instance.movementAudio.PlayDash();
         velocity = moveInput * dashSpeed;
         dashIndicator.color = Color.red;
-        yield return new WaitForSeconds(dashDuration);
-        if (!tryDash || Player.instance.IsGrounded)
+        if(moveInput.y < 0)
+        {
+            float timer = 0;
+            while(timer < dashDuration)
+            {
+                if (Player.instance.IsGrounded)
+                {
+                    break;
+                }
+                timer += Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            }
+        }
+        else
+        {
+            yield return new WaitForSeconds(dashDuration);
+        }
+        if (!bunnyHop && (!tryDash || Player.instance.IsGrounded))
         {
             // Stop dash momentum if we aren't bunny hopping
             velocity = Vector2.zero;
@@ -67,7 +103,9 @@ public class Dashing : MonoBehaviour
             }
         }
 
-        yield return new WaitForSeconds(dashCooldown - dashDuration);
+        if(!waveDash)
+            yield return new WaitForSeconds(dashCooldown);
+
         while (!Player.instance.IsGrounded)
         {
             if(Player.instance.wall != null || Mathf.Abs(velocity.x) < Mathf.Abs(Player.instance.moveVelocity.x))
@@ -76,12 +114,18 @@ public class Dashing : MonoBehaviour
             }
             else
             {
-                velocity.x = Mathf.Lerp(velocity.x, 0, Time.deltaTime * dashDrag);
+                velocity.x = Mathf.Lerp(velocity.x, 0, Time.fixedDeltaTime * dashDrag);
             }
             yield return new WaitForFixedUpdate();
         }
         velocity = Vector2.zero;
         dashIndicator.color = Color.green;
         canDash = true;
+        if (waveDash && Player.instance.input.Player.Jump.ReadValue<float>() >= 1f)
+        {
+            moveInput.y = 0;
+            moveInput.Normalize();
+            StartCoroutine(Dash(moveInput, true));
+        }
     }
 }

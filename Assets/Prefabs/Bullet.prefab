@@ -329,6 +329,11 @@ MonoBehaviour:
       m_Calls: []
   collidersInTrigger: 0
   healthAmount: -1
+  applyKnockback: 1
+  knockback:
+    velocity: {x: 8, y: 0}
+    duration: 0.1
+    drag: 0.4
   maxHealthAmount: 0
   uses: 1
   healthSystemCooldown: 0

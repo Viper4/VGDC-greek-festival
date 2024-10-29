@@ -944,10 +944,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 257
   damage: 1.5
-  cooldown: 0.4
   knockback:
-    velocity: {x: 6, y: 0}
+    velocity: {x: 12, y: 0}
     duration: 0.3
+    drag: 0.5
+  cooldown: 0.4
+  recoilKnockback:
+    velocity: {x: 6, y: 0}
+    duration: 0.25
     drag: 0.5
   hitbox: {fileID: 8861101491974765743}
 --- !u!1 &2172163241395074571
@@ -1978,8 +1982,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   damage: 1
-  cooldown: 1
   knockback:
+    velocity: {x: 0, y: 7}
+    duration: 0.2
+    drag: 0.4
+  cooldown: 1
+  recoilKnockback:
     velocity: {x: 0, y: 0}
     duration: 0
     drag: 0
@@ -4321,6 +4329,7 @@ GameObject:
   - component: {fileID: 8913142879628579271}
   - component: {fileID: 7853303006011264248}
   - component: {fileID: 5857443152791070776}
+  - component: {fileID: 4791427393741568531}
   - component: {fileID: 8188443158377112316}
   - component: {fileID: 7173882381029784539}
   - component: {fileID: 3310414760287612847}
@@ -4421,7 +4430,7 @@ MonoBehaviour:
   runSpeed: 10
   walkSpeed: 5
   crouchSpeed: 2
-  jumpSpeed: 15
+  jumpSpeed: 13
   moveVelocity: {x: 0, y: 0}
   rotateWithMovement: 1
   predictionTime: 0.5
@@ -4451,8 +4460,6 @@ MonoBehaviour:
   deaths: 0
   deathTime: 1
   statsUI: {fileID: 2629752551155893318}
-  groundPounding: 0
-  groundPoundSpeed: 18
   pauseUI: {fileID: 5315934267357499005}
 --- !u!114 &7853303006011264248
 MonoBehaviour:
@@ -4466,9 +4473,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff4c2a9da9aeaa64b8b66801f0a4ff43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dashSpeed: 25
+  inputWait: 0.05
+  dashSpeed: 30
   dashDuration: 0.25
-  dashCooldown: 0.5
+  dashCooldown: 0.25
   dashDrag: 0.5
   dashIndicator: {fileID: 350476612653116990}
   velocity: {x: 0, y: 0}
@@ -4489,6 +4497,20 @@ MonoBehaviour:
   slideTime: 2
   maxJumps: 3
   jumpPower: {x: 12, y: 18}
+--- !u!114 &4791427393741568531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9202725978975512340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed1fbeaf563a86b469e804deb73d68f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 32
+  velocity: 0
 --- !u!114 &8188443158377112316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4502,8 +4524,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   invincible: 0
-  maxHealth: 100
-  health: 100
+  maxHealth: 20
+  health: 20
   healthBarSprites:
   - {fileID: 2991465362390440683}
   - {fileID: 1666694651845179001}

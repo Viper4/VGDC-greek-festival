@@ -21,6 +21,21 @@ public class Enemy : BaseMovement
     [HideInInspector] public List<Transform> targets = new List<Transform>();
     [HideInInspector] public Transform selectedTarget = null;
 
+    private void FixedUpdate()
+    {
+        Vector2 newVelocity = Vector2.zero;
+        if(moveVelocity.x != 0)
+        {
+            newVelocity.x = moveVelocity.x;
+        }
+        if(knockbackVelocity.y == 0)
+        {
+            newVelocity.y = rb.velocity.y;
+        }
+        newVelocity += knockbackVelocity;
+        ApplyVelocity(newVelocity);
+    }
+
     private void Update()
     {
         MovementUpdate();
@@ -40,7 +55,6 @@ public class Enemy : BaseMovement
             {
                 moveVelocity = Vector2.zero;
             }
-            ApplyVelocity(new Vector2(moveVelocity.x, rb.velocity.y));
         }
     }
 

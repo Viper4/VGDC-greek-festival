@@ -201,11 +201,14 @@ public class Player : BaseMovement
 
     void Jump()
     {
-        if (Time.timeScale > 0 && Mathf.Round(rb.velocity.y * 100) / 100 == 0 && (IsGrounded || (canCoyoteJump && airTime <= coyoteTime)))
+        Debug.Log(IsGrounded);
+        Debug.Log(rb.velocity);
+        if(Time.timeScale > 0 && rb.velocity.y <= 0 && (IsGrounded || (canCoyoteJump && airTime <= coyoteTime)))
         {
             canCoyoteJump = false;
             if(IsGrounded)
                 PlayJumpSound();
+            Debug.Log("Jump");
             rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
         }
     }

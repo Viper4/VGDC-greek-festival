@@ -2061,6 +2061,11 @@ MonoBehaviour:
       m_Calls: []
   collidersInTrigger: 0
   healthAmount: -1
+  applyKnockback: 0
+  knockback:
+    velocity: {x: 0, y: 0}
+    duration: 0
+    drag: 0
   maxHealthAmount: 0
   uses: -1
   healthSystemCooldown: 0
@@ -4066,6 +4071,11 @@ MonoBehaviour:
       m_Calls: []
   collidersInTrigger: 0
   healthAmount: -1
+  applyKnockback: 0
+  knockback:
+    velocity: {x: 0, y: 0}
+    duration: 0
+    drag: 0
   maxHealthAmount: 0
   uses: -1
   healthSystemCooldown: 0
@@ -4794,7 +4804,8 @@ MonoBehaviour:
       m_Calls: []
   collidersInTrigger: 0
   lockCamera: 1
-  changeOrthoSize: 0
+  min: {x: 0, y: 0}
+  max: {x: 0, y: 0}
 --- !u!61 &1769421419
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6147,11 +6158,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3055023435420540101, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 46.02
+      value: 32.3
       objectReference: {fileID: 0}
     - target: {fileID: 3055023435420540101, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: 21.3
       objectReference: {fileID: 0}
     - target: {fileID: 3055023435420540101, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6220,6 +6231,18 @@ PrefabInstance:
     - target: {fileID: 7694236456005743555, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7853303006011264248, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
+      propertyPath: waitFrames
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8243280492254820738, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
+      propertyPath: knockback.velocity.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8243280492254820738, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
+      propertyPath: knockback.velocity.y
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8413491891202077799, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: m_SizeDelta.x

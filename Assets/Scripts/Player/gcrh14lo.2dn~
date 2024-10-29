@@ -30,6 +30,8 @@ public class Player : BaseMovement
     private bool dying = false;
     [SerializeField] StatsUI statsUI;
     
+    public bool groundPounding;
+    [SerializeField] private float groundPoundSpeed = 18f;
     [SerializeField] PauseUI pauseUI;
 
     // Called before Start()
@@ -120,10 +122,10 @@ public class Player : BaseMovement
                     newVelocity.y = -wallJumping.slideSpeed;
             }
 
-            if (groundPound.velocity != 0)
+            if (groundPound.)
             {
-                newVelocity.x = 0;
-                newVelocity.y = groundPound.velocity;
+                if (newVelocity.y < -groundPoundSpeed)
+                    newVelocity.y = -groundPoundSpeed;
             }
 
             newVelocity += knockbackVelocity;
@@ -184,9 +186,20 @@ public class Player : BaseMovement
             movementAudio.PlayCrouch();
             transform.localScale = new Vector3(1, 0.5f, 1);
             transform.position -= new Vector3(0, 0.5f);
-            if (!IsGrounded && groundPound.velocity == 0)
+            if (!IsGrounded && groundPound.velocity == Vector2.zero)
                 groundPound.StartGroundPound();
         }
+    }
+
+    IEnumerator GroundPound(){
+        while(!IsGrounded){
+            groundPounding = true;
+            moveVelocity.y = -groundPoundSpeed;
+            moveVelocity.x = 0f;
+            rb.velocity = moveVelocity;
+            yield return new WaitForEndOfFrame();
+        }
+        if(IsGrounded) groundPounding = false;
     }
 
     void Uncrouch(InputAction.CallbackContext context)
@@ -201,7 +214,7 @@ public class Player : BaseMovement
 
     void Jump()
     {
-        if (Time.timeScale > 0 && Mathf.Round(rb.velocity.y * 100) / 100 == 0 && (IsGrounded || (canCoyoteJump && airTime <= coyoteTime)))
+        if(Time.timeScale > 0 && rb.velocity.y <= 0 && (IsGrounded || (canCoyoteJump && airTime <= coyoteTime)))
         {
             canCoyoteJump = false;
             if(IsGrounded)
