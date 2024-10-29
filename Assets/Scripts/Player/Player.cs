@@ -201,7 +201,7 @@ public class Player : BaseMovement
 
     void Jump()
     {
-        if (Time.timeScale > 0 && Mathf.Round(rb.velocity.y * 100) / 100 == 0 && (IsGrounded || (canCoyoteJump && airTime <= coyoteTime)))
+        if (Time.timeScale > 0 && Mathf.Round(rb.velocity.y * 100) / 100 <= 0 && (IsGrounded || (canCoyoteJump && airTime <= coyoteTime)))
         {
             canCoyoteJump = false;
             if(IsGrounded)
