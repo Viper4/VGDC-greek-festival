@@ -11,7 +11,7 @@ public class NailAttack : Ability
         Player.instance.input.Player.Nail.performed += OnInput;
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
         Player.instance.input.Player.Nail.performed -= OnInput;
     }
@@ -26,13 +26,19 @@ public class NailAttack : Ability
             {
                 healthSystem.AddHealth(-damage, 0, true);
             }
+            if (hits[i].TryGetComponent(out BaseMovement baseMovement))
+            {
+                BaseMovement.KnockbackInfo knockbackInfo = knockback;
+                knockbackInfo.velocity = hitbox.transform.right * knockbackInfo.velocity.x + hitbox.transform.up * knockbackInfo.velocity.y;
+                baseMovement.ApplyKnockback(knockbackInfo, true);
+            }
         }
 
         if (numHits > 0)
         {
             Vector2 direction = -(hitbox.transform.position - transform.position).normalized;
             direction.y = 0;
-            owner.ApplyKnockback(new BaseMovement.KnockbackInfo(direction * knockback.velocity, knockback.duration, knockback.drag));
+            owner.ApplyKnockback(new BaseMovement.KnockbackInfo(direction * recoilKnockback.velocity, recoilKnockback.duration, recoilKnockback.drag), true);
         }
     }
 }

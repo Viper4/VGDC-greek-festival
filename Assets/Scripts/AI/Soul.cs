@@ -14,6 +14,7 @@ public class Soul : MonoBehaviour
     [SerializeField] float followSpeed = 3.5f;
     [SerializeField] float followRadius = 5f;
     [SerializeField] Color followingColor;
+    [SerializeField, ColorUsage(true, true)] Color followingEmission;
 
     Transform ground;
 
@@ -76,6 +77,7 @@ public class Soul : MonoBehaviour
         simpleBob.enabled = false;
         this.target = target;
         spriteRenderer.color = followingColor;
+        spriteRenderer.material.SetColor("_EmissionColor", followingEmission);
     }
 
     public void ResetSoul()
@@ -98,9 +100,11 @@ public class Soul : MonoBehaviour
         // Fade spirit's sprite color alpha to 0 and delete it after
         float fadeTimer = 0;
         Color fadeStartColor = spriteRenderer.color;
+        Color emissionStartColor = spriteRenderer.material.GetColor("_EmissionColor");
         while(fadeTimer < fadeTime)
         {
             spriteRenderer.color = Color.Lerp(fadeStartColor, Color.clear, fadeTimer / fadeTime);
+            spriteRenderer.material.SetColor("_EmissionColor", Color.Lerp(emissionStartColor, Color.clear, fadeTimer / fadeTime));
             fadeTimer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }

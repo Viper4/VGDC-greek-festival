@@ -18,6 +18,7 @@ TagManager:
   - Enemy
   - Trap
   - Projectile
+  - No Slide
   layers:
   - Default
   - TransparentFX
@@ -52,8 +53,14 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 739056199
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Player
+    uniqueID: 2922354555
     locked: 0
   - name: CameraSortingLayer
     uniqueID: 271720529

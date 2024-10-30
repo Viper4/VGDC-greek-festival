@@ -77,6 +77,8 @@ public class BaseMovement : MonoBehaviour
     }
     [HideInInspector] public Vector2 knockbackVelocity;
     Coroutine knockbackRoutine;
+    public float immunityTime = 0.3f;
+    float immunityTimer = 0;
 
     [SerializeField] string[] nonWallTags = new string[] { "Trap", "Enemy", "Projectile", "Soul" };
     HashSet<string> nonWallTagsSet = new HashSet<string>();
@@ -105,7 +107,7 @@ public class BaseMovement : MonoBehaviour
         gravityScale = rb.gravityScale;
     }
 
-    public virtual void MovementUpdate()
+    public void MovementUpdate()
     {
         if (Time.timeScale > 0)
         {
@@ -129,6 +131,7 @@ public class BaseMovement : MonoBehaviour
                     footstepTimer += Time.deltaTime;
                 }
             }
+            immunityTimer += Time.deltaTime;
         }
     }
 
@@ -186,11 +189,16 @@ public class BaseMovement : MonoBehaviour
         }
     }
 
-    public void ApplyKnockback(KnockbackInfo knockback)
+    public void ApplyKnockback(KnockbackInfo knockback, bool overrideImmunity)
     {
-        if (knockbackRoutine != null)
-            StopCoroutine(knockbackRoutine);
-        knockbackRoutine = StartCoroutine(Knockback(knockback));
+        if(overrideImmunity || immunityTimer > immunityTime)
+        {
+            if (knockbackRoutine != null)
+                StopCoroutine(knockbackRoutine);
+            knockbackRoutine = StartCoroutine(Knockback(knockback));
+            if(!overrideImmunity)
+                immunityTime = 0;
+        }
     }
 
     private IEnumerator Knockback(KnockbackInfo knockback)

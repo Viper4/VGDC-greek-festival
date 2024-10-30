@@ -60,18 +60,18 @@ public class Trigger : MonoBehaviour
         onCollisionExit?.Invoke(collision);
     }
 
-    private void OnTriggerEnter2D(Collider2D collider)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (tagHashSet.Count == 0 || tagHashSet.Contains(collider.tag))
-            TriggerEnter(collider);
-        onAnyTriggerEnter?.Invoke(collider);
+        if (tagHashSet.Count == 0 || tagHashSet.Contains(other.tag))
+            TriggerEnter(other);
+        onAnyTriggerEnter?.Invoke(other);
     }
 
-    private void OnTriggerExit2D(Collider2D collider)
+    private void OnTriggerExit2D(Collider2D other)
     {
-        if (tagHashSet.Count == 0 || tagHashSet.Contains(collider.tag))
-            TriggerExit(collider);
-        onAnyTriggerExit?.Invoke(collider);
+        if (tagHashSet.Count == 0 || tagHashSet.Contains(other.tag))
+            TriggerExit(other);
+        onAnyTriggerExit?.Invoke(other);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

@@ -711,7 +711,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 100}
+  m_SizeDelta: {x: 75, y: 100}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &3050699151691286561
 MonoBehaviour:
@@ -943,11 +943,15 @@ MonoBehaviour:
   hitLayers:
     serializedVersion: 2
     m_Bits: 257
-  damage: 1
-  cooldown: 3
+  damage: 1.5
   knockback:
-    velocity: {x: 6, y: 0}
+    velocity: {x: 12, y: 0}
     duration: 0.3
+    drag: 0.5
+  cooldown: 0.4
+  recoilKnockback:
+    velocity: {x: 6, y: 0}
+    duration: 0.25
     drag: 0.5
   hitbox: {fileID: 8861101491974765743}
 --- !u!1 &2172163241395074571
@@ -1606,8 +1610,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1372612741
+  m_SortingLayer: 1
   m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
   m_Color: {r: 0, g: 1, b: 0, a: 1}
@@ -1691,7 +1695,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 271720529
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1722,7 +1726,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7694236456005743555
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1738,9 +1742,9 @@ RectTransform:
   - {fileID: 8413491891202077799}
   m_Father: {fileID: 8395551047884023504}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: -50}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &5263329918767710087
@@ -1978,8 +1982,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   damage: 1
-  cooldown: 1
   knockback:
+    velocity: {x: 0, y: 7}
+    duration: 0.2
+    drag: 0.4
+  cooldown: 1
+  recoilKnockback:
     velocity: {x: 0, y: 0}
     duration: 0
     drag: 0
@@ -2462,7 +2470,7 @@ Camera:
   far clip plane: 1000
   field of view: 165
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 14
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2500,6 +2508,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1399390001140983904}
   followSpeed: 6
+  bounds: {fileID: 0}
+  lockedPosition: {x: 0, y: 0}
+  locked: 0
+  originalHeight: 0
+  originalWidth: 0
 --- !u!114 &2982843961935162859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2523,7 +2536,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -2614,8 +2627,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1372612741
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 82ead93cb7cef7149a5d9efdcbecd3c8, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
@@ -3280,8 +3293,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1372612741
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: db52d143c00b3a743b2b764857eeafe0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -4289,8 +4302,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1372612741
+  m_SortingLayer: 1
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 82ead93cb7cef7149a5d9efdcbecd3c8, type: 3}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
@@ -4316,6 +4329,7 @@ GameObject:
   - component: {fileID: 8913142879628579271}
   - component: {fileID: 7853303006011264248}
   - component: {fileID: 5857443152791070776}
+  - component: {fileID: 4791427393741568531}
   - component: {fileID: 8188443158377112316}
   - component: {fileID: 7173882381029784539}
   - component: {fileID: 3310414760287612847}
@@ -4366,7 +4380,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 50bc0fb70338d354b91aefcfe6c4b35f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4384,8 +4398,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1372612741
+  m_SortingLayer: 1
   m_SortingOrder: 1
   m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -4416,11 +4430,26 @@ MonoBehaviour:
   runSpeed: 10
   walkSpeed: 5
   crouchSpeed: 2
-  jumpSpeed: 15
+  jumpSpeed: 13
   moveVelocity: {x: 0, y: 0}
+  rotateWithMovement: 1
+  predictionTime: 0.5
+  nonGroundTags:
+  - Trap
+  - Enemy
+  - Projectile
+  - Soul
+  fallCheckDistance: 3
   climbSpeed: 4
   movementAudio: {fileID: 7173882381029784539}
   knockbackVelocity: {x: 0, y: 0}
+  immunityTime: 0.3
+  nonWallTags:
+  - Trap
+  - Enemy
+  - Projectile
+  - Soul
+  - No Slide
   wall: {fileID: 0}
   collisionLayers:
     serializedVersion: 2
@@ -4444,9 +4473,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff4c2a9da9aeaa64b8b66801f0a4ff43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dashSpeed: 25
+  inputWait: 0.05
+  dashSpeed: 30
   dashDuration: 0.25
-  dashCooldown: 0.5
+  dashCooldown: 0.25
   dashDrag: 0.5
   dashIndicator: {fileID: 350476612653116990}
   velocity: {x: 0, y: 0}
@@ -4467,6 +4497,20 @@ MonoBehaviour:
   slideTime: 2
   maxJumps: 3
   jumpPower: {x: 12, y: 18}
+--- !u!114 &4791427393741568531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9202725978975512340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed1fbeaf563a86b469e804deb73d68f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 32
+  velocity: 0
 --- !u!114 &8188443158377112316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4479,11 +4523,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91137798dd1cf054783e9ee646d3b911, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 3
-  health: 3
+  invincible: 0
+  maxHealth: 20
+  health: 20
   healthBarSprites:
   - {fileID: 2991465362390440683}
   - {fileID: 1666694651845179001}
+  bossBarImage: {fileID: 0}
+  bossBarWidth: 0
   healthBarFadeSpeed: 1
   healthBarAlwaysVisible: 1
   healthBarScale: {x: 3, y: 0.3, z: 1}
@@ -5051,7 +5098,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8982149559847455679, guid: 89a316f84eca4084784f9e9915481d73, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8982149559847455679, guid: 89a316f84eca4084784f9e9915481d73, type: 3}
       propertyPath: m_AnchorMin.x
@@ -5059,7 +5106,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8982149559847455679, guid: 89a316f84eca4084784f9e9915481d73, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8982149559847455679, guid: 89a316f84eca4084784f9e9915481d73, type: 3}
       propertyPath: m_SizeDelta.x
@@ -5099,11 +5146,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8982149559847455679, guid: 89a316f84eca4084784f9e9915481d73, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 37.5
       objectReference: {fileID: 0}
     - target: {fileID: 8982149559847455679, guid: 89a316f84eca4084784f9e9915481d73, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 8982149559847455679, guid: 89a316f84eca4084784f9e9915481d73, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

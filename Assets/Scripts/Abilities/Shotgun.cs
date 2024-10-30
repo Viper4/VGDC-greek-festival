@@ -15,7 +15,7 @@ public class Shotgun : Ability
         Player.instance.input.Player.Ability1.performed += OnInput;
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
         Player.instance.input.Player.Ability1.performed -= OnInput;
     }
@@ -30,6 +30,10 @@ public class Shotgun : Ability
             Quaternion launchRotation = Quaternion.AngleAxis((i - projectileCount / 2) * spreadAngle + launchOffset.eulerAngles.z, launchOffset.forward);
             Collider2D clone = Instantiate(projectilePrefab, launchOffset.position, launchRotation).GetComponent<Collider2D>();
             clone.GetComponent<Rigidbody2D>().velocity = initialVelocity + clone.transform.up * projectileSpeed;
+            if(clone.TryGetComponent(out HealthTrigger healthTrigger))
+            {
+                healthTrigger.knockback = knockback;
+            }
             clones[i] = clone;
             Physics2D.IgnoreCollision(owner._collider, clone);
 

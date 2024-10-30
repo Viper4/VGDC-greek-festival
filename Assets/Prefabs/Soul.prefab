@@ -56,7 +56,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: cbf489bdb574e524bbb8ebeef61b63c9, type: 2}
+  - {fileID: 2100000, guid: 4e9669e550f83af4ca1d46e392751607, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
-  m_Color: {r: 0.338163, g: 0.6075471, b: 0.6075471, a: 0.78431374}
+  m_Color: {r: 0, g: 1, b: 1, a: 0.78431374}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -175,7 +175,8 @@ MonoBehaviour:
   target: {fileID: 0}
   followSpeed: 1
   followRadius: 4
-  followingColor: {r: 0, g: 1, b: 1, a: 0.54901963}
+  followingColor: {r: 0.31479523, g: 0.6235342, b: 0.6754716, a: 0.54901963}
+  followingEmission: {r: 0, g: 3.5137234, b: 5.9921565, a: 0.54901963}
   fadeTime: 1
   simpleBob: {fileID: 3584296898245550529}
 --- !u!114 &3584296898245550529

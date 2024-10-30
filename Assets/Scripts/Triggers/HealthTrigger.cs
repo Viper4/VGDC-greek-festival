@@ -8,6 +8,8 @@ public class HealthTrigger : Trigger
     AudioSource audioSource;
 
     [SerializeField] float healthAmount = 1;
+    [SerializeField] bool applyKnockback = false;
+    public BaseMovement.KnockbackInfo knockback;
     [SerializeField] float maxHealthAmount = 0;
     [SerializeField] int uses = 1;
     [SerializeField] float healthSystemCooldown = 0f;
@@ -34,6 +36,12 @@ public class HealthTrigger : Trigger
     {
         if (canUse)
         {
+            if (applyKnockback && triggerHealthSystem.TryGetComponent(out BaseMovement baseMovement))
+            {
+                BaseMovement.KnockbackInfo knockbackInfo = knockback;
+                knockbackInfo.velocity = transform.right * knockbackInfo.velocity.x + transform.up * knockbackInfo.velocity.y;
+                baseMovement.ApplyKnockback(knockbackInfo, true);
+            }
             bool changedMaxHealth = triggerHealthSystem.AddMaxHealth(maxHealthAmount, healthSystemCooldown, overrideHealthSystemCooldown);
             bool changedHealth = triggerHealthSystem.AddHealth(healthAmount, healthSystemCooldown, overrideHealthSystemCooldown);
             if (changedHealth || changedMaxHealth)
@@ -50,8 +58,8 @@ public class HealthTrigger : Trigger
 
     private void FixedUpdate()
     {
-        // If the player is still triggering this, keep using the health trigger
-        if (triggerHealthSystem != null)
+        // If the target is still triggering this, keep using the health trigger
+        if (triggerHealthSystem != null && cooldown > 0)
         {
             Use();
         }
