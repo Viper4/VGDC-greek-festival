@@ -2,7 +2,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class BossOne : Enemy
+public class BossOne : BaseMovement
 {
     enum BossState{
         Slash, Jump, Charge, Idle
@@ -21,8 +21,11 @@ public class BossOne : Enemy
     [SerializeField] float arcTime = 3.0f;
 
     [SerializeField] KnockbackInfo defaultKnockback;
+    [SerializeField] float defaultBodyDamage = 15f;
     [SerializeField] KnockbackInfo jumpKnockback;
+    [SerializeField] float jumpDamage = 25f;
     [SerializeField] KnockbackInfo chargeKnockback;
+    [SerializeField] float chargeDamage = 25f;
 
     [SerializeField] float chargeSpeed = 6f;
 
@@ -30,10 +33,13 @@ public class BossOne : Enemy
 
     [SerializeField] GameObject shield;
     [SerializeField] Animator animator;
+    HealthTrigger healthTrigger;
+
 
     public override void Start()
     {
         base.Start();
+        healthTrigger = GetComponent<HealthTrigger>();
         originalIdleTime = idleTime;        
         StartCoroutine(StartIdle());
     }
@@ -47,6 +53,7 @@ public class BossOne : Enemy
     }
 
     IEnumerator StartIdle(){
+        healthTrigger.healthAmount = -defaultBodyDamage;
         yield return new WaitForEndOfFrame();
         Physics2D.IgnoreCollision(Player.instance._collider, _collider, false);
         shield.GetComponent<Renderer>().material.color = Color.white;
@@ -149,6 +156,7 @@ public class BossOne : Enemy
 
     IEnumerator Charge()
     {
+        healthTrigger.healthAmount = -chargeDamage;
         RotateTowardsPlayer();
         moveVelocity = transform.right * chargeSpeed;
         float chargeTimer = 0;
@@ -170,6 +178,7 @@ public class BossOne : Enemy
     IEnumerator Jump()
     {
         Physics2D.IgnoreCollision(Player.instance._collider, _collider, true);
+        healthTrigger.healthAmount = -jumpDamage;
         float distanceX = Player.instance.transform.position.x - transform.position.x;
         float distanceY = Player.instance.transform.position.y - transform.position.y;
         float velocityX = distanceX / arcTime;

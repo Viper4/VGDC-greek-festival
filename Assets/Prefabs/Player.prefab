@@ -4456,7 +4456,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 257
   coyoteTime: 0.35
-  healing: {fileID: 2186101770137282216}
   followingSouls: []
   soulsCollected: 0
   deaths: 0
@@ -4499,6 +4498,7 @@ MonoBehaviour:
   slideTime: 2
   maxJumps: 3
   jumpPower: {x: 12, y: 18}
+  regularJumpBlockTime: 0.25
 --- !u!114 &4791427393741568531
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4525,10 +4525,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91137798dd1cf054783e9ee646d3b911, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  originalMaxHealth: 0
   invincible: 0
-  maxHealth: 20
-  health: 20
+  originalMaxHealth: 0
+  maxHealth: 100
+  health: 100
   healthBarSprites:
   - {fileID: 2991465362390440683}
   - {fileID: 1666694651845179001}
@@ -5090,7 +5090,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unsavedHealing: 0
   InHealerRange: 0
-  target: {fileID: 0}
+  target: {fileID: 8188443158377112316}
   maxOverheal: 120
   OverhealTime: 60
 --- !u!1001 &5702451750774449067

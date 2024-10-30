@@ -24,13 +24,17 @@ public class Dashing : MonoBehaviour
             {
                 if (moveInput != Vector2.zero)
                 {
-                    if(canDash)
+                    if (canDash)
+                    {
                         StartCoroutine(WaitForInput(moveInput));
+                    }
                 }
                 else if(lastInput != Vector2.zero)
                 {
-                    if(canDash)
+                    if (canDash)
+                    {
                         StartCoroutine(WaitForInput(lastInput));
+                    }
                 }
             }
             if(moveInput != Vector2.zero)
@@ -44,6 +48,7 @@ public class Dashing : MonoBehaviour
     {
         bool jumped = Player.instance.input.Player.Jump.ReadValue<float>() >= 1f;
         canDash = false;
+        dashIndicator.color = Color.red;
         yield return new WaitForSecondsRealtime(inputWait);
         Vector2 moveInput = Player.instance.input.Player.Move.ReadValue<Vector2>();
 
@@ -62,10 +67,8 @@ public class Dashing : MonoBehaviour
     IEnumerator Dash(Vector2 moveInput, bool bunnyHop)
     {
         bool waveDash = moveInput.y < 0 && moveInput.x != 0;
-        canDash = false;
         Player.instance.movementAudio.PlayDash();
         velocity = moveInput * dashSpeed;
-        dashIndicator.color = Color.red;
         if (moveInput.y < 0)
         {
             // Stop downward dash if we hit the ground
@@ -86,6 +89,8 @@ public class Dashing : MonoBehaviour
             float timer = 0;
             while (timer < dashDuration)
             {
+                if (Player.instance.input.Player.Jump.ReadValue<float>() >= 1f)
+                    bunnyHop = true;
                 if (Player.instance.wall != null)
                 {
                     break;

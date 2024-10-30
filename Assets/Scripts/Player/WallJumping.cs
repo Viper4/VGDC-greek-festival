@@ -8,7 +8,7 @@ public class WallJumping : MonoBehaviour
     { 
         get
         {
-            return Player.instance.wall != null && Player.instance.rb.velocity.y < 0 && slideTimer > 0;
+            return Player.instance.wall != null && !Player.instance.IsGrounded && slideTimer > 0;
         }
     }
     public bool IsJumping { get; set; }
@@ -19,6 +19,10 @@ public class WallJumping : MonoBehaviour
     [SerializeField] int maxJumps = 3;
     int jumpsLeft;
     [SerializeField] Vector2 jumpPower = new Vector2(10f, 12f);
+
+    [SerializeField] float regularJumpBlockTime = 0.5f;
+    bool canJump = true;
+    Coroutine blockJumpRoutine;
 
     // Start is called before the first frame update
     void Start()
@@ -34,7 +38,7 @@ public class WallJumping : MonoBehaviour
             // While player holds space
             if (Player.instance.input.Player.Jump.ReadValue<float>() >= 1f)
             {
-                if (IsSliding && jumpsLeft > 0 && !IsJumping)
+                if (canJump && IsSliding && jumpsLeft > 0 && !IsJumping)
                     StartCoroutine(WallJump());
             }
             if (IsSliding)
@@ -59,5 +63,19 @@ public class WallJumping : MonoBehaviour
     {
         slideTimer = slideTime;
         jumpsLeft = maxJumps;
+    }
+
+    public void BlockWallJump()
+    {
+        if (blockJumpRoutine != null)
+            StopCoroutine(blockJumpRoutine);
+        blockJumpRoutine = StartCoroutine(BlockWallJumpRoutine());
+    }
+
+    IEnumerator BlockWallJumpRoutine()
+    {
+        canJump = false;
+        yield return new WaitForSeconds(regularJumpBlockTime);
+        canJump = true;
     }
 }

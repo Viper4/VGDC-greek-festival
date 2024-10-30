@@ -6,8 +6,8 @@ using UnityEngine.Events;
 
 public class HealthSystem : MonoBehaviour
 {
-    public float originalMaxHealth;
     [SerializeField] bool invincible = false;
+    [HideInInspector] public float originalMaxHealth;
     public float maxHealth = 10;
     public float health;
     [SerializeField] SpriteRenderer[] healthBarSprites;

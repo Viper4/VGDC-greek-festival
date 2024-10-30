@@ -25,10 +25,7 @@ public class NailAttack : Ability
             if (hits[i].TryGetComponent(out HealthSystem healthSystem))
             {
                 healthSystem.AddHealth(-damage, 0, true);
-                if (healthSystem.health <= 0){
-                    Player.instance.healing.unsavedHealing += healthSystem.KillHealAmount;
-                    Debug.Log(Player.instance.healing.unsavedHealing);
-                }
+                Player.instance.CheckKill(healthSystem);
             }
             if (hits[i].TryGetComponent(out BaseMovement baseMovement))
             {

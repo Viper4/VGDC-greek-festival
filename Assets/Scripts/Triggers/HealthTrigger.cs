@@ -7,7 +7,7 @@ public class HealthTrigger : Trigger
 {
     AudioSource audioSource;
 
-    [SerializeField] float healthAmount = 1;
+    public float healthAmount = 1;
     [SerializeField] bool applyKnockback = false;
     public BaseMovement.KnockbackInfo knockback;
     [SerializeField] float maxHealthAmount = 0;
@@ -16,6 +16,7 @@ public class HealthTrigger : Trigger
     [SerializeField] float cooldown = 0.5f;
     [SerializeField] bool overrideHealthSystemCooldown = false;
     HealthSystem triggerHealthSystem;
+    [HideInInspector] public bool player = false;
 
     bool canUse = true;
 
@@ -46,6 +47,8 @@ public class HealthTrigger : Trigger
             bool changedHealth = triggerHealthSystem.AddHealth(healthAmount, healthSystemCooldown, overrideHealthSystemCooldown);
             if (changedHealth || changedMaxHealth)
             {
+                if (player)
+                    Player.instance.CheckKill(triggerHealthSystem);
                 if (audioSource != null)
                     audioSource.Play();
                 uses--;

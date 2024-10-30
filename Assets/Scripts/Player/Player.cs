@@ -20,7 +20,7 @@ public class Player : BaseMovement
     private WallJumping wallJumping;
     private Dashing dashing;
     private GroundPound groundPound;
-    public Healing healing;
+    private Healing healing;
 
     // Checkpoints, souls, and stats
     private Checkpoint lastCheckpoint;
@@ -30,8 +30,9 @@ public class Player : BaseMovement
     [SerializeField] float deathTime = 1f;
     private bool dying = false;
     [SerializeField] StatsUI statsUI;
-    
     [SerializeField] PauseUI pauseUI;
+
+    private HealthSystem previousKill;
 
     // Called before Start()
     private void OnEnable()
@@ -85,6 +86,7 @@ public class Player : BaseMovement
         wallJumping = GetComponent<WallJumping>();
         dashing = GetComponent<Dashing>();
         groundPound = GetComponent<GroundPound>();
+        healing = GetComponent<Healing>();
     }
 
     // Called every time the Physics engine updates (not tied to framerate, fixed rate)
@@ -212,6 +214,7 @@ public class Player : BaseMovement
             if(IsGrounded)
                 PlayJumpSound();
             rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
+            wallJumping.BlockWallJump();
         }
     }
 
@@ -256,6 +259,16 @@ public class Player : BaseMovement
         dying = false;
         IsGrounded = false;
         healthSystem.ResetHealth();
+    }
+
+    public void CheckKill(HealthSystem healthSystem)
+    {
+        if (previousKill != healthSystem && healthSystem.health <= 0)
+        {
+            healing.unsavedHealing += healthSystem.KillHealAmount;
+            previousKill = healthSystem;
+            Debug.Log(healing.unsavedHealing);
+        }
     }
 
     public void SetCheckpoint(Checkpoint checkpoint)

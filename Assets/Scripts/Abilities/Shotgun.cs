@@ -33,6 +33,7 @@ public class Shotgun : Ability
             if(clone.TryGetComponent(out HealthTrigger healthTrigger))
             {
                 healthTrigger.knockback = knockback;
+                healthTrigger.player = true;
             }
             clones[i] = clone;
             Physics2D.IgnoreCollision(owner._collider, clone);
