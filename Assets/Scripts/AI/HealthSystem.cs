@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 public class HealthSystem : MonoBehaviour
 {
-    float originalMaxHealth;
+    public float originalMaxHealth;
     [SerializeField] bool invincible = false;
     public float maxHealth = 10;
     public float health;
@@ -24,6 +24,8 @@ public class HealthSystem : MonoBehaviour
     [SerializeField] UnityEvent onDeath;
     bool canUpdateHealth = true;
     bool immune = false;
+
+    public float KillHealAmount;
 
     IEnumerator Start()
     {
@@ -65,84 +67,116 @@ public class HealthSystem : MonoBehaviour
         canUpdateHealth = true;
     }
 
-    public bool AddHealth(float amount, float cooldown, bool overrideCooldown = false)
+    private void HealthUpdate()
+{
+    if (health <= 0)
     {
-        if (invincible || immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
-            return false;
-        float previousHealth = health;
-        health += amount;
-        if (health <= 0)
-        {
-            health = 0;
-            onDeath?.Invoke();
-        }
-        else if (health > maxHealth)
-        {
-            health = maxHealth;
-        }
-        if (health == previousHealth)
-            return false;
-        StartCoroutine(HealthCooldown(cooldown));
-        float healthPercent = health / maxHealth;
-        onHealthUpdate?.Invoke(healthPercent);
-        if (healthBarSprites.Length > 0)
-        {
-            healthBarSprites[0].transform.localScale = new Vector3(healthPercent * healthBarScale.x, healthBarScale.y, healthBarScale.z);
-            // Popup health bar for 1 second then fade it out
-            foreach (SpriteRenderer sprite in healthBarSprites)
-            {
-                Color newColor = sprite.color;
-                newColor.a = 1;
-                sprite.color = newColor;
-            }
-            if (!PlayerNearby)
-                FadeHealthBarOut(1f);
-        }
-        if(bossBarImage != null)
-        {
-            bossBarImage.rectTransform.sizeDelta = new Vector2(healthPercent * bossBarWidth, bossBarImage.rectTransform.sizeDelta.y);
-        }
-        return true;
+        health = 0;
+        onDeath?.Invoke();
     }
-
-    public bool AddMaxHealth(float amount, float cooldown, bool overrideCooldown = false)
+    else if (health > maxHealth)
     {
-        if (invincible || immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
-            return false;
-        StartCoroutine(HealthCooldown(cooldown));
-        maxHealth += amount;
-        if (maxHealth < 0)
-        {
-            maxHealth = 0;
-            onDeath?.Invoke();
-        }
-        if (health > maxHealth)
-            health = maxHealth;
-        float healthPercent = health / maxHealth;
-        onMaxHealthUpdate?.Invoke(maxHealth);
-        onHealthUpdate?.Invoke(healthPercent);
-
-        if(healthBarSprites.Length > 0)
-        {
-            healthBarSprites[0].transform.localScale = new Vector3(healthPercent * healthBarScale.x, healthBarScale.y, healthBarScale.z);
-
-            // Popup health bar for 1 second then fade it out
-            foreach (SpriteRenderer sprite in healthBarSprites)
-            {
-                Color newColor = sprite.color;
-                newColor.a = 1;
-                sprite.color = newColor;
-            }
-            if(!PlayerNearby)
-                FadeHealthBarOut(1f);
-        }
-        if (bossBarImage != null)
-        {
-            bossBarImage.rectTransform.sizeDelta = new Vector2(healthPercent * bossBarWidth, bossBarImage.rectTransform.sizeDelta.y);
-        }
-        return true;
+        health = maxHealth;
     }
+    float healthPercent = health / maxHealth;
+    onHealthUpdate?.Invoke(healthPercent);
+    if (healthBarSprites.Length > 0)
+    {
+        healthBarSprites[0].transform.localScale = new Vector3(healthPercent * healthBarScale.x, healthBarScale.y, healthBarScale.z);
+        // Popup health bar for 1 second then fade it out
+        foreach (SpriteRenderer sprite in healthBarSprites)
+        {
+            Color newColor = sprite.color;
+            newColor.a = 1;
+            sprite.color = newColor;
+        }
+        if (!PlayerNearby)
+            FadeHealthBarOut(1f);
+    }
+    if (bossBarImage != null)
+    {
+        bossBarImage.rectTransform.sizeDelta = new Vector2(healthPercent * bossBarWidth, bossBarImage.rectTransform.sizeDelta.y);
+    }
+}
 
+public bool AddHealth(float amount, float cooldown, bool overrideCooldown = false)
+{
+    if (invincible || immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
+        return false;
+    float previousHealth = health;
+    health += amount;
+    if (health == previousHealth)
+        return false;
+    StartCoroutine(HealthCooldown(cooldown));
+    HealthUpdate();
+    return true;
+}
+
+public bool SetHealth(float amount, float cooldown, bool overrideCooldown = false)
+{
+    if (invincible || immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
+        return false;
+    float previousHealth = health;
+    health = amount;
+    if (health == previousHealth)
+        return false;
+    StartCoroutine(HealthCooldown(cooldown));
+    HealthUpdate();
+    return true;
+}
+
+private void MaxHealthUpdate()
+{
+    if (maxHealth < 0)
+    {
+        maxHealth = 0;
+        onDeath?.Invoke();
+    }
+    if (health > maxHealth)
+        health = maxHealth;
+    float healthPercent = health / maxHealth;
+    onMaxHealthUpdate?.Invoke(maxHealth);
+    onHealthUpdate?.Invoke(healthPercent);
+
+    if (healthBarSprites.Length > 0)
+    {
+        healthBarSprites[0].transform.localScale = new Vector3(healthPercent * healthBarScale.x, healthBarScale.y, healthBarScale.z);
+
+        // Popup health bar for 1 second then fade it out
+        foreach (SpriteRenderer sprite in healthBarSprites)
+        {
+            Color newColor = sprite.color;
+            newColor.a = 1;
+            sprite.color = newColor;
+        }
+        if (!PlayerNearby)
+            FadeHealthBarOut(1f);
+    }
+    if (bossBarImage != null)
+    {
+        bossBarImage.rectTransform.sizeDelta = new Vector2(healthPercent * bossBarWidth, bossBarImage.rectTransform.sizeDelta.y);
+    }
+}
+
+public bool AddMaxHealth(float amount, float cooldown, bool overrideCooldown = false)
+{
+    if (invincible || immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
+        return false;
+    StartCoroutine(HealthCooldown(cooldown));
+    maxHealth += amount;
+    MaxHealthUpdate();
+    return true;
+}
+
+public bool SetMaxHealth(float amount, float cooldown, bool overrideCooldown = false)
+{
+    if (invincible || immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
+        return false;
+    StartCoroutine(HealthCooldown(cooldown));
+    maxHealth = amount;
+    MaxHealthUpdate();
+    return true;
+}
     IEnumerator FadeHealthBar(bool fadeIn, float delay)
     {
         yield return new WaitForSeconds(delay);

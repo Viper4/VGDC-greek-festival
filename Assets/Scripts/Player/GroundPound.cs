@@ -16,6 +16,7 @@ public class GroundPound : MonoBehaviour
     {
         velocity = -speed;
         yield return new WaitUntil(() => Player.instance.IsGrounded);
+        Player.instance.UncrouchAnimation();
         velocity = 0;
     }
 }

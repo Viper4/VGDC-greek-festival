@@ -19,6 +19,8 @@ TagManager:
   - Trap
   - Projectile
   - No Slide
+  - BossOne
+  - Healer
   layers:
   - Default
   - TransparentFX

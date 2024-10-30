@@ -20,6 +20,7 @@ public class Player : BaseMovement
     private WallJumping wallJumping;
     private Dashing dashing;
     private GroundPound groundPound;
+    public Healing healing;
 
     // Checkpoints, souls, and stats
     private Checkpoint lastCheckpoint;
@@ -191,12 +192,16 @@ public class Player : BaseMovement
 
     void Uncrouch(InputAction.CallbackContext context)
     {
-        if (Time.timeScale > 0)
+        if (Time.timeScale > 0 && groundPound.velocity == 0)
         {
-            movementAudio.PlayCrouch();
-            transform.localScale = new Vector3(1, 1, 1);
-            transform.position += new Vector3(0, 0.5f);
+            UncrouchAnimation();
         }
+    }
+
+    public void UncrouchAnimation(){
+        movementAudio.PlayCrouch();
+        transform.localScale = new Vector3(1, 1, 1);
+        transform.position += new Vector3(0, 0.5f);
     }
 
     void Jump()
