@@ -214,7 +214,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   collidersInTrigger: 0
-  healthAmount: -1
+  healthAmount: -8
   applyKnockback: 1
   knockback:
     velocity: {x: 0, y: 7}

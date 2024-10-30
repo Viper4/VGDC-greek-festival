@@ -2964,8 +2964,14 @@ Transform:
   - {fileID: 26416656}
   - {fileID: 167098446}
   - {fileID: 349154914}
+  - {fileID: 794309384}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &794309384 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4853024165831500253, guid: c3bf1437f60140943a8bbbc75fde7325, type: 3}
+  m_PrefabInstance: {fileID: 7882578135197543185}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &815192929 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8991820369115136978, guid: d8fc9a877e3faed458e6beffa9f35c23, type: 3}
@@ -3977,6 +3983,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91137798dd1cf054783e9ee646d3b911, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originalMaxHealth: 0
   invincible: 0
   maxHealth: 50
   health: 50
@@ -4031,6 +4038,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  KillHealAmount: 0
 --- !u!114 &1307138096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4081,6 +4089,17 @@ MonoBehaviour:
   healthSystemCooldown: 0
   cooldown: 0.5
   overrideHealthSystemCooldown: 1
+--- !u!114 &1335945913 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8188443158377112316, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
+  m_PrefabInstance: {fileID: 7654677570944208260}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91137798dd1cf054783e9ee646d3b911, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1347401597
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5032,8 +5051,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2eb7c88d64846aa4db4e361fee809abf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextUnlock: {fileID: 0}
-  soulsForUnlock: 3
   lockedColor: {r: 0.5849056, g: 0, b: 0, a: 0.54901963}
   unlockedColor: {r: 0, g: 0.5396226, b: 0, a: 0.54901963}
   selectionIndicator: {fileID: 318929637}
@@ -5043,6 +5060,10 @@ MonoBehaviour:
   unselectedEmission: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   selectedEmission: {r: 0, g: 1, b: 0, a: 1}
   selectSound: {fileID: 8300000, guid: 3db3af243efc8c142b4796ee7b8a418b, type: 3}
+  canSaveSouls: 1
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!61 &1812731697
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6144,6 +6165,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2186101770137282216, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 1335945913}
+    - target: {fileID: 2186101770137282216, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
+      propertyPath: unsavedHealing
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2798469293561247654, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -6236,6 +6265,18 @@ PrefabInstance:
       propertyPath: waitFrames
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8188443158377112316, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
+      propertyPath: health
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8188443158377112316, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
+      propertyPath: maxHealth
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8188443158377112316, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
+      propertyPath: originalMaxHealth
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 8243280492254820738, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: knockback.velocity.x
       value: 0
@@ -6257,6 +6298,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
+--- !u!1001 &7882578135197543185
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 765618029}
+    m_Modifications:
+    - target: {fileID: 4853024165831500253, guid: c3bf1437f60140943a8bbbc75fde7325, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 42.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4853024165831500253, guid: c3bf1437f60140943a8bbbc75fde7325, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 20.56
+      objectReference: {fileID: 0}
+    - target: {fileID: 4853024165831500253, guid: c3bf1437f60140943a8bbbc75fde7325, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4853024165831500253, guid: c3bf1437f60140943a8bbbc75fde7325, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4853024165831500253, guid: c3bf1437f60140943a8bbbc75fde7325, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4853024165831500253, guid: c3bf1437f60140943a8bbbc75fde7325, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4853024165831500253, guid: c3bf1437f60140943a8bbbc75fde7325, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4853024165831500253, guid: c3bf1437f60140943a8bbbc75fde7325, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4853024165831500253, guid: c3bf1437f60140943a8bbbc75fde7325, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4853024165831500253, guid: c3bf1437f60140943a8bbbc75fde7325, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278910836646650230, guid: c3bf1437f60140943a8bbbc75fde7325, type: 3}
+      propertyPath: m_Name
+      value: HealingAltar
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c3bf1437f60140943a8bbbc75fde7325, type: 3}
 --- !u!1001 &7932638879675909472
 PrefabInstance:
   m_ObjectHideFlags: 0

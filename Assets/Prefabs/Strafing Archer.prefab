@@ -315,6 +315,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91137798dd1cf054783e9ee646d3b911, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originalMaxHealth: 0
   invincible: 0
   maxHealth: 5
   health: 5
@@ -359,6 +360,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  KillHealAmount: 10
 --- !u!114 &8710747593224138277
 MonoBehaviour:
   m_ObjectHideFlags: 0

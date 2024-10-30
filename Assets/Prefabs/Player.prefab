@@ -4336,6 +4336,7 @@ GameObject:
   - component: {fileID: 8339625888759171136}
   - component: {fileID: 3016146244513728964}
   - component: {fileID: 7466795169192890462}
+  - component: {fileID: 2186101770137282216}
   m_Layer: 9
   m_Name: Player Controller
   m_TagString: Player
@@ -4455,6 +4456,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 257
   coyoteTime: 0.35
+  healing: {fileID: 2186101770137282216}
   followingSouls: []
   soulsCollected: 0
   deaths: 0
@@ -4523,6 +4525,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91137798dd1cf054783e9ee646d3b911, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originalMaxHealth: 0
   invincible: 0
   maxHealth: 20
   health: 20
@@ -4579,6 +4582,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  KillHealAmount: 0
 --- !u!114 &7173882381029784539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5072,6 +5076,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &2186101770137282216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9202725978975512340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 038dc64f3ec541b40a64185394a77fa3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unsavedHealing: 0
+  InHealerRange: 0
+  target: {fileID: 0}
+  maxOverheal: 120
+  OverhealTime: 60
 --- !u!1001 &5702451750774449067
 PrefabInstance:
   m_ObjectHideFlags: 0
