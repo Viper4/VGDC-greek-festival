@@ -2,48 +2,47 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class CollectedSoul : BaseMovement
 {
     [System.Serializable]
-    enum MoveState
+    private enum MoveState
     {
         Wander,
         Destination,
         Idle,
     }
     [Header("CollectedSoul")]
-    [SerializeField] MoveState moveState = MoveState.Wander;
-    MoveState currentMoveState;
+    [SerializeField] private MoveState moveState = MoveState.Wander;
+    private MoveState currentMoveState;
 
-    [SerializeField] Vector2 wanderTime = new Vector2(3, 5);
+    [SerializeField] private Vector2 wanderTime = new Vector2(3, 5);
 
-    [SerializeField] Transform[] verticalPoints;
-    [SerializeField] Transform[] endPoints;
-    List<Vector2> destinations = new List<Vector2>();
-    bool atDestination = false;
-    [SerializeField] Vector2 pauseTime = new Vector2(1, 2);
+    [SerializeField] private Transform[] verticalPoints;
+    [SerializeField] private Transform[] endPoints;
+    private List<Vector2> destinations = new List<Vector2>();
+    private bool atDestination = false;
+    [SerializeField] private Vector2 pauseTime = new Vector2(1, 2);
 
-    bool inDialogue = false;
-    [SerializeField] GameObject dialogueBox;
-    [SerializeField] TextMeshProUGUI dialogueText;
-    [SerializeField] float dialogueClearDelay = 1f;
-    [SerializeField] float dialogueClearSpeed = 0.025f;
-    [SerializeField] string[] dialogue;
-    [SerializeField] float[] timesPerChar;
-    int dialogueIndex = 0;
-    Coroutine dialogueAnimationRoutine = null;
-    Coroutine clearDialogueRoutine = null;
+    private bool inDialogue = false;
+    [SerializeField] private GameObject dialogueBox;
+    [SerializeField] private TextMeshProUGUI dialogueText;
+    [SerializeField] private float dialogueClearDelay = 1f;
+    [SerializeField] private float dialogueClearSpeed = 0.025f;
+    [SerializeField] private string[] dialogue;
+    [SerializeField] private float[] timesPerChar;
+    private int dialogueIndex = 0;
+    private Coroutine dialogueAnimationRoutine = null;
+    private Coroutine clearDialogueRoutine = null;
 
     private void OnEnable()
     {
-        Player.instance.input.Player.Dialogue.performed += NextDialogue;
+        Player.instance.input.Player.Dialogue.performed += ctx => NextDialogue();
     }
 
     private void OnDisable()
     {
-        Player.instance.input.Player.Dialogue.performed -= NextDialogue;
+        Player.instance.input.Player.Dialogue.performed -= ctx => NextDialogue();
     }
 
     // Start is called before the first frame update
@@ -56,7 +55,7 @@ public class CollectedSoul : BaseMovement
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         switch (currentMoveState)
         {
@@ -108,13 +107,13 @@ public class CollectedSoul : BaseMovement
         }
     }
 
-    bool CheckLineOfSight(Vector2 from, Vector2 to)
+    private bool CheckLineOfSight(Vector2 from, Vector2 to)
     {
         RaycastHit2D hit = Physics2D.Linecast(from, to, collisionLayers);
         return hit.transform == null;
     }
 
-    IEnumerator Move()
+    private IEnumerator Move()
     {
         switch (currentMoveState)
         {
@@ -179,7 +178,7 @@ public class CollectedSoul : BaseMovement
         StartCoroutine(Move());
     }
 
-    IEnumerator AnimatedDialogue(string text, float timePerChar)
+    private IEnumerator AnimatedDialogue(string text, float timePerChar)
     {
         for (int i = 0; i < text.Length; i++)
         {
@@ -189,7 +188,7 @@ public class CollectedSoul : BaseMovement
         dialogueAnimationRoutine = null;
     }
 
-    void SkipDialogue(int index)
+    private void SkipDialogue(int index)
     {
         StopCoroutine(dialogueAnimationRoutine);
         dialogueText.text = "";
@@ -217,7 +216,7 @@ public class CollectedSoul : BaseMovement
         }
     }
 
-    public void NextDialogue(InputAction.CallbackContext context)
+    public void NextDialogue()
     {
         if(inDialogue)
         {
@@ -250,7 +249,7 @@ public class CollectedSoul : BaseMovement
         clearDialogueRoutine = StartCoroutine(ClearDialogue(dialogueClearDelay, dialogueClearSpeed));
     }
 
-    IEnumerator ClearDialogue(float delay, float timerPerChar)
+    private IEnumerator ClearDialogue(float delay, float timerPerChar)
     {
         yield return new WaitUntil(() => dialogueAnimationRoutine == null);
         yield return new WaitForSeconds(delay);

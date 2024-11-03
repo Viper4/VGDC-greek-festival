@@ -5,14 +5,14 @@ using UnityEngine;
 public class Archer : Enemy
 {
     [Header("Archer")]
-    [SerializeField] Transform launcher;
-    [SerializeField] float launcherRotateSpeed = 180f;
-    [SerializeField] Transform firePoint;
-    [SerializeField] GameObject projectile;
-    [SerializeField] float projectileSpeed = 5f;
-    [SerializeField] float avoidDistance = 4f;
-    [SerializeField] float followDistance = 6f;
-    [SerializeField] bool strafe = false;
+    [SerializeField] private Transform launcher;
+    [SerializeField] private float launcherRotateSpeed = 180f;
+    [SerializeField] private Transform firePoint;
+    [SerializeField] private GameObject projectile;
+    [SerializeField] private float projectileSpeed = 5f;
+    [SerializeField] private float avoidDistance = 4f;
+    [SerializeField] private float followDistance = 6f;
+    [SerializeField] private bool strafe = false;
 
     private void Update()
     {

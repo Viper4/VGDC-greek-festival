@@ -5,59 +5,59 @@ using UnityEngine;
 
 public class MovementAudio : MonoBehaviour
 {
-    AudioSource audioSource;
+    private AudioSource audioSource;
 
-    [SerializeField] AudioClip doubleJumpClip;
-    [SerializeField] AudioClip dashClip;
-    [SerializeField] AudioClip crouchClip;
+    [SerializeField] private AudioClip doubleJumpClip;
+    [SerializeField] private AudioClip dashClip;
+    [SerializeField] private AudioClip crouchClip;
 
     // Cant serialize a dictionary so we do this stupid shit
     // We have audio clip arrays for each ground type and their respective walk, run, jump, and land sound effects.
-    [SerializeField, Header("Running")] AudioClip[] dirtRunClips;
-    [SerializeField] AudioClip[] gravelRunClips;
-    [SerializeField] AudioClip[] metalV1RunClips;
-    [SerializeField] AudioClip[] metalV2RunClips;
-    [SerializeField] AudioClip[] mudRunClips;
-    [SerializeField] AudioClip[] rockRunClips;
-    [SerializeField] AudioClip[] sandRunClips;
-    [SerializeField] AudioClip[] tileRunClips;
-    Dictionary<string, AudioClip[]> footstepRunClips = new Dictionary<string, AudioClip[]>();
-    [SerializeField] float runVolume = 1f;
+    [SerializeField, Header("Running")] private AudioClip[] dirtRunClips;
+    [SerializeField] private AudioClip[] gravelRunClips;
+    [SerializeField] private AudioClip[] metalV1RunClips;
+    [SerializeField] private AudioClip[] metalV2RunClips;
+    [SerializeField] private AudioClip[] mudRunClips;
+    [SerializeField] private AudioClip[] rockRunClips;
+    [SerializeField] private AudioClip[] sandRunClips;
+    [SerializeField] private AudioClip[] tileRunClips;
+    private Dictionary<string, AudioClip[]> footstepRunClips = new Dictionary<string, AudioClip[]>();
+    [SerializeField] private float runVolume = 1f;
     public float runStepInterval = 0.1f;
 
-    [SerializeField, Header("Walking")] AudioClip[] dirtWalkClips;
-    [SerializeField] AudioClip[] gravelWalkClips;
-    [SerializeField] AudioClip[] metalV1WalkClips;
-    [SerializeField] AudioClip[] metalV2WalkClips;
-    [SerializeField] AudioClip[] mudWalkClips;
-    [SerializeField] AudioClip[] rockWalkClips;
-    [SerializeField] AudioClip[] sandWalkClips;
-    [SerializeField] AudioClip[] tileWalkClips;
-    Dictionary<string, AudioClip[]> footstepWalkClips = new Dictionary<string, AudioClip[]>();
-    [SerializeField] float walkVolume = 0.75f;
+    [SerializeField, Header("Walking")] private AudioClip[] dirtWalkClips;
+    [SerializeField] private AudioClip[] gravelWalkClips;
+    [SerializeField] private AudioClip[] metalV1WalkClips;
+    [SerializeField] private AudioClip[] metalV2WalkClips;
+    [SerializeField] private AudioClip[] mudWalkClips;
+    [SerializeField] private AudioClip[] rockWalkClips;
+    [SerializeField] private AudioClip[] sandWalkClips;
+    [SerializeField] private AudioClip[] tileWalkClips;
+    private Dictionary<string, AudioClip[]> footstepWalkClips = new Dictionary<string, AudioClip[]>();
+    [SerializeField] private float walkVolume = 0.75f;
     public float walkStepInterval = 0.25f;
 
-    [SerializeField, Header("Jumping")] AudioClip[] dirtJumpClips;
-    [SerializeField] AudioClip[] gravelJumpClips;
-    [SerializeField] AudioClip[] metalV1JumpClips;
-    [SerializeField] AudioClip[] metalV2JumpClips;
-    [SerializeField] AudioClip[] mudJumpClips;
-    [SerializeField] AudioClip[] rockJumpClips;
-    [SerializeField] AudioClip[] sandJumpClips;
-    [SerializeField] AudioClip[] tileJumpClips;
-    Dictionary<string, AudioClip[]> jumpClips = new Dictionary<string, AudioClip[]>();
-    [SerializeField] float jumpVolume;
+    [SerializeField, Header("Jumping")] private AudioClip[] dirtJumpClips;
+    [SerializeField] private AudioClip[] gravelJumpClips;
+    [SerializeField] private AudioClip[] metalV1JumpClips;
+    [SerializeField] private AudioClip[] metalV2JumpClips;
+    [SerializeField] private AudioClip[] mudJumpClips;
+    [SerializeField] private AudioClip[] rockJumpClips;
+    [SerializeField] private AudioClip[] sandJumpClips;
+    [SerializeField] private AudioClip[] tileJumpClips;
+    private Dictionary<string, AudioClip[]> jumpClips = new Dictionary<string, AudioClip[]>();
+    [SerializeField] private float jumpVolume;
 
-    [SerializeField, Header("Landing")] AudioClip[] dirtLandClips;
-    [SerializeField] AudioClip[] gravelLandClips;
-    [SerializeField] AudioClip[] metalV1LandClips;
-    [SerializeField] AudioClip[] metalV2LandClips;
-    [SerializeField] AudioClip[] mudLandClips;
-    [SerializeField] AudioClip[] rockLandClips;
-    [SerializeField] AudioClip[] sandLandClips;
-    [SerializeField] AudioClip[] tileLandClips;
-    Dictionary<string, AudioClip[]> landClips = new Dictionary<string, AudioClip[]>();
-    [SerializeField] float maxLandVolume = 2.5f;
+    [SerializeField, Header("Landing")] private AudioClip[] dirtLandClips;
+    [SerializeField] private AudioClip[] gravelLandClips;
+    [SerializeField] private AudioClip[] metalV1LandClips;
+    [SerializeField] private AudioClip[] metalV2LandClips;
+    [SerializeField] private AudioClip[] mudLandClips;
+    [SerializeField] private AudioClip[] rockLandClips;
+    [SerializeField] private AudioClip[] sandLandClips;
+    [SerializeField] private AudioClip[] tileLandClips;
+    private Dictionary<string, AudioClip[]> landClips = new Dictionary<string, AudioClip[]>();
+    [SerializeField] private float maxLandVolume = 2.5f;
 
     // Start is called before the first frame update
     void Start()

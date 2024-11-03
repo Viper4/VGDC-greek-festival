@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class Player : BaseMovement
 {
@@ -14,6 +15,17 @@ public class Player : BaseMovement
     private WallJumping wallJumping;
     private Dashing dashing;
     private GroundPound groundPound;
+
+    private enum PlayerState
+    {
+        Normal,
+        WallJumping,
+        Dashing,
+        Climbing,
+        WallSliding,
+        GroundPounding
+    }
+    private PlayerState currentState = PlayerState.Normal;
 
     // Coyote time and double jumping
     [Header("Player")]
@@ -88,7 +100,40 @@ public class Player : BaseMovement
     {
         if (Time.timeScale > 0)
         {
-            Vector2 newVelocity;
+            Vector2 newVelocity = moveVelocity;
+            switch (currentState)
+            {
+                case PlayerState.WallJumping:
+                    newVelocity = rb.velocity;
+                    break;
+                case PlayerState.Dashing:
+                    newVelocity = dashing.velocity;
+                    if (dashing.velocity.y == 0 && ((dashing.velocity.x > 0 && moveVelocity.x < 0) || (dashing.velocity.x < 0 && moveVelocity.x > 0)))
+                    {
+                        dashing.velocity = Vector2.zero;
+                        newVelocity = moveVelocity;
+                        currentState = PlayerState.Normal;
+                    }
+                    break;
+                case PlayerState.WallSliding:
+                    if (rb.velocity.y < -wallJumping.slideSpeed)
+                        newVelocity.y = -wallJumping.slideSpeed;
+                    break;
+                case PlayerState.GroundPounding:
+                    newVelocity.x = 0;
+                    newVelocity.y = groundPound.velocity;
+                    break;
+            }
+
+            if (!Climbing && dashing.velocity.y == 0 && currentState != PlayerState.WallJumping && knockbackVelocity.y == 0)
+            {
+                newVelocity += new Vector2(0, rb.velocity.y);
+            }
+
+            newVelocity += knockbackVelocity;
+
+            ApplyVelocity(newVelocity);
+            /*
             if (wallJumping.IsJumping)
             {
                 newVelocity = rb.velocity;
@@ -108,9 +153,7 @@ public class Player : BaseMovement
             }
 
             if (!Climbing && dashing.velocity.y == 0 && !wallJumping.IsJumping && knockbackVelocity.y == 0)
-            {
                 newVelocity += new Vector2(0, rb.velocity.y);
-            }
 
             if (wallJumping.IsSliding)
             {
@@ -126,7 +169,7 @@ public class Player : BaseMovement
 
             newVelocity += knockbackVelocity;
 
-            ApplyVelocity(newVelocity);
+            ApplyVelocity(newVelocity);*/
         }
     }
 
@@ -197,9 +240,8 @@ public class Player : BaseMovement
 
     public void UncrouchAnimation(){
         movementAudio.PlayCrouch();
-        float deltaY = 1 - transform.localScale.y;
         transform.localScale = new Vector3(1, 1, 1);
-        transform.position += new Vector3(0, deltaY);
+        transform.position += new Vector3(0, 0.5f);
     }
 
     private void Jump()
@@ -243,7 +285,6 @@ public class Player : BaseMovement
         spriteRenderer.color = oldColor;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         transform.position = lastCheckpoint.transform.position;
-        lastCheckpoint.Respawn();
 
         // Reset all souls that were following
         foreach (Soul followingSoul in followingSouls)

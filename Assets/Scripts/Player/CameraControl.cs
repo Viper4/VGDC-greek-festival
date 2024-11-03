@@ -5,9 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class CameraControl : MonoBehaviour
 {
-    Camera _camera;
-    [SerializeField] Transform target;
-    [SerializeField] float followSpeed = 1f;
+    private Camera _camera;
+    [SerializeField] private Transform target;
+    [SerializeField] private float followSpeed = 1f;
     public CameraBounds bounds;
     public Vector2 lockedPosition;
     public bool locked = false;
@@ -21,7 +21,7 @@ public class CameraControl : MonoBehaviour
         originalWidth = originalHeight * _camera.aspect;
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         Vector3 newPosition;
         if (locked)

@@ -4,44 +4,48 @@ using UnityEngine;
 
 public class BossOne : BaseMovement
 {
-    enum BossState{
+    private enum BossState
+    {
         Slash, Jump, Charge, Idle
     }
 
-    BossState currentState = BossState.Idle;
-    BossState lastState;
-    [SerializeField, Header("Boss One")] float minWalk = 0.5f;
-    [SerializeField] float maxWalk = 2f;
-    [SerializeField] float idleTime = 2.5f;
-    [SerializeField] float slashIdleTime = 1.0f;
+    private BossState currentState = BossState.Idle;
+    private BossState lastState;
+    [SerializeField, Header("Boss One")] private float minWalk = 0.5f;
+    [SerializeField] private float maxWalk = 2f;
+    [SerializeField] private float idleTime = 2.5f;
+    [SerializeField] private float slashIdleTime = 1.0f;
     private float originalIdleTime;
 
-    [SerializeField, Tooltip("Order of enum is Slash, Jump, Charge, Idle")] float[] attackReactionTimes;
+    [SerializeField, Tooltip("Order of enum is Slash, Jump, Charge, Idle")] private float[] attackReactionTimes;
 
-    [SerializeField] float arcTime = 3.0f;
+    [SerializeField] private float arcTime = 3.0f;
 
-    [SerializeField] KnockbackInfo defaultKnockback;
-    [SerializeField] float defaultBodyDamage = 15f;
-    [SerializeField] KnockbackInfo jumpKnockback;
-    [SerializeField] float jumpDamage = 25f;
-    [SerializeField] KnockbackInfo chargeKnockback;
-    [SerializeField] float chargeDamage = 25f;
+    [SerializeField] private KnockbackInfo defaultKnockback;
+    [SerializeField] private float defaultBodyDamage = 15f;
+    [SerializeField] private KnockbackInfo jumpKnockback;
+    [SerializeField] private float jumpDamage = 25f;
+    [SerializeField] private KnockbackInfo chargeKnockback;
+    [SerializeField] private float chargeDamage = 25f;
 
-    [SerializeField] float chargeSpeed = 6f;
+    [SerializeField] private float chargeSpeed = 6f;
 
-    [SerializeField] float chargeAccelerationTime = .8f;
+    [SerializeField] private float chargeAccelerationTime = .8f;
 
-    [SerializeField] GameObject shield;
-    [SerializeField] Animator animator;
-    HealthTrigger healthTrigger;
+    [SerializeField] private GameObject shield;
+    [SerializeField] private Animator animator;
+    private HealthTrigger healthTrigger;
+    private HealthSystem healthSystem;
 
+    private Vector3 spawnPosition;
 
     public override void Start()
     {
         base.Start();
         healthTrigger = GetComponent<HealthTrigger>();
-        originalIdleTime = idleTime;        
-        StartCoroutine(StartIdle());
+        healthSystem = GetComponent<HealthSystem>();
+        originalIdleTime = idleTime;
+        spawnPosition = transform.position;
     }
 
     private void FixedUpdate()
@@ -52,9 +56,22 @@ public class BossOne : BaseMovement
         }
     }
 
-    IEnumerator StartIdle(){
-        healthTrigger.healthAmount = -defaultBodyDamage;
+    public void StartBoss()
+    {
+        StartCoroutine(StartBossDelay());
+    }
+
+    private IEnumerator StartBossDelay()
+    {
+        // When the boss gameObject is set active Start() doesn't get called so we need to wait
         yield return new WaitForEndOfFrame();
+        healthSystem.ResetHealth();
+        StartCoroutine(StartIdle());
+    }
+
+    IEnumerator StartIdle(){
+        yield return new WaitForEndOfFrame();
+        healthTrigger.healthAmount = -defaultBodyDamage;
         Physics2D.IgnoreCollision(Player.instance._collider, _collider, false);
         shield.GetComponent<Renderer>().material.color = Color.white;
         RotateTowardsPlayer();
@@ -206,5 +223,11 @@ public class BossOne : BaseMovement
         {
             KnockbackPlayer();
         }
+    }
+
+    public void ResetBoss()
+    {
+        transform.position = spawnPosition;
+        gameObject.SetActive(false);
     }
 }

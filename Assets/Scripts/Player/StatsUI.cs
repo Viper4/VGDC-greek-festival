@@ -6,19 +6,19 @@ using UnityEngine.UI;
 
 public class StatsUI : MonoBehaviour
 {
-    [SerializeField] RectTransform healthMask;
-    [SerializeField] RectTransform heartsParent;
-    [SerializeField] GameObject heartPrefab;
+    [SerializeField] private RectTransform healthMask;
+    [SerializeField] private RectTransform heartsParent;
+    [SerializeField] private GameObject heartPrefab;
 
-    Color deathsStartColor;
-    Color deathsEndColor;
-    [SerializeField] Image deathsIcon;
-    [SerializeField] TextMeshProUGUI deathsText;
+    private Color deathsStartColor;
+    private Color deathsEndColor;
+    [SerializeField] private Image deathsIcon;
+    [SerializeField] private TextMeshProUGUI deathsText;
 
-    Color soulsStartColor;
-    Color soulsEndColor;
-    [SerializeField] Image soulsIcon;
-    [SerializeField] TextMeshProUGUI soulsText;
+    private Color soulsStartColor;
+    private Color soulsEndColor;
+    [SerializeField] private Image soulsIcon;
+    [SerializeField] private TextMeshProUGUI soulsText;
 
     Coroutine popupCoroutine;
 
@@ -67,7 +67,7 @@ public class StatsUI : MonoBehaviour
         popupCoroutine = StartCoroutine(Popup(time));
     }
 
-    IEnumerator Popup(float time)
+    private IEnumerator Popup(float time)
     {
         // Fade icons and text from 0 alpha to 1
         float timer = 0;

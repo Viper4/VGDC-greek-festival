@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class Parallax : MonoBehaviour
 {
-    float length;
-    float startPosition;
-    [SerializeField] float parallaxEffect;
+    private float length;
+    private float startPosition;
+    [SerializeField] private float parallaxEffect;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         startPosition = transform.position.x;
         length = GetComponent<SpriteRenderer>().bounds.size.x;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         float temp = Camera.main.transform.position.x * (1 - parallaxEffect);
         float distance = Camera.main.transform.position.x * parallaxEffect;

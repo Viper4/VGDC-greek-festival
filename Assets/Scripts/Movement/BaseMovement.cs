@@ -9,7 +9,7 @@ public class BaseMovement : MonoBehaviour
     [HideInInspector] public Collider2D _collider;
     [HideInInspector] public Stairs stairs;
 
-    float gravityScale = 1f;
+    private float gravityScale = 1f;
     [Header("BaseMovement")]
     public float runSpeed = 5f;
     public float walkSpeed = 2f;
@@ -19,12 +19,12 @@ public class BaseMovement : MonoBehaviour
     public bool Crouching { get; set; }
     [HideInInspector] public Vector2 moveVelocity;
     public bool rotateWithMovement = true;
-    [SerializeField, Tooltip("Seconds in the future to predict for falling, obstructions, etc.")] float predictionTime = 0.5f;
+    [SerializeField, Tooltip("Seconds in the future to predict for falling, obstructions, etc.")] private float predictionTime = 0.5f;
 
-    [SerializeField] string[] nonGroundTags = new string[] { "Trap", "Enemy", "Projectile", "Soul" };
-    HashSet<string> nonGroundTagsSet = new HashSet<string>();
-    Transform ground;
-    bool isGrounded = false;
+    [SerializeField] private string[] nonGroundTags = new string[] { "Trap", "Enemy", "Projectile", "Soul" };
+    private HashSet<string> nonGroundTagsSet = new HashSet<string>();
+    private Transform ground;
+    private bool isGrounded = false;
     public bool IsGrounded 
     { 
         get
@@ -41,7 +41,7 @@ public class BaseMovement : MonoBehaviour
     [SerializeField] float fallCheckDistance = 3f;
 
     public float climbSpeed = 2f;
-    bool climbing = false;
+    private bool climbing = false;
     public bool Climbing 
     {
         get
@@ -59,7 +59,7 @@ public class BaseMovement : MonoBehaviour
     }
 
     public MovementAudio movementAudio;
-    float footstepTimer = 0;
+    private float footstepTimer = 0;
 
     [System.Serializable]
     public struct KnockbackInfo
@@ -76,12 +76,12 @@ public class BaseMovement : MonoBehaviour
         }
     }
     [HideInInspector] public Vector2 knockbackVelocity;
-    Coroutine knockbackRoutine;
+    private Coroutine knockbackRoutine;
     public float immunityTime = 0.3f;
-    float immunityTimer = 0;
+    private float immunityTimer = 0;
 
-    [SerializeField] string[] nonWallTags = new string[] { "Trap", "Enemy", "Projectile", "Soul" };
-    HashSet<string> nonWallTagsSet = new HashSet<string>();
+    [SerializeField] private string[] nonWallTags = new string[] { "Trap", "Enemy", "Projectile", "Soul" };
+    private HashSet<string> nonWallTagsSet = new HashSet<string>();
     [HideInInspector] public Transform wall;
 
     public LayerMask collisionLayers;

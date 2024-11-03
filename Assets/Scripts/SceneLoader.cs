@@ -9,9 +9,9 @@ public class SceneLoader : MonoBehaviour
 {
     public static SceneLoader Instance { get; private set; }
 
-    [SerializeField] GameObject loadingScreen;
-    [SerializeField] Slider loadingBar;
-    [SerializeField] TextMeshProUGUI loadingText;
+    [SerializeField] private GameObject loadingScreen;
+    [SerializeField] private Slider loadingBar;
+    [SerializeField] private TextMeshProUGUI loadingText;
 
     private void Start()
     {
@@ -33,7 +33,7 @@ public class SceneLoader : MonoBehaviour
         StartCoroutine(LoadRoutine(buildIndex));
     }
 
-    IEnumerator LoadRoutine(int buildIndex)
+    private IEnumerator LoadRoutine(int buildIndex)
     {
         Time.timeScale = 0;
         loadingScreen.SetActive(true);

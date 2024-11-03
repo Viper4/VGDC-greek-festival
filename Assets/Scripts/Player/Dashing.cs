@@ -1,18 +1,22 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Dashing : MonoBehaviour
 {
-    [SerializeField] float inputWait = 0.05f;
-    [SerializeField] float dashSpeed = 15;
-    [SerializeField] float dashDuration = 0.25f;
-    [SerializeField] float dashCooldown = 0.1f;
-    [SerializeField] float dashDrag = 0.5f;
-    [SerializeField] SpriteRenderer dashIndicator;
+    [SerializeField] private float inputWait = 0.05f;
+    [SerializeField] private float dashSpeed = 15;
+    [SerializeField] private float dashDuration = 0.25f;
+    [SerializeField] private float dashCooldown = 0.1f;
+    [SerializeField] private float dashDrag = 0.5f;
+    [SerializeField] private SpriteRenderer dashIndicator;
+    private Coroutine dashRoutine;
 
     private bool canDash = true;
     [HideInInspector] public Vector2 velocity = Vector2.zero;
     private Vector2 lastInput;
+
+    [SerializeField] private UnityEvent onDash;
 
     // Update is called once per frame
     void Update()
@@ -56,16 +60,17 @@ public class Dashing : MonoBehaviour
 
         if (moveInput != Vector2.zero)
         {
-            StartCoroutine(Dash(moveInput, jumped));
+            dashRoutine = StartCoroutine(Dash(moveInput, jumped));
         }
         else
         {
-            StartCoroutine(Dash(initialInput, jumped));
+            dashRoutine = StartCoroutine(Dash(initialInput, jumped));
         }
     }
 
     IEnumerator Dash(Vector2 moveInput, bool bunnyHop)
     {
+        onDash?.Invoke();
         bool waveDash = moveInput.y < 0 && moveInput.x != 0;
         Player.instance.movementAudio.PlayDash();
         velocity = moveInput * dashSpeed;

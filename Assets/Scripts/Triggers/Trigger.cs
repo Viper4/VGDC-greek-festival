@@ -5,17 +5,17 @@ using UnityEngine.Events;
 
 public class Trigger : MonoBehaviour
 {
-    [SerializeField] string[] triggerTags;
+    [SerializeField] private string[] triggerTags;
     public HashSet<string> tagHashSet = new HashSet<string>();
-    [SerializeField] UnityEvent<Collider2D> onTriggerEnter;
-    [SerializeField] UnityEvent<Collider2D> onTriggerExit;
-    [SerializeField] UnityEvent<Collision2D> onCollisionEnter;
-    [SerializeField] UnityEvent<Collision2D> onCollisionExit;
+    [SerializeField] private UnityEvent<Collider2D> onTriggerEnter;
+    [SerializeField] private UnityEvent<Collider2D> onTriggerExit;
+    [SerializeField] private UnityEvent<Collision2D> onCollisionEnter;
+    [SerializeField] private UnityEvent<Collision2D> onCollisionExit;
 
-    [SerializeField] UnityEvent<Collider2D> onAnyTriggerEnter;
-    [SerializeField] UnityEvent<Collider2D> onAnyTriggerExit;
-    [SerializeField] UnityEvent<Collision2D> onAnyCollisionEnter;
-    [SerializeField] UnityEvent<Collision2D> onAnyCollisionExit;
+    [SerializeField] private UnityEvent<Collider2D> onAnyTriggerEnter;
+    [SerializeField] private UnityEvent<Collider2D> onAnyTriggerExit;
+    [SerializeField] private UnityEvent<Collision2D> onAnyCollisionEnter;
+    [SerializeField] private UnityEvent<Collision2D> onAnyCollisionExit;
     public int collidersInTrigger = 0;
 
     private void Start()
@@ -88,7 +88,7 @@ public class Trigger : MonoBehaviour
         onAnyCollisionExit?.Invoke(collision);
     }
 
-    public void DestroyGameObject(GameObject toDestroy)
+    public void DestroyTarget(Object toDestroy)
     {
         Destroy(toDestroy);
     }

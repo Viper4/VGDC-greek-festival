@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class Shotgun : Ability
 {
-    [SerializeField] Transform launchOffset;
-    [SerializeField] int projectileCount = 3;
-    [SerializeField] GameObject projectilePrefab;
-    [SerializeField] float spreadAngle = 10f;
-    [SerializeField] float projectileSpeed = 20f;
+    [SerializeField] private Transform launchOffset;
+    [SerializeField] private int projectileCount = 3;
+    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private float spreadAngle = 10f;
+    [SerializeField] private float projectileSpeed = 20f;
 
-    void OnEnable()
+    private void OnEnable()
     {
         Player.instance.input.Player.Ability1.performed += OnInput;
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         Player.instance.input.Player.Ability1.performed -= OnInput;
     }

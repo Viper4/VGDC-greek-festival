@@ -5,13 +5,13 @@ using TMPro;
 
 public class PauseUI : MonoBehaviour
 {
-    GameObject holder;
-    [SerializeField] GameObject screenBlur;
-    [SerializeField] GameObject pauseMenu;
-    [SerializeField] GameObject settingsMenu;
-    [SerializeField] TextMeshProUGUI timePlayedText;
-    [SerializeField] TextMeshProUGUI deathsText;
-    [SerializeField] TextMeshProUGUI soulsText;
+    private GameObject holder;
+    [SerializeField] private GameObject screenBlur;
+    [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private GameObject settingsMenu;
+    [SerializeField] private TextMeshProUGUI timePlayedText;
+    [SerializeField] private TextMeshProUGUI deathsText;
+    [SerializeField] private TextMeshProUGUI soulsText;
 
     private void Start()
     {

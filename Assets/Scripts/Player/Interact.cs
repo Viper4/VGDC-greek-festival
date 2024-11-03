@@ -8,14 +8,14 @@ using TMPro;
 public class Interact : Trigger
 {
     public UnityEvent OnInteract;
-    [SerializeField] TextMeshProUGUI popupText;
-    [SerializeField] float fadeTime = 0.5f;
-    Coroutine fadeRoutine;
-    [SerializeField] Color startColor;
-    [SerializeField] Color endColor;
-    bool interacted = false;
+    [SerializeField] private TextMeshProUGUI popupText;
+    [SerializeField] private float fadeTime = 0.5f;
+    private Coroutine fadeRoutine;
+    [SerializeField] private Color startColor;
+    [SerializeField] private Color endColor;
+    private bool interacted = false;
 
-    void OnEnable()
+    private void OnEnable()
     {
         Player.instance.input.Player.Interact.performed += DoInteract;
     }
@@ -25,7 +25,7 @@ public class Interact : Trigger
         Player.instance.input.Player.Interact.performed -= DoInteract;
     }
 
-    void DoInteract(InputAction.CallbackContext context)
+    private void DoInteract(InputAction.CallbackContext context)
     {
         if(collidersInTrigger > 0)
         {
@@ -35,6 +35,11 @@ public class Interact : Trigger
                 StopCoroutine(fadeRoutine);
             popupText.color = startColor;
         }
+    }
+
+    public void ResetInteract()
+    {
+        interacted = false;
     }
 
     public override void TriggerEnter(Collider2D collider)
@@ -63,7 +68,7 @@ public class Interact : Trigger
         }
     }
 
-    IEnumerator Popup(bool fadeIn)
+    private IEnumerator Popup(bool fadeIn)
     {
         float timer = 0;
         Color start;

@@ -175,6 +175,11 @@ public class Player : BaseMovement
         }
     }
 
+    public void ChangeState(PlayerState newState) 
+    { 
+        currentState = newState;
+    }
+
     private void Crouch()
     {
         if (Time.timeScale > 0)

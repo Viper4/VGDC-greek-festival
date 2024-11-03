@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Ladder : Trigger
 {
-    [SerializeField] Collider2D collisionCollider;
-    [SerializeField] float startAlpha = 1;
-    [SerializeField] float endAlpha = 0.1f;
-    [SerializeField] float maxFadeDistance = 3;
-    SpriteRenderer spriteRenderer;
-    List<Collider2D> targets = new List<Collider2D>();
+    [SerializeField] private Collider2D collisionCollider;
+    [SerializeField] private float startAlpha = 1;
+    [SerializeField] private float endAlpha = 0.1f;
+    [SerializeField] private float maxFadeDistance = 3;
+    private SpriteRenderer spriteRenderer;
+    private List<Collider2D> targets = new List<Collider2D>();
 
     private void Start()
     {

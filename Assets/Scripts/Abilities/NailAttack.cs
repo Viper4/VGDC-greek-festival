@@ -2,16 +2,16 @@ using UnityEngine;
 
 public class NailAttack : Ability
 {
-    [SerializeField] Collider2D hitbox;
+    [SerializeField] private Collider2D hitbox;
 
-    Collider2D[] hits = new Collider2D[10];
+    private Collider2D[] hits = new Collider2D[10];
 
-    void OnEnable()
+    private void OnEnable()
     {
         Player.instance.input.Player.Nail.performed += OnInput;
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         Player.instance.input.Player.Nail.performed -= OnInput;
     }

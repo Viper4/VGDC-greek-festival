@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class Stairs : Trigger
 {
-    [SerializeField] Collider2D collisionCollider;
-    SpriteRenderer spriteRenderer;
-    [SerializeField] float startAlpha = 1;
-    [SerializeField] float endAlpha = 0.1f;
-    [SerializeField] float maxFadeDistance = 3;
-    List<Collider2D> targets = new List<Collider2D>();
+    [SerializeField] private Collider2D collisionCollider;
+    private SpriteRenderer spriteRenderer;
+    [SerializeField] private float startAlpha = 1;
+    [SerializeField] private float endAlpha = 0.1f;
+    [SerializeField] private float maxFadeDistance = 3;
+    private List<Collider2D> targets = new List<Collider2D>();
 
     private void Start()
     {

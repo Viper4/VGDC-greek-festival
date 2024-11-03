@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Step : Trigger
 {
-    Collider2D stepCollider;
+    private Collider2D stepCollider;
 
     private void Start()
     {

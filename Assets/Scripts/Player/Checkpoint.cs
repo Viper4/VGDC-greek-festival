@@ -6,22 +6,25 @@ using UnityEngine.Events;
 
 public class Checkpoint : MonoBehaviour
 {
-    SpriteRenderer spriteRenderer;
-    AudioSource audioSource;
+    private SpriteRenderer spriteRenderer;
+    private AudioSource audioSource;
 
-    [SerializeField] Color lockedColor = Color.red;
-    [SerializeField] Color unlockedColor = Color.green;
+    [SerializeField] private Color lockedColor = Color.red;
+    [SerializeField] private Color unlockedColor = Color.green;
 
-    [SerializeField] SpriteRenderer selectionIndicator;
-    [SerializeField] Light2D selectionLight;
-    [SerializeField] Color unselectedColor = Color.yellow;
-    [SerializeField] Color selectedColor = Color.green;
-    [SerializeField, ColorUsage(true, true)] Color unselectedEmission = Color.yellow;
-    [SerializeField, ColorUsage(true, true)] Color selectedEmission = Color.green;
-    [SerializeField] AudioClip selectSound;
-    bool unlocked = false;
+    [SerializeField] private SpriteRenderer selectionIndicator;
+    [SerializeField] private Light2D selectionLight;
+    [SerializeField] private Color unselectedColor = Color.yellow;
+    [SerializeField] private Color selectedColor = Color.green;
+    [SerializeField, ColorUsage(true, true)] private Color unselectedEmission = Color.yellow;
+    [SerializeField, ColorUsage(true, true)] private Color selectedEmission = Color.green;
+    [SerializeField] private AudioClip selectSound;
+    private bool unlocked = false;
     public bool canSaveSouls = true;
-    [SerializeField] UnityEvent<int> onSelect;
+    [SerializeField] private UnityEvent<int> onSelect;
+    [SerializeField] private UnityEvent onPlayerRespawn;
+
+    [SerializeField] private ParticleSystem respawnParticles;
 
     private void Start()
     {
@@ -30,6 +33,12 @@ public class Checkpoint : MonoBehaviour
         spriteRenderer.color = lockedColor;
         selectionIndicator.color = unselectedColor;
         selectionIndicator.material.SetColor("_EmissionColor", unselectedEmission);
+    }
+
+    public void Respawn()
+    {
+        onPlayerRespawn?.Invoke();
+        respawnParticles.Play();
     }
 
     public void Select(int souls)

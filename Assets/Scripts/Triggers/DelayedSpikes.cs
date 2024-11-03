@@ -3,18 +3,18 @@ using UnityEngine;
 
 public class DelayedSpikes : Trigger
 {
-    [SerializeField] float delay = 0.75f;
-    [SerializeField] float spikeSpeed = 1;
-    [SerializeField] Vector2 retractedPosition;
-    [SerializeField] Vector2 extendedPosition;
-    [SerializeField] Transform spikeParent;
+    [SerializeField] private float delay = 0.75f;
+    [SerializeField] private float spikeSpeed = 1;
+    [SerializeField] private Vector2 retractedPosition;
+    [SerializeField] private Vector2 extendedPosition;
+    [SerializeField] private Transform spikeParent;
 
     private void Start()
     {
         InitializeHashSet();
     }
 
-    IEnumerator ExtendSpikes()
+    private IEnumerator ExtendSpikes()
     {
         yield return new WaitForSeconds(delay);
         while (new Vector2(spikeParent.localPosition.x, spikeParent.localPosition.y) != extendedPosition)
@@ -24,7 +24,7 @@ public class DelayedSpikes : Trigger
         }
     }
 
-    IEnumerator RetractSpikes()
+    private IEnumerator RetractSpikes()
     {
         while (new Vector2(spikeParent.localPosition.x, spikeParent.localPosition.y) != retractedPosition)
         {

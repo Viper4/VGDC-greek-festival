@@ -4,24 +4,24 @@ using UnityEngine;
 
 public class ProjectileTrap : MonoBehaviour
 {
-    Collider2D _collider;
-    [SerializeField] Transform[] launchPoints;
-    [SerializeField] GameObject projectile;
-    [SerializeField] float projectileSpeed = 8f;
-    [SerializeField] float fireRate = 1f;
-    float timer = 0;
-    [SerializeField] float delay = 0f;
+    private Collider2D _collider;
+    [SerializeField] private Transform[] launchPoints;
+    [SerializeField] private GameObject projectile;
+    [SerializeField] private float projectileSpeed = 8f;
+    [SerializeField] private float fireRate = 1f;
+    private float timer = 0;
+    [SerializeField] private float delay = 0f;
 
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         TryGetComponent(out _collider);
         timer = -delay;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if(timer > fireRate)
         {

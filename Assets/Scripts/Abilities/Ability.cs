@@ -10,7 +10,7 @@ public abstract class Ability : MonoBehaviour
     public float damage = 1f;
     public BaseMovement.KnockbackInfo knockback;
     public float cooldown;
-    float timer;
+    private float timer;
 
     public BaseMovement.KnockbackInfo recoilKnockback;
 

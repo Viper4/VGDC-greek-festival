@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class SimpleBob : MonoBehaviour
 {
-    Vector2 startPosition;
-    [SerializeField] float bobHeight = 0.5f;
-    [SerializeField] float bobSpeed = 1f;
-    float seed = 0;
+    private Vector2 startPosition;
+    [SerializeField] private float bobHeight = 0.5f;
+    [SerializeField] private float bobSpeed = 1f;
+    private float seed = 0;
 
-    void Start()
+    private void Start()
     {
         ResetBob();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         transform.localPosition = startPosition + bobHeight * Mathf.Sin(seed + Time.time * bobSpeed) * Vector2.up;
     }

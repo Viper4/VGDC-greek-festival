@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class CameraBounds : Trigger
 {
-    Collider2D boundsCollider;
-    [SerializeField] bool lockCamera = false;
+    private Collider2D boundsCollider;
+    [SerializeField] private bool lockCamera = false;
     public Vector2 min;
     public Vector2 max;
-    CameraBounds otherBounds;
+    private CameraBounds otherBounds;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         InitializeHashSet();
         if (!TryGetComponent(out boundsCollider) && min == max)

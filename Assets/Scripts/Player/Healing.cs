@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Healing : MonoBehaviour
 {
@@ -15,15 +13,18 @@ public class Healing : MonoBehaviour
 
     [SerializeField] private float overhealTime = 60f;
 
-    void OnEnable(){
-        Player.instance.input.Player.Interact.performed += Heal;
+    private void OnEnable()
+    {
+        Player.instance.input.Player.Interact.performed += ctx => Heal();
     }
 
-    void OnDisable(){
-        Player.instance.input.Player.Interact.performed -= Heal;
+    private void OnDisable()
+    {
+        Player.instance.input.Player.Interact.performed -= ctx => Heal();
     }
 
-    void Heal(InputAction.CallbackContext context){
+    private void Heal()
+    {
         if(unsavedHealing > 0 && inHealerRange)
         {
             if(target.health + unsavedHealing > target.originalMaxHealth)
@@ -37,8 +38,9 @@ public class Healing : MonoBehaviour
             unsavedHealing = 0;
         }
     }
-    
-    IEnumerator OverhealTimer(float OverhealAmount){
+
+    private IEnumerator OverhealTimer(float OverhealAmount)
+    {
         float timer = 0;
         OverhealAmount = Mathf.Min(OverhealAmount, maxOverheal);
         while(timer < overhealTime)
@@ -49,12 +51,14 @@ public class Healing : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other){
+    private void OnTriggerEnter2D(Collider2D other)
+    {
         if (other.CompareTag("Healer"))
             inHealerRange = true;
     }
 
-    void OnTriggerExit2D(Collider2D other){
+    private void OnTriggerExit2D(Collider2D other)
+    {
         if (other.CompareTag("Healer"))
             inHealerRange = false;
     }

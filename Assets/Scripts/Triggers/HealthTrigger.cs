@@ -5,20 +5,20 @@ using UnityEngine;
 
 public class HealthTrigger : Trigger
 {
-    AudioSource audioSource;
+    private AudioSource audioSource;
 
     public float healthAmount = 1;
-    [SerializeField] bool applyKnockback = false;
+    [SerializeField] private bool applyKnockback = false;
     public BaseMovement.KnockbackInfo knockback;
-    [SerializeField] float maxHealthAmount = 0;
-    [SerializeField] int uses = 1;
-    [SerializeField] float healthSystemCooldown = 0f;
-    [SerializeField] float cooldown = 0.5f;
-    [SerializeField] bool overrideHealthSystemCooldown = false;
-    HealthSystem triggerHealthSystem;
+    [SerializeField] private float maxHealthAmount = 0;
+    [SerializeField] private int uses = 1;
+    [SerializeField] private float healthSystemCooldown = 0f;
+    [SerializeField] private float cooldown = 0.5f;
+    [SerializeField] private bool overrideHealthSystemCooldown = false;
+    private HealthSystem triggerHealthSystem;
     [HideInInspector] public bool player = false;
 
-    bool canUse = true;
+    private bool canUse = true;
 
     private void Start()
     {
@@ -26,14 +26,14 @@ public class HealthTrigger : Trigger
         TryGetComponent(out audioSource);
     }
 
-    IEnumerator UseCooldown()
+    private IEnumerator UseCooldown()
     {
         canUse = false;
         yield return new WaitForSeconds(cooldown);
         canUse = true;
     }
 
-    void Use()
+    private void Use()
     {
         if (canUse)
         {

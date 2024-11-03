@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class TrapFloor : Trigger
 {
-    [SerializeField] SpriteRenderer spriteRenderer;
-    [SerializeField] Collider2D trapCollider;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private Collider2D trapCollider;
 
-    [SerializeField] GameObject breakParticles;
-    [SerializeField] float breakDelay = 0f;
-    [SerializeField] Color startColor;
-    [SerializeField] Color endColor;
-    float breakTimer = 0f;
-    AudioSource breakAudio;
+    [SerializeField] private GameObject breakParticles;
+    [SerializeField] private float breakDelay = 0f;
+    [SerializeField] private Color startColor;
+    [SerializeField] private Color endColor;
+    private float breakTimer = 0f;
+    private AudioSource breakAudio;
 
-    [SerializeField] float mendSpeed = 0.1f;
+    [SerializeField] private float mendSpeed = 0.1f;
 
-    [SerializeField] float respawnDelay = 5f;
-    bool broken = false;
+    [SerializeField] private float respawnDelay = 5f;
+    private bool broken = false;
 
     private void Start()
     {
@@ -72,7 +72,7 @@ public class TrapFloor : Trigger
         }
     }
 
-    IEnumerator Respawn()
+    private IEnumerator Respawn()
     {
         yield return new WaitForSeconds(respawnDelay);
         breakTimer = 0;

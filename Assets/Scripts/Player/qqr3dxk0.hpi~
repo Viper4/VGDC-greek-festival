@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class Player : BaseMovement
 {
@@ -14,6 +15,18 @@ public class Player : BaseMovement
     private WallJumping wallJumping;
     private Dashing dashing;
     private GroundPound groundPound;
+
+    [System.Serializable]
+    public enum PlayerState
+    {
+        Normal,
+        WallJumping,
+        Dashing,
+        Climbing,
+        WallSliding,
+        GroundPounding
+    }
+    private PlayerState currentState = PlayerState.Normal;
 
     // Coyote time and double jumping
     [Header("Player")]
@@ -125,6 +138,11 @@ public class Player : BaseMovement
             }
 
             newVelocity += knockbackVelocity;
+            if(newVelocity != Vector2.zero)
+            {
+                Debug.Log("newVelocity: " + newVelocity);
+                Debug.Log("rb: " + rb.velocity);
+            }
 
             ApplyVelocity(newVelocity);
         }
@@ -175,6 +193,11 @@ public class Player : BaseMovement
         }
     }
 
+    public void ChangeState(PlayerState newState) 
+    { 
+        currentState = newState;
+    }
+
     private void Crouch()
     {
         if (Time.timeScale > 0)
@@ -197,9 +220,8 @@ public class Player : BaseMovement
 
     public void UncrouchAnimation(){
         movementAudio.PlayCrouch();
-        float deltaY = 1 - transform.localScale.y;
         transform.localScale = new Vector3(1, 1, 1);
-        transform.position += new Vector3(0, deltaY);
+        transform.position += new Vector3(0, 0.5f);
     }
 
     private void Jump()

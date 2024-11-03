@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class CollisionSounds : MonoBehaviour
 {
-    [SerializeField] AudioSource audioSource;
-    [SerializeField] float strengthThreshold = 2;
-    [SerializeField] float[] pitchRange = { 0.8f, 1.2f };
-    [SerializeField] float volumeMultiplier = 0.1f;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private float strengthThreshold = 2;
+    [SerializeField] private float[] pitchRange = { 0.8f, 1.2f };
+    [SerializeField] private float volumeMultiplier = 0.1f;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         if(audioSource == null)
         {

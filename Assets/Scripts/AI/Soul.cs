@@ -4,24 +4,24 @@ using UnityEngine;
 
 public class Soul : MonoBehaviour
 {
-    Rigidbody2D rb;
-    SpriteRenderer spriteRenderer;
+    private Rigidbody2D rb;
+    private SpriteRenderer spriteRenderer;
 
-    Color startColor;
-    Vector3 startPosition;
+    private Color startColor;
+    private Vector3 startPosition;
 
     public Transform target;
-    [SerializeField] float followSpeed = 3.5f;
-    [SerializeField] float followRadius = 5f;
-    [SerializeField] Color followingColor;
-    [SerializeField, ColorUsage(true, true)] Color followingEmission;
+    [SerializeField] private float followSpeed = 3.5f;
+    [SerializeField] private float followRadius = 5f;
+    [SerializeField] private Color followingColor;
+    [SerializeField, ColorUsage(true, true)] private Color followingEmission;
 
-    Transform ground;
+    private Transform ground;
 
-    [SerializeField] float fadeTime = 0.5f;
-    bool fading = false;
+    [SerializeField] private float fadeTime = 0.5f;
+    private bool fading = false;
 
-    [SerializeField] SimpleBob simpleBob;
+    [SerializeField] private SimpleBob simpleBob;
 
     private void Start()
     {
@@ -31,7 +31,7 @@ public class Soul : MonoBehaviour
         startPosition = transform.position;
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (!fading)
         {
@@ -95,7 +95,7 @@ public class Soul : MonoBehaviour
         StartCoroutine(FadeRoutine());
     }
 
-    IEnumerator FadeRoutine()
+    private IEnumerator FadeRoutine()
     {
         // Fade spirit's sprite color alpha to 0 and delete it after
         float fadeTimer = 0;
