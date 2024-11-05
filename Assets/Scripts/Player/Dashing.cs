@@ -60,11 +60,11 @@ public class Dashing : MonoBehaviour
 
         if (moveInput != Vector2.zero)
         {
-            dashRoutine = StartCoroutine(Dash(moveInput, jumped));
+            dashRoutine = StartCoroutine(Dash(moveInput, jumped && moveInput.y == 0));
         }
         else
         {
-            dashRoutine = StartCoroutine(Dash(initialInput, jumped));
+            dashRoutine = StartCoroutine(Dash(initialInput, jumped && initialInput.y == 0));
         }
     }
 
@@ -88,7 +88,7 @@ public class Dashing : MonoBehaviour
                 yield return new WaitForEndOfFrame();
             }
         }
-        else if(moveInput.x != 0)
+        else if(moveInput.y == 0 && moveInput.x != 0)
         {
             // Stop horizontal dash if we hit a wall
             float timer = 0;

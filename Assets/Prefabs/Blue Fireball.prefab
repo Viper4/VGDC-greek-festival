@@ -200,11 +200,11 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: -4250280097031624711}
         m_TargetAssemblyTypeName: Trigger, Assembly-CSharp
-        m_MethodName: DestroyGameObject
+        m_MethodName: DestroyTarget
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 7016418746558379312}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -225,6 +225,7 @@ MonoBehaviour:
   healthSystemCooldown: 0
   cooldown: 0
   overrideHealthSystemCooldown: 1
+  player: 0
 --- !u!82 &6577362541230408115
 AudioSource:
   m_ObjectHideFlags: 0
