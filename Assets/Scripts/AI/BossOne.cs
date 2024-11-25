@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class BossOne : BaseMovement
 {
@@ -34,18 +35,27 @@ public class BossOne : BaseMovement
 
     [SerializeField] private GameObject shield;
     [SerializeField] private Animator animator;
+    private AudioSource audioSource;
     private HealthTrigger healthTrigger;
     private HealthSystem healthSystem;
 
     private Vector3 spawnPosition;
 
+    [SerializeField] private AudioClip landSound;
+    [SerializeField] private AudioClip chargeImpactSound;
+    [SerializeField] private float shakeMagnitude = 0.4f;
+    [SerializeField] private float shakeSpeed = 12f;
+    [SerializeField] private float shakeDuration = 0.6f;
+
     public override void Start()
     {
         base.Start();
+        audioSource = GetComponent<AudioSource>();
         healthTrigger = GetComponent<HealthTrigger>();
         healthSystem = GetComponent<HealthSystem>();
         originalIdleTime = idleTime;
         spawnPosition = transform.position;
+        onLand = Land;
     }
 
     private void FixedUpdate()
@@ -54,6 +64,11 @@ public class BossOne : BaseMovement
         {
             KnockbackPlayer();
         }
+    }
+
+    private void Update()
+    {
+        MovementUpdate();
     }
 
     public void StartBoss()
@@ -82,17 +97,20 @@ public class BossOne : BaseMovement
             currentState = GetRandomEnum<BossState>();
         }
         Vector2 randomDirection = Random.Range(0, 2) == 0 ? Vector2.right : Vector2.left;
+        Walking = true;
         moveVelocity = randomDirection * walkSpeed;
         float idleTimer = 0;
         float walkTime = Random.Range(Mathf.Min(minWalk, idleTime), Mathf.Max(maxWalk, idleTime));
         while(idleTimer < idleTime)
         {
-            if(idleTimer < walkTime)
+            if (idleTimer < walkTime)
             {
-                rb.velocity = new Vector2(moveVelocity.x, rb.velocity.y);
+                moveVelocity.y = rb.velocity.y;
+                ApplyVelocity(moveVelocity);
             }
             if (idleTimer + attackReactionTimes[(int)currentState] > idleTime)
             {
+                moveVelocity = Vector2.zero;
                 switch (currentState)
                 {
                     case BossState.Slash:
@@ -115,19 +133,16 @@ public class BossOne : BaseMovement
             case BossState.Slash:
                 idleTime = slashIdleTime;
                 lastState = BossState.Slash;
-                Debug.Log("Slash");
                 StartCoroutine(Slash());
                 break;
             case BossState.Jump:
                 idleTime = originalIdleTime;
                 lastState = BossState.Jump;
-                Debug.Log("Jump");
                 StartCoroutine(Jump());
                 break;
             case BossState.Charge:
                 idleTime = originalIdleTime;
                 lastState = BossState.Charge;
-                Debug.Log("Charge");
                 StartCoroutine(Charge());
                 break;
             }
@@ -173,6 +188,7 @@ public class BossOne : BaseMovement
 
     IEnumerator Charge()
     {
+        Walking = false;
         healthTrigger.healthAmount = -chargeDamage;
         RotateTowardsPlayer();
         moveVelocity = transform.right * chargeSpeed;
@@ -227,7 +243,28 @@ public class BossOne : BaseMovement
 
     public void ResetBoss()
     {
-        transform.position = spawnPosition;
-        gameObject.SetActive(false);
+        if (gameObject.activeSelf)
+        {
+            transform.position = spawnPosition;
+            gameObject.SetActive(false);
+        }
+    }
+
+    private void Land()
+    {
+        if (currentState == BossState.Charge)
+        {
+            audioSource.PlayOneShot(chargeImpactSound);
+        }
+        else
+        {
+            audioSource.PlayOneShot(landSound);
+        }
+        Camera.main.GetComponent<CameraControl>().StartCameraShake(shakeMagnitude, shakeSpeed, shakeDuration);
+    }
+
+    public void PlayAudioClip(AudioClip audioClip)
+    {
+        audioSource.PlayOneShot(audioClip);
     }
 }

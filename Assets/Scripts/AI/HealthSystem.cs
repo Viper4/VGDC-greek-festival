@@ -107,10 +107,7 @@ public class HealthSystem : MonoBehaviour
     {
         if (invincible || immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
             return false;
-        float previousHealth = health;
         health += amount;
-        if (health == previousHealth)
-            return false;
         StartCoroutine(HealthCooldown(cooldown));
         HealthUpdate();
         return true;
@@ -118,12 +115,9 @@ public class HealthSystem : MonoBehaviour
 
     public bool SetHealth(float amount, float cooldown, bool overrideCooldown = false)
     {
-        if (invincible || immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
+        if (invincible || immune || amount == health || (!canUpdateHealth && !overrideCooldown))
             return false;
-        float previousHealth = health;
         health = amount;
-        if (health == previousHealth)
-            return false;
         StartCoroutine(HealthCooldown(cooldown));
         HealthUpdate();
         return true;
@@ -166,18 +160,18 @@ public class HealthSystem : MonoBehaviour
     {
         if (invincible || immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
             return false;
-        StartCoroutine(HealthCooldown(cooldown));
         maxHealth += amount;
+        StartCoroutine(HealthCooldown(cooldown));
         MaxHealthUpdate();
         return true;
     }
 
     public bool SetMaxHealth(float amount, float cooldown, bool overrideCooldown = false)
     {
-        if (invincible || immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
+        if (invincible || immune || amount == maxHealth || (!canUpdateHealth && !overrideCooldown))
             return false;
-        StartCoroutine(HealthCooldown(cooldown));
         maxHealth = amount;
+        StartCoroutine(HealthCooldown(cooldown));
         MaxHealthUpdate();
         return true;
     }

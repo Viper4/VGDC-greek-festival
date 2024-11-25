@@ -18,6 +18,8 @@ public class CameraControl : MonoBehaviour
     public bool locked = false;
     [HideInInspector] public float originalHeight;
     [HideInInspector] public float originalWidth;
+    public Vector3 cameraShake;
+    bool shakingCamera = false;
 
     private void OnEnable()
     {
@@ -63,7 +65,7 @@ public class CameraControl : MonoBehaviour
             }
         }
         newPosition.z = -1; // Keep the camera above everything so we can see
-        transform.position = Vector3.Lerp(transform.position, newPosition, followSpeed * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, newPosition, followSpeed * Time.deltaTime) + cameraShake;
         targetPreviousPosition = target.position;
     }
 
@@ -93,5 +95,29 @@ public class CameraControl : MonoBehaviour
             previewPosition = _camera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         }
         preview = value;
+    }
+
+    public void StartCameraShake(float magnitude, float speed, float duration)
+    {
+        if(!shakingCamera)
+            StartCoroutine(CameraShake(magnitude, speed, duration));
+    }
+
+    private IEnumerator CameraShake(float magnitude, float speed, float duration)
+    {
+        shakingCamera = true;
+        float timer = 0;
+        float x = Random.Range(-999f, 999f);
+        float y = Random.Range(-999f, 999f);
+        while (timer < duration)
+        {
+            cameraShake = new Vector3((Mathf.PerlinNoise1D(x) - 0.5f) * 2, (Mathf.PerlinNoise1D(y) - 0.5f) * 2, 0) * magnitude;
+            timer += Time.deltaTime;
+            x += Time.deltaTime * speed;
+            y += Time.deltaTime * speed;
+            yield return new WaitForEndOfFrame();
+        }
+        cameraShake = Vector3.zero;
+        shakingCamera = false;
     }
 }

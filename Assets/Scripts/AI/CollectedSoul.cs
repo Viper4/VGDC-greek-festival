@@ -94,7 +94,7 @@ public class CollectedSoul : BaseMovement
                         {
                             if (destinations[^2].y < destinations[^1].y)
                             {
-                                GoDown();
+                                Descend();
                             }
                         }
                         destinations.RemoveAt(destinations.Count - 1);
@@ -194,8 +194,13 @@ public class CollectedSoul : BaseMovement
         dialogueText.text = "";
         for (int i = 0; i < index; i++)
         {
-            dialogueText.text += dialogue[i] + "\n";
+            dialogueText.text += dialogue[i];
+            if(i < index - 1)
+            {
+                dialogueText.text += "\n";
+            }
         }
+        dialogueAnimationRoutine = null;
     }
 
     public void EnterDialogue()
@@ -221,16 +226,17 @@ public class CollectedSoul : BaseMovement
         if(inDialogue)
         {
             if(dialogueAnimationRoutine != null)
-                SkipDialogue(Mathf.Min(dialogueIndex + 1, dialogue.Length - 1));
-
-            if (dialogueIndex < dialogue.Length - 2)
             {
-                dialogueIndex++;
-                if (dialogueAnimationRoutine == null)
+                SkipDialogue(Mathf.Min(dialogueIndex + 1, dialogue.Length - 1));
+            }
+            else 
+            {
+                if (dialogueIndex < dialogue.Length - 2)
                 {
+                    dialogueIndex++;
                     dialogueText.text += "\n";
+                    dialogueAnimationRoutine = StartCoroutine(AnimatedDialogue(dialogue[dialogueIndex], timesPerChar[dialogueIndex]));
                 }
-                dialogueAnimationRoutine = StartCoroutine(AnimatedDialogue(dialogue[dialogueIndex], timesPerChar[dialogueIndex]));
             }
         }
     }

@@ -1,7 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.Events;
 
 public class BaseMovement : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class BaseMovement : MonoBehaviour
     private Transform ground;
     private bool isGrounded = false;
     public bool IsGrounded 
-    { 
+    {
         get
         { 
             return isGrounded;
@@ -38,7 +39,8 @@ public class BaseMovement : MonoBehaviour
             isGrounded = value;
         } 
     }
-    [SerializeField] float fallCheckDistance = 3f;
+    [SerializeField] protected Action onLand;
+    [SerializeField] private float fallCheckDistance = 3f;
 
     public float climbSpeed = 2f;
     private bool climbing = false;
@@ -140,9 +142,9 @@ public class BaseMovement : MonoBehaviour
         movementAudio.PlayJump(ground.tag);
     }
 
-    public void GoDown()
+    public void Descend()
     {
-        if(stairs != null)
+        if (stairs != null)
         {
             stairs.Descend(_collider);
             stairs = null;
@@ -159,6 +161,7 @@ public class BaseMovement : MonoBehaviour
                 if (movementAudio != null && !isGrounded)
                     movementAudio.PlayLand(ground.tag, Mathf.Abs(collision.relativeVelocity.y) * 0.1f);
                 isGrounded = true;
+                onLand?.Invoke();
                 return true;
             }
         }

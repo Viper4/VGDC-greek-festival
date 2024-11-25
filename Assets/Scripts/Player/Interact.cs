@@ -13,6 +13,7 @@ public class Interact : Trigger
     private Coroutine fadeRoutine;
     [SerializeField] private Color startColor;
     [SerializeField] private Color endColor;
+    [SerializeField] private bool disableOnInteract = true;
     private bool interacted = false;
 
     private void OnEnable()
@@ -30,7 +31,8 @@ public class Interact : Trigger
         if(collidersInTrigger > 0)
         {
             OnInteract?.Invoke();
-            interacted = true;
+            if (disableOnInteract)
+                interacted = true;
             if (fadeRoutine != null)
                 StopCoroutine(fadeRoutine);
             popupText.color = startColor;

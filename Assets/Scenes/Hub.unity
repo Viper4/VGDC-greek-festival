@@ -371,6 +371,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -543,6 +546,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -870,6 +876,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -1042,6 +1051,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -1214,6 +1226,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -1627,6 +1642,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -1839,6 +1857,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f25cdb37b1acff849aa4197e094a59da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -2387,6 +2408,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -2837,6 +2861,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -3009,6 +3036,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -3181,6 +3211,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -3353,6 +3386,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -3643,6 +3679,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -4062,6 +4101,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -4323,7 +4365,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &717420665
 Transform:
   m_ObjectHideFlags: 0
@@ -4351,6 +4393,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cb56480bea16674ea76a6b7ba98fa52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   onTriggerEnter:
@@ -4631,6 +4676,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 716203d11df839b47b481afa0c1132af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -4937,6 +4985,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -5109,6 +5160,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -5281,6 +5335,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -5748,7 +5805,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1993446810302680352, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2172163241395074571, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: m_IsActive
@@ -5909,6 +5966,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -6789,6 +6849,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -6961,6 +7024,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -7237,7 +7303,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1264073672
 Transform:
   m_ObjectHideFlags: 0
@@ -7278,6 +7344,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cb56480bea16674ea76a6b7ba98fa52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   onTriggerEnter:
@@ -7300,7 +7369,7 @@ MonoBehaviour:
         m_MethodName: DestroyGameObject
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 1264073671}
+          m_ObjectArgument: {fileID: 717420664}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -7517,6 +7586,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -7702,6 +7774,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f25cdb37b1acff849aa4197e094a59da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Soul
@@ -8040,6 +8115,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -8536,6 +8614,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -9166,6 +9247,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -9586,6 +9670,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f25cdb37b1acff849aa4197e094a59da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -9763,6 +9850,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c98f932ac4900c46903e40a223e1b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -10443,9 +10533,9 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1154516408}
   - {fileID: 583610506}
   - {fileID: 1529002728}
   - {fileID: 1833481666}
-  - {fileID: 8998849694891058397}
   - {fileID: 873861192}
-  - {fileID: 1154516408}
+  - {fileID: 8998849694891058397}

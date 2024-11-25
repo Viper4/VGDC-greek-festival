@@ -264,7 +264,6 @@ public class Player : BaseMovement
         {
             healing.unsavedHealing += healthSystem.KillHealAmount;
             previousKill = healthSystem;
-            Debug.Log(healing.unsavedHealing);
         }
     }
 

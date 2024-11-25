@@ -226,12 +226,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cb56480bea16674ea76a6b7ba98fa52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   onTriggerEnter:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7438897545462268611}
+      - m_Target: {fileID: 1430991937371450377}
         m_TargetAssemblyTypeName: HealthSystem, Assembly-CSharp
         m_MethodName: FadeHealthBarIn
         m_Mode: 4
@@ -243,7 +246,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 7438897545462268611}
+      - m_Target: {fileID: 1430991937371450377}
         m_TargetAssemblyTypeName: HealthSystem, Assembly-CSharp
         m_MethodName: set_PlayerNearby
         m_Mode: 6
@@ -270,7 +273,7 @@ MonoBehaviour:
   onTriggerExit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7438897545462268611}
+      - m_Target: {fileID: 1430991937371450377}
         m_TargetAssemblyTypeName: HealthSystem, Assembly-CSharp
         m_MethodName: FadeHealthBarOut
         m_Mode: 4
@@ -282,7 +285,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 7438897545462268611}
+      - m_Target: {fileID: 1430991937371450377}
         m_TargetAssemblyTypeName: HealthSystem, Assembly-CSharp
         m_MethodName: set_PlayerNearby
         m_Mode: 6
@@ -594,12 +597,12 @@ GameObject:
   - component: {fileID: 7673148624627711460}
   - component: {fileID: 2361992913522901211}
   - component: {fileID: 5978282107288441153}
-  - component: {fileID: 7438897545462268611}
   - component: {fileID: 9164816117063691086}
   - component: {fileID: 309998505201321071}
   - component: {fileID: 9223291077386494900}
   - component: {fileID: 5308239909779260276}
   - component: {fileID: 6791098325775229122}
+  - component: {fileID: 1430991937371450377}
   m_Layer: 8
   m_Name: Controller
   m_TagString: Enemy
@@ -738,64 +741,6 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 2}
   m_Direction: 0
---- !u!114 &7438897545462268611
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8890461973935167281}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91137798dd1cf054783e9ee646d3b911, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  invincible: 0
-  originalMaxHealth: 0
-  maxHealth: 5
-  health: 5
-  healthBarSprites:
-  - {fileID: 6547524103937365302}
-  - {fileID: 3983165666670958838}
-  bossBarImage: {fileID: 0}
-  bossBarWidth: 0
-  healthBarFadeSpeed: 1.5
-  healthBarAlwaysVisible: 0
-  healthBarScale: {x: 3, y: 0.3, z: 1}
-  onHealthUpdate:
-    m_PersistentCalls:
-      m_Calls: []
-  onMaxHealthUpdate:
-    m_PersistentCalls:
-      m_Calls: []
-  onDeath:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7438897545462268611}
-        m_TargetAssemblyTypeName: UnityEngine.MonoBehaviour, UnityEngine
-        m_MethodName: StopAllCoroutines
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 203001484719344653}
-        m_TargetAssemblyTypeName: Trigger, Assembly-CSharp
-        m_MethodName: DestroyTarget
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 862170027641714331}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  KillHealAmount: 0
 --- !u!114 &9164816117063691086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -822,6 +767,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cb56480bea16674ea76a6b7ba98fa52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - DeathZone
   onTriggerEnter:
@@ -835,11 +783,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 309998505201321071}
         m_TargetAssemblyTypeName: Trigger, Assembly-CSharp
-        m_MethodName: DestroyGameObject
+        m_MethodName: DestroyTarget
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 862170027641714331}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1317,3 +1265,49 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1430991937371450377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8890461973935167281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91137798dd1cf054783e9ee646d3b911, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  invincible: 0
+  originalMaxHealth: 0
+  maxHealth: 24
+  health: 24
+  healthBarSprites:
+  - {fileID: 6547524103937365302}
+  - {fileID: 3983165666670958838}
+  bossBarImage: {fileID: 0}
+  bossBarWidth: 0
+  healthBarFadeSpeed: 1.5
+  healthBarAlwaysVisible: 0
+  healthBarScale: {x: 3, y: 0.3, z: 1}
+  onHealthUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+  onMaxHealthUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeath:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 203001484719344653}
+        m_TargetAssemblyTypeName: Trigger, Assembly-CSharp
+        m_MethodName: DestroyTarget
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 862170027641714331}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  KillHealAmount: 0

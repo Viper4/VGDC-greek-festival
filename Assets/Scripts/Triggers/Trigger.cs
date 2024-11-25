@@ -5,6 +5,7 @@ using UnityEngine.Events;
 
 public class Trigger : MonoBehaviour
 {
+    [SerializeField] LayerMask ignoreLayers;
     [SerializeField] private string[] triggerTags;
     public HashSet<string> tagHashSet = new HashSet<string>();
     [SerializeField] private UnityEvent<Collider2D> onTriggerEnter;
@@ -62,30 +63,42 @@ public class Trigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (tagHashSet.Count == 0 || tagHashSet.Contains(other.tag))
-            TriggerEnter(other);
-        onAnyTriggerEnter?.Invoke(other);
+        if ((ignoreLayers & (1 << other.gameObject.layer)) == 0)
+        {
+            if (tagHashSet.Count == 0 || tagHashSet.Contains(other.tag))
+                TriggerEnter(other);
+            onAnyTriggerEnter?.Invoke(other);
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (tagHashSet.Count == 0 || tagHashSet.Contains(other.tag))
-            TriggerExit(other);
-        onAnyTriggerExit?.Invoke(other);
+        if ((ignoreLayers & (1 << other.gameObject.layer)) == 0)
+        {
+            if (tagHashSet.Count == 0 || tagHashSet.Contains(other.tag))
+                TriggerExit(other);
+            onAnyTriggerExit?.Invoke(other);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (tagHashSet.Count == 0 || tagHashSet.Contains(collision.transform.tag))
-            CollisionEnter(collision);
-        onAnyCollisionEnter?.Invoke(collision);
+        if ((ignoreLayers & (1 << collision.gameObject.layer)) == 0)
+        {
+            if (tagHashSet.Count == 0 || tagHashSet.Contains(collision.transform.tag))
+                CollisionEnter(collision);
+            onAnyCollisionEnter?.Invoke(collision);
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (tagHashSet.Count == 0 || tagHashSet.Contains(collision.transform.tag))
-            CollisionExit(collision);
-        onAnyCollisionExit?.Invoke(collision);
+        if ((ignoreLayers & (1 << collision.gameObject.layer)) == 0)
+        {
+            if (tagHashSet.Count == 0 || tagHashSet.Contains(collision.transform.tag))
+                CollisionExit(collision);
+            onAnyCollisionExit?.Invoke(collision);
+        }
     }
 
     public void DestroyTarget(Object toDestroy)

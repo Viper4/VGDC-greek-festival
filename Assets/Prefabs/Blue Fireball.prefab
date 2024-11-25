@@ -162,6 +162,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ed12efc4b9225643a34f866b06d3945, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   - Enemy
@@ -214,7 +217,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   collidersInTrigger: 0
-  healthAmount: -8
+  healthAmount: -4
   applyKnockback: 1
   knockback:
     velocity: {x: 0, y: 7}
