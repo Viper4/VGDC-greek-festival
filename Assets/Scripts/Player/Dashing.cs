@@ -10,9 +10,9 @@ public class Dashing : MonoBehaviour
     [SerializeField] private float dashCooldown = 0.1f;
     [SerializeField] private float dashDrag = 0.5f;
     [SerializeField] private SpriteRenderer dashIndicator;
-    private Coroutine dashRoutine;
 
-    private bool canDash = true;
+    private Coroutine dashRoutine;
+    [HideInInspector] public bool canDash = true;
     [HideInInspector] public Vector2 velocity = Vector2.zero;
     private Vector2 lastInput;
 
@@ -48,11 +48,25 @@ public class Dashing : MonoBehaviour
         }
     }
 
+    public void TryResetDash()
+    {
+        if (dashRoutine == null)
+        {
+            canDash = true;
+            UpdateDashIndicator();
+        }
+    }
+
+    public void UpdateDashIndicator()
+    {
+        dashIndicator.color = canDash ? Color.green : Color.red;
+    }
+
     IEnumerator WaitForInput(Vector2 initialInput)
     {
         bool jumped = Player.instance.input.Player.Jump.ReadValue<float>() >= 1f;
         canDash = false;
-        dashIndicator.color = Color.red;
+        UpdateDashIndicator();
         yield return new WaitForSecondsRealtime(inputWait);
         Vector2 moveInput = Player.instance.input.Player.Move.ReadValue<Vector2>();
 
@@ -141,13 +155,14 @@ public class Dashing : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
         velocity = Vector2.zero;
-        dashIndicator.color = Color.green;
         canDash = true;
+        UpdateDashIndicator();
+        dashRoutine = null;
         if (waveDash && Player.instance.input.Player.Jump.ReadValue<float>() >= 1f)
         {
             moveInput.y = 0;
             moveInput.Normalize();
-            StartCoroutine(Dash(moveInput, true));
+            dashRoutine = StartCoroutine(Dash(moveInput, true));
         }
     }
 }

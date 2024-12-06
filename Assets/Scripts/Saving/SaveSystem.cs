@@ -1,0 +1,210 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class SaveSystem : MonoBehaviour
+{
+    public static SaveSystem instance { get; private set; }
+
+    [System.Serializable]
+    private struct PlayerData
+    {
+        public int sceneIndex;
+        public float health;
+        public int deaths;
+        public int soulsCollected;
+    }
+
+    private void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+            StoreSaveableEntities();
+            DontDestroyOnLoad(gameObject);
+            Load();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public Dictionary<string, SaveableEntity> saveableEntityDict = new Dictionary<string, SaveableEntity>();
+    private Dictionary<string, object> gameState = new Dictionary<string, object>();
+
+    public void StoreSaveableEntities()
+    {
+        saveableEntityDict.Clear();
+        foreach (SaveableEntity saveable in FindObjectsOfType<SaveableEntity>(true))
+        {
+            saveableEntityDict[saveable.UniqueId] = saveable;
+        }
+    }
+
+    public void CaptureEntityStates()
+    {
+        foreach (SaveableEntity saveable in saveableEntityDict.Values)
+        {
+            gameState[saveable.UniqueId] = saveable.CaptureState();
+        }
+    }
+
+    public void RestoreEntityStates()
+    {
+        if (gameState.Count == 0)
+            return;
+        foreach (SaveableEntity saveable in saveableEntityDict.Values)
+        {
+            string id = saveable.UniqueId;
+            if (gameState.ContainsKey(id))
+                saveable.RestoreState(gameState[id]);
+            else
+                saveable.Delete();
+        }
+    }
+
+    public void Save()
+    {
+        CaptureState(gameState);
+        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+        string playerPath = GetPath($"player.txt");
+        print($"saving player data to {playerPath}");
+
+        PlayerData playerData = new PlayerData()
+        {
+            sceneIndex = sceneIndex,
+            health = Player.instance.GetComponent<HealthSystem>().health,
+            deaths = Player.instance.deaths,
+            soulsCollected = Player.instance.soulsCollected,
+        };
+        using (FileStream fs = File.Open(playerPath, FileMode.Create))
+        {
+            // Serialize our object
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            binaryFormatter.Serialize(fs, playerData);
+        }
+
+        if (sceneIndex != 0)
+        {
+            string scenePath = GetPath($"scene{sceneIndex}.txt");
+            print($"saving scene to {scenePath}");
+
+            using (FileStream fs = File.Open(scenePath, FileMode.Create))
+            {
+                // Serialize our object
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                binaryFormatter.Serialize(fs, gameState);
+            }
+        }
+    }
+
+    public void Load()
+    {
+        string playerPath = GetPath("player.txt");
+        print($"loading player data from {playerPath}");
+        if (!File.Exists(playerPath))
+            return;
+
+        PlayerData playerData;
+        using (FileStream fs = File.Open(playerPath, FileMode.Open))
+        {
+            // Deserialize our object
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            playerData = (PlayerData)binaryFormatter.Deserialize(fs);
+        }
+        Player.instance.deaths = playerData.deaths;
+        Player.instance.soulsCollected = playerData.soulsCollected;
+        Player.instance.GetComponent<HealthSystem>().health = playerData.health;
+
+        string scenePath = GetPath($"scene{playerData.sceneIndex}.txt");
+        print($"loading scene data from {scenePath}");
+        if (File.Exists(scenePath))
+        {
+            using (FileStream fs = File.Open(scenePath, FileMode.Open))
+            {
+                // Deserialize our object
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                gameState = (Dictionary<string, object>)binaryFormatter.Deserialize(fs);
+            }
+        }
+        else
+        {
+            gameState = new Dictionary<string, object>();
+        }
+
+        if (SceneManager.GetActiveScene().buildIndex != playerData.sceneIndex)
+        {
+            SceneLoader.instance.LoadScene(playerData.sceneIndex);
+        }
+    }
+
+    public void Delete(string saveFile)
+    {
+        File.Delete(GetPath(saveFile));
+    }
+
+    // Used to capture states of all saveable objects in the game
+    private void CaptureState(Dictionary<string, object> state)
+    {
+        state.Clear();
+        foreach (SaveableEntity saveable in FindObjectsOfType<SaveableEntity>(true))
+        {
+            state[saveable.UniqueId] = saveable.CaptureState();
+        }
+    }
+
+    // Used to restore states of all saveable objects in the game
+    private void RestoreState(Dictionary<string, object> state)
+    {
+        foreach (SaveableEntity saveable in FindObjectsOfType<SaveableEntity>(true))
+        {
+            string id = saveable.UniqueId;
+            if (state.ContainsKey(id))
+                saveable.RestoreState(state[id]);
+        }
+    }
+
+    void SaveFile(string saveFile, Dictionary<string, object> state)
+    {
+        string path = GetPath(saveFile);
+        print($"saving to {path}");
+
+        using (FileStream fs = File.Open(path, FileMode.Create))
+        {
+            // Serialize our object
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            binaryFormatter.Serialize(fs, state);
+        }
+    }
+
+    Dictionary<string, object> LoadFile(string saveFile)
+    {
+        string path = GetPath(saveFile);
+        if (!File.Exists(path))
+            return new Dictionary<string, object>();
+
+        using (FileStream fs = File.Open(path, FileMode.Open))
+        {
+            // Deserialize our object
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            return (Dictionary<string, object>)binaryFormatter.Deserialize(fs);
+        }
+    }
+
+    private string GetPath(string saveFile)
+    {
+        return Path.Combine(Application.dataPath + "/Saves/", saveFile);
+    }
+
+    public bool HasCurrentSceneSave()
+    {
+        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        return File.Exists(GetPath($"scene{sceneIndex}.txt"));
+    }
+}

@@ -7,7 +7,7 @@ using UnityEngine.Events;
 public class HealthSystem : MonoBehaviour
 {
     [SerializeField] private bool invincible = false;
-    [HideInInspector] public float originalMaxHealth;
+    public float originalMaxHealth { get; private set; }
     public float maxHealth = 10;
     public float health;
     [SerializeField] private SpriteRenderer[] healthBarSprites;
@@ -41,7 +41,6 @@ public class HealthSystem : MonoBehaviour
         onMaxHealthUpdate?.Invoke(maxHealth);
         if (updateHealth)
             health = maxHealth;
-        yield return new WaitForEndOfFrame(); // Wait for UI updates
         onHealthUpdate?.Invoke(1);
         if (healthBarSprites != null)
         {
@@ -71,7 +70,7 @@ public class HealthSystem : MonoBehaviour
         canUpdateHealth = true;
     }
 
-    private void HealthUpdate()
+    public void HealthUpdate()
     {
         if (health <= 0)
         {

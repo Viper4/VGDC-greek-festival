@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using TMPro;
 
-public class Interact : Trigger
+public class Interact : Trigger, ISaveable
 {
     public UnityEvent OnInteract;
     [SerializeField] private TextMeshProUGUI popupText;
@@ -18,24 +18,29 @@ public class Interact : Trigger
 
     private void OnEnable()
     {
-        Player.instance.input.Player.Interact.performed += DoInteract;
+        Player.instance.input.Player.Interact.performed += (ctx) => TryInteract();
     }
 
     private void OnDisable()
     {
-        Player.instance.input.Player.Interact.performed -= DoInteract;
+        Player.instance.input.Player.Interact.performed -= (ctx) => TryInteract();
     }
 
-    private void DoInteract(InputAction.CallbackContext context)
+    private void DoInteract()
+    {
+        OnInteract?.Invoke();
+        if (disableOnInteract)
+            interacted = true;
+        if (fadeRoutine != null)
+            StopCoroutine(fadeRoutine);
+        popupText.color = startColor;
+    }
+
+    private void TryInteract()
     {
         if(collidersInTrigger > 0)
         {
-            OnInteract?.Invoke();
-            if (disableOnInteract)
-                interacted = true;
-            if (fadeRoutine != null)
-                StopCoroutine(fadeRoutine);
-            popupText.color = startColor;
+            DoInteract();
         }
     }
 
@@ -92,5 +97,22 @@ public class Interact : Trigger
             yield return new WaitForEndOfFrame();
         }
         popupText.color = end;
+    }
+
+    public object CaptureState()
+    {
+        return interacted;
+    }
+
+    public void RestoreState(object state)
+    {
+        interacted = (bool)state;
+        if(interacted)
+            DoInteract();
+    }
+
+    public void Delete()
+    {
+        Destroy(gameObject);
     }
 }

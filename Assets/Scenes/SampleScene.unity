@@ -1107,6 +1107,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cb56480bea16674ea76a6b7ba98fa52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   onTriggerEnter:
@@ -1673,6 +1676,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cb56480bea16674ea76a6b7ba98fa52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   onTriggerEnter:
@@ -2639,6 +2645,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ed12efc4b9225643a34f866b06d3945, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   onTriggerEnter:
@@ -3191,6 +3200,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ded19ffe89fd8f41905ff232971a3cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   onTriggerEnter:
@@ -3237,6 +3249,7 @@ MonoBehaviour:
   fadeTime: 1
   startColor: {r: 0, g: 0, b: 0, a: 0}
   endColor: {r: 1, g: 0, b: 0, a: 1}
+  disableOnInteract: 1
 --- !u!61 &654980462
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3656,6 +3669,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Non-Strafing Archer
       objectReference: {fileID: 0}
+    - target: {fileID: 3391733278234211737, guid: a15607869e5b7594eba8842eb3ffe926, type: 3}
+      propertyPath: uniqueId
+      value: f5f976e2-5f04-48ab-8468-a6da01f4be05
+      objectReference: {fileID: 0}
     - target: {fileID: 4192189024617082387, guid: a15607869e5b7594eba8842eb3ffe926, type: 3}
       propertyPath: m_LocalPosition.x
       value: 16.88
@@ -3910,6 +3927,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zombie Enemy
       objectReference: {fileID: 0}
+    - target: {fileID: 3567617220946568734, guid: 095df7754c766bf4f802dc33a1d5bf3a, type: 3}
+      propertyPath: uniqueId
+      value: f05c7a70-6b47-4afa-a2ed-6da3c3ffb20e
+      objectReference: {fileID: 0}
     - target: {fileID: 4451766670519795802, guid: 095df7754c766bf4f802dc33a1d5bf3a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.9759674
@@ -4011,6 +4032,10 @@ PrefabInstance:
     - target: {fileID: 3841129006526631686, guid: 8a007fab4c198da4ebbdf75b896ad14f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5043347053179637580, guid: 8a007fab4c198da4ebbdf75b896ad14f, type: 3}
+      propertyPath: uniqueId
+      value: 1f704f9e-44ee-4d7d-a023-9f772bcf86e5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4486,6 +4511,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Checkpoint (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 5284370372655809823, guid: 4d5636b4bdcbfd5418f7091699a19818, type: 3}
+      propertyPath: uniqueId
+      value: b3e11cf9-224f-464a-98fa-1e56c5ddce47
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4838,6 +4867,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Checkpoint (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 5284370372655809823, guid: 4d5636b4bdcbfd5418f7091699a19818, type: 3}
+      propertyPath: uniqueId
+      value: bd27a6fe-9f54-47ed-ac11-9ad067a8b0f7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5080,6 +5113,11 @@ MonoBehaviour:
   chargeAccelerationTime: 1
   shield: {fileID: 454547711}
   animator: {fileID: 1307138090}
+  landSound: {fileID: 0}
+  chargeImpactSound: {fileID: 0}
+  shakeMagnitude: 0.4
+  shakeSpeed: 12
+  shakeDuration: 0.6
 --- !u!95 &1307138090
 Animator:
   serializedVersion: 5
@@ -5256,7 +5294,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   invincible: 0
-  originalMaxHealth: 0
   maxHealth: 50
   health: 50
   healthBarSprites: []
@@ -5323,6 +5360,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ed12efc4b9225643a34f866b06d3945, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   onTriggerEnter:
@@ -5362,17 +5402,6 @@ MonoBehaviour:
   cooldown: 0.5
   overrideHealthSystemCooldown: 1
   player: 0
---- !u!114 &1335945913 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8188443158377112316, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
-  m_PrefabInstance: {fileID: 7654677570944208260}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91137798dd1cf054783e9ee646d3b911, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1347401597
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5755,6 +5784,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1117624299}
     m_Modifications:
+    - target: {fileID: 3941291574152315499, guid: 87363ecf03821de47b1a48e49d298802, type: 3}
+      propertyPath: uniqueId
+      value: 91ebe8e8-1fb8-40d2-b804-a496b544a97f
+      objectReference: {fileID: 0}
     - target: {fileID: 3974312357204605953, guid: 87363ecf03821de47b1a48e49d298802, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -6012,6 +6045,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Checkpoint
       objectReference: {fileID: 0}
+    - target: {fileID: 5284370372655809823, guid: 4d5636b4bdcbfd5418f7091699a19818, type: 3}
+      propertyPath: uniqueId
+      value: e1722855-1132-4738-bdd4-08b30d75d253
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6137,6 +6174,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9364e93cfde65da48866fc3bb428d934, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreLayers:
+    serializedVersion: 2
+    m_Bits: 0
   triggerTags:
   - Player
   onTriggerEnter:
@@ -6609,6 +6649,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Checkpoint (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 5284370372655809823, guid: 4d5636b4bdcbfd5418f7091699a19818, type: 3}
+      propertyPath: uniqueId
+      value: fe267fc2-239c-402a-b883-0df8b1bbf664
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6665,6 +6709,10 @@ PrefabInstance:
     - target: {fileID: 3841129006526631686, guid: 8a007fab4c198da4ebbdf75b896ad14f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5043347053179637580, guid: 8a007fab4c198da4ebbdf75b896ad14f, type: 3}
+      propertyPath: uniqueId
+      value: 1ca60a79-ac4d-4ac1-8064-456b78b9b8fd
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7555,6 +7603,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5043347053179637580, guid: 8a007fab4c198da4ebbdf75b896ad14f, type: 3}
+      propertyPath: uniqueId
+      value: 73006a01-481a-4633-bb8e-a769261bf642
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7591,7 +7643,7 @@ PrefabInstance:
     - target: {fileID: 2186101770137282216, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: target
       value: 
-      objectReference: {fileID: 1335945913}
+      objectReference: {fileID: 0}
     - target: {fileID: 2186101770137282216, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: unsavedHealing
       value: 0
@@ -7715,6 +7767,10 @@ PrefabInstance:
     - target: {fileID: 8913142879628579271, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
       propertyPath: GroundPoundSpeed
       value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 9169579317966905170, guid: b26ce0633cf00c8498dcf7974a470331, type: 3}
+      propertyPath: uniqueId
+      value: 75f80b5f-25e8-41ac-ade8-a7189c3a4e70
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

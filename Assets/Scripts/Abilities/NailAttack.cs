@@ -2,9 +2,15 @@ using UnityEngine;
 
 public class NailAttack : Ability
 {
+    private AudioSource audioSource;
     [SerializeField] private Collider2D hitbox;
 
     private Collider2D[] hits = new Collider2D[10];
+
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     private void OnEnable()
     {
@@ -18,6 +24,7 @@ public class NailAttack : Ability
 
     public override void Use()
     {
+        audioSource.PlayOneShot(audioSource.clip);
         ContactFilter2D Filter = new ContactFilter2D() { layerMask = hitLayers, useLayerMask = true };
         int numHits = hitbox.OverlapCollider(Filter, hits);
         for (int i = 0; i < numHits; i++)

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class BaseMovement : MonoBehaviour
+public class BaseMovement : MonoBehaviour, ISaveable
 {
     [HideInInspector] public Rigidbody2D rb;
     [HideInInspector] public Collider2D _collider;
@@ -39,7 +39,7 @@ public class BaseMovement : MonoBehaviour
             isGrounded = value;
         } 
     }
-    [SerializeField] protected Action onLand;
+    [SerializeField] protected UnityEvent onLand;
     [SerializeField] private float fallCheckDistance = 3f;
 
     public float climbSpeed = 2f;
@@ -179,19 +179,6 @@ public class BaseMovement : MonoBehaviour
         }
     }
 
-    public void ExitCollision(Collision2D collision)
-    {
-        if(collision.transform == ground)
-        {
-            isGrounded = false;
-            ground = null;
-        }
-        else if(collision.transform == wall)
-        {
-            wall = null;
-        }
-    }
-
     public void ApplyKnockback(KnockbackInfo knockback, bool overrideImmunity)
     {
         if(overrideImmunity || immunityTimer > immunityTime)
@@ -226,7 +213,15 @@ public class BaseMovement : MonoBehaviour
 
     public virtual void OnCollisionExit2D(Collision2D collision)
     {
-        ExitCollision(collision);
+        if (collision.transform == ground)
+        {
+            isGrounded = false;
+            ground = null;
+        }
+        else if (collision.transform == wall)
+        {
+            wall = null;
+        }
     }
 
     public RaycastHit2D GetFutureObstruction(Vector3 velocity)
@@ -266,5 +261,29 @@ public class BaseMovement : MonoBehaviour
         RaycastHit2D groundHit = Physics2D.Linecast(futurePosition, futurePosition + new Vector2(0, -fallCheckDistance), collisionLayers);
         Debug.DrawLine(futurePosition, futurePosition + new Vector2(0, -fallCheckDistance), Color.green, 1f);
         return groundHit;
+    }
+
+    public virtual object CaptureState()
+    {
+        float[] position = { transform.position.x, transform.position.y, transform.position.z };
+        float[] eulerAngles = { transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z };
+        float[] velocity = { rb.velocity.x, rb.velocity.y };
+        return new object[] { position, eulerAngles, velocity };
+    }
+
+    public virtual void RestoreState(object state)
+    {
+        object[] data = (object[])state;
+        float[] position = (float[])data[0];
+        float[] eulerAngles = (float[])data[1];
+        float[] velocity = (float[])data[2];
+        transform.position = new Vector3(position[0], position[1], position[2]);
+        transform.eulerAngles = new Vector3(eulerAngles[0], eulerAngles[1], eulerAngles[2]);
+        rb.velocity = new Vector2(velocity[0], velocity[1]);
+    }
+
+    public virtual void Delete()
+    {
+        Destroy(gameObject);
     }
 }

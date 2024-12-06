@@ -5,18 +5,13 @@ using TMPro;
 
 public class PauseUI : MonoBehaviour
 {
-    private GameObject holder;
+    [SerializeField] private GameObject holder;
     [SerializeField] private GameObject screenBlur;
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject settingsMenu;
     [SerializeField] private TextMeshProUGUI timePlayedText;
     [SerializeField] private TextMeshProUGUI deathsText;
     [SerializeField] private TextMeshProUGUI soulsText;
-
-    private void Start()
-    {
-        holder = transform.Find("Holder").gameObject;
-    }
 
     public void AddListener()
     {
@@ -30,6 +25,7 @@ public class PauseUI : MonoBehaviour
 
     public void TogglePause()
     {
+        Debug.Log("Here");
         if (transform == null)
         {
             Destroy(this);
@@ -43,6 +39,7 @@ public class PauseUI : MonoBehaviour
         }
         else
         {
+            SaveSystem.instance.Save();
             timePlayedText.text = "Time played: " + Time.time.ToString("0.00");
             deathsText.text = "X " + Player.instance.deaths.ToString();
             soulsText.text = "X " + Player.instance.soulsCollected.ToString();

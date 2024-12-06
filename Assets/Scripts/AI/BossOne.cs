@@ -3,7 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public class BossOne : BaseMovement
+public class BossOne : BaseMovement, ISaveable
 {
     private enum BossState
     {
@@ -55,7 +55,7 @@ public class BossOne : BaseMovement
         healthSystem = GetComponent<HealthSystem>();
         originalIdleTime = idleTime;
         spawnPosition = transform.position;
-        onLand = Land;
+        onLand.AddListener(Land);
     }
 
     private void FixedUpdate()
@@ -266,5 +266,38 @@ public class BossOne : BaseMovement
     public void PlayAudioClip(AudioClip audioClip)
     {
         audioSource.PlayOneShot(audioClip);
+    }
+
+    public override object CaptureState()
+    {
+        float[] position = { transform.position.x, transform.position.y, transform.position.z };
+        float[] eulerAngles = { transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z };
+        float[] velocity = { rb.velocity.x, rb.velocity.y };
+        float health = healthSystem.health;
+        return new object[] { position, eulerAngles, velocity, health };
+    }
+
+    public override void RestoreState(object state)
+    {
+        object[] data = (object[])state;
+        float[] position = (float[])data[0];
+        float[] eulerAngles = (float[])data[1];
+        float[] velocity = (float[])data[2];
+        healthSystem.health = (float)data[3];
+        healthSystem.HealthUpdate();
+        transform.position = new Vector3(position[0], position[1], position[2]);
+        transform.eulerAngles = new Vector3(eulerAngles[0], eulerAngles[1], eulerAngles[2]);
+        rb.velocity = new Vector2(velocity[0], velocity[1]);
+    }
+
+    public override void Delete()
+    {
+        if(healthSystem == null)
+        {
+            healthSystem = GetComponent<HealthSystem>();
+        }
+        healthSystem.health = 0;
+        healthSystem.HealthUpdate();
+        Destroy(gameObject);
     }
 }

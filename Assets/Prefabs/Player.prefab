@@ -904,6 +904,7 @@ GameObject:
   m_Component:
   - component: {fileID: 85926686107846718}
   - component: {fileID: 7558589841173660248}
+  - component: {fileID: 7990057506419951906}
   m_Layer: 9
   m_Name: Nail
   m_TagString: Untagged
@@ -954,6 +955,102 @@ MonoBehaviour:
     duration: 0.25
     drag: 0.5
   hitbox: {fileID: 8861101491974765743}
+--- !u!82 &7990057506419951906
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993446810302680352}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: a41634e6cbdd8d64ea41efc17f3a0ea7, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &2172163241395074571
 GameObject:
   m_ObjectHideFlags: 0
@@ -1709,7 +1806,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1372612741
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
   m_Color: {r: 0, g: 1, b: 0, a: 1}
@@ -1749,7 +1846,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1}
-  m_LocalScale: {x: 40, y: 20, z: 1}
+  m_LocalScale: {x: 120, y: 40, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7722121182631698393}
@@ -1793,7 +1890,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 271720529
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -2804,7 +2901,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1372612741
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 82ead93cb7cef7149a5d9efdcbecd3c8, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
@@ -3099,6 +3196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c921de1ba33947c4ab39d45fb81dc667, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  holder: {fileID: 5355930335218575294}
   screenBlur: {fileID: 3390874017547383608}
   pauseMenu: {fileID: 1710612630515271809}
   settingsMenu: {fileID: 7300569806324770688}
@@ -3470,7 +3568,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1372612741
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: db52d143c00b3a743b2b764857eeafe0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -4479,7 +4577,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1372612741
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 82ead93cb7cef7149a5d9efdcbecd3c8, type: 3}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
@@ -4514,6 +4612,7 @@ GameObject:
   - component: {fileID: 2186101770137282216}
   - component: {fileID: 3596572653464559012}
   - component: {fileID: 8257914073028496873}
+  - component: {fileID: 9169579317966905170}
   m_Layer: 9
   m_Name: Player Controller
   m_TagString: Player
@@ -4577,7 +4676,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1372612741
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -4617,6 +4716,21 @@ MonoBehaviour:
   - Enemy
   - Projectile
   - Soul
+  onLand:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8913142879628579271}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        m_MethodName: OnLand
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   fallCheckDistance: 3
   climbSpeed: 4
   movementAudio: {fileID: 7173882381029784539}
@@ -4634,11 +4748,12 @@ MonoBehaviour:
     m_Bits: 257
   coyoteTime: 0.35
   followingSouls: []
-  soulsCollected: 0
-  deaths: 0
   deathTime: 1
   statsUI: {fileID: 2629752551155893318}
   pauseUI: {fileID: 5315934267357499005}
+  soulsCollected: 0
+  deaths: 0
+  updateTransformOnLoad: 0
 --- !u!114 &7853303006011264248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4657,6 +4772,7 @@ MonoBehaviour:
   dashCooldown: 0.25
   dashDrag: 0.5
   dashIndicator: {fileID: 350476612653116990}
+  canDash: 1
   velocity: {x: 0, y: 0}
   onDash:
     m_PersistentCalls:
@@ -5239,7 +5355,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   invincible: 0
-  originalMaxHealth: 0
   maxHealth: 100
   health: 100
   healthBarSprites:
@@ -5354,6 +5469,19 @@ MonoBehaviour:
     smoothTimeScale: 0
     audioClip: {fileID: 8300000, guid: 5ff6686f2d4d9db4b8c69e65a1fe923f, type: 3}
     particles: {fileID: 8965499369700417490, guid: 204106c275171564984d6fbbfbf7f180, type: 3}
+--- !u!114 &9169579317966905170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9202725978975512340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4881f89f8b930e34489bbb86116ccd4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueId: 
 --- !u!1001 &5702451750774449067
 PrefabInstance:
   m_ObjectHideFlags: 0

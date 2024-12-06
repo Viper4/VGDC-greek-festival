@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
-public class Enemy : BaseMovement
+public class Enemy : BaseMovement, ISaveable
 {
     enum TargetMode
     {
@@ -120,5 +121,28 @@ public class Enemy : BaseMovement
     public void OnTargetTriggerExit(Collider2D targetCollider)
     {
         targets.Remove(targetCollider.transform);
+    }
+
+    public override object CaptureState()
+    {
+        float[] position = { transform.position.x, transform.position.y, transform.position.z };
+        float[] eulerAngles = { transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z };
+        float[] velocity = { rb.velocity.x, rb.velocity.y };
+        float health = GetComponent<HealthSystem>().health;
+        return new object[] { position, eulerAngles, velocity, health };
+    }
+
+    public override void RestoreState(object state)
+    {
+        object[] data = (object[])state;
+        float[] position = (float[])data[0];
+        float[] eulerAngles = (float[])data[1];
+        float[] velocity = (float[])data[2];
+        HealthSystem healthSystem = GetComponent<HealthSystem>();
+        healthSystem.health = (float)data[3];
+        healthSystem.HealthUpdate();
+        transform.position = new Vector3(position[0], position[1], position[2]);
+        transform.eulerAngles = new Vector3(eulerAngles[0], eulerAngles[1], eulerAngles[2]);
+        rb.velocity = new Vector2(velocity[0], velocity[1]);
     }
 }

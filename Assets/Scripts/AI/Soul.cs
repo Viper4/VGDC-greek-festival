@@ -19,7 +19,7 @@ public class Soul : MonoBehaviour
     private Transform ground;
 
     [SerializeField] private float fadeTime = 0.5f;
-    private bool fading = false;
+    private bool faded = false;
 
     [SerializeField] private SimpleBob simpleBob;
 
@@ -33,7 +33,7 @@ public class Soul : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!fading)
+        if (!faded)
         {
             if (target != null && (target.position - transform.position).sqrMagnitude > followRadius * followRadius)
             {
@@ -52,13 +52,15 @@ public class Soul : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(!other.isTrigger && !fading && ground == null)
+        if (faded)
+            return;
+        if(!other.isTrigger && ground == null)
         {
             rb.gravityScale = 0;
             rb.velocity = Vector2.zero;
             ground = other.transform;
         }
-        if (other.CompareTag("Player"))
+        if (target == null && other.CompareTag("Player"))
         {
             other.GetComponent<Player>().PickupSoul(this);
         }
@@ -66,7 +68,7 @@ public class Soul : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if(!other.isTrigger && !fading && ground == other.transform)
+        if(!other.isTrigger && !faded && ground == other.transform)
         {
             ground = null;
         }
@@ -90,7 +92,7 @@ public class Soul : MonoBehaviour
 
     public void Fade()
     {
-        fading = true;
+        faded = true;
         rb.gravityScale = -0.25f;
         StartCoroutine(FadeRoutine());
     }

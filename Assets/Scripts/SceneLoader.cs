@@ -7,22 +7,28 @@ using TMPro;
 
 public class SceneLoader : MonoBehaviour
 {
-    public static SceneLoader Instance { get; private set; }
+    public static SceneLoader instance { get; private set; }
 
     [SerializeField] private GameObject loadingScreen;
     [SerializeField] private Slider loadingBar;
     [SerializeField] private TextMeshProUGUI loadingText;
+    public bool isLoading { get; private set; }
 
-    private void Start()
+    private void Awake()
     {
-        if (Instance == null)
+        if (instance == null)
         {
-            Instance = this;
+            instance = this;
             DontDestroyOnLoad(gameObject);
         }
     }
 
-    public void LoadScene(string sceneName)
+    public void TriggerLoadScene(string sceneName)
+    {
+        LoadScene(sceneName, true);
+    }
+
+    public void LoadScene(string sceneName, bool trigger = false)
     {
         string scenePath = $"Assets/Scenes/{sceneName}.unity";
         StartCoroutine(LoadRoutine(SceneUtility.GetBuildIndexByScenePath(scenePath)));
@@ -33,8 +39,11 @@ public class SceneLoader : MonoBehaviour
         StartCoroutine(LoadRoutine(buildIndex));
     }
 
-    private IEnumerator LoadRoutine(int buildIndex)
+    private IEnumerator LoadRoutine(int buildIndex, bool trigger = false)
     {
+        if(trigger)
+            Player.instance.updateTransformOnLoad = false;
+        isLoading = true;
         Time.timeScale = 0;
         loadingScreen.SetActive(true);
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(buildIndex);
@@ -53,5 +62,8 @@ public class SceneLoader : MonoBehaviour
         loadingText.text = "100%";
         asyncLoad.allowSceneActivation = true;
         Time.timeScale = 1;
+        isLoading = false;
+        SaveSystem.instance.StoreSaveableEntities();
+        SaveSystem.instance.RestoreEntityStates();
     }
 }

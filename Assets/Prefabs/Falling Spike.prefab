@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ignoreLayers:
     serializedVersion: 2
-    m_Bits: 4
+    m_Bits: 1028
   triggerTags:
   - Player
   - Enemy

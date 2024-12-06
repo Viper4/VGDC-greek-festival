@@ -603,6 +603,7 @@ GameObject:
   - component: {fileID: 5308239909779260276}
   - component: {fileID: 6791098325775229122}
   - component: {fileID: 1430991937371450377}
+  - component: {fileID: 3391733278234211737}
   m_Layer: 8
   m_Name: Controller
   m_TagString: Enemy
@@ -1278,7 +1279,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   invincible: 0
-  originalMaxHealth: 0
   maxHealth: 24
   health: 24
   healthBarSprites:
@@ -1311,3 +1311,16 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   KillHealAmount: 0
+--- !u!114 &3391733278234211737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8890461973935167281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4881f89f8b930e34489bbb86116ccd4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueId: 

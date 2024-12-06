@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class Player : BaseMovement
+public class Player : BaseMovement, ISaveable
 {
     public static Player instance;
     public PlayerInput input;
@@ -25,14 +26,16 @@ public class Player : BaseMovement
     // Checkpoints, souls, and stats
     private Checkpoint lastCheckpoint;
     public List<Soul> followingSouls = new List<Soul>();
-    public int soulsCollected = 0;
-    public int deaths = 0;
     [SerializeField] private float deathTime = 1f;
     private bool dying = false;
     [SerializeField] private StatsUI statsUI;
     [SerializeField] private PauseUI pauseUI;
 
     private HealthSystem previousKill;
+    public int soulsCollected = 0;
+    public int deaths = 0;
+
+    public bool updateTransformOnLoad = true;
 
     // Called before Start()
     private void OnEnable()
@@ -49,10 +52,17 @@ public class Player : BaseMovement
             input.Player.Crouch.performed += ctx => Crouch();
             input.Player.Crouch.canceled += ctx => Uncrouch();
             input.Player.Jump.performed += ctx => DoubleJump();
+            pauseUI.AddListener();
         }
         else
         {
-            instance.transform.SetPositionAndRotation(transform.position, transform.rotation);
+            instance.followingSouls.Clear();
+            instance.lastCheckpoint = null;
+            if (!SaveSystem.instance.HasCurrentSceneSave())
+            {
+                instance.transform.SetPositionAndRotation(transform.position, transform.rotation);
+            }
+
             Destroy(transform.root.gameObject);
         }
     }
@@ -269,8 +279,6 @@ public class Player : BaseMovement
 
     public void SetCheckpoint(Checkpoint checkpoint)
     {
-        checkpoint.Select(followingSouls.Count);
-
         if(checkpoint.canSaveSouls)
         {
             foreach (Soul followingSoul in followingSouls)
@@ -294,41 +302,39 @@ public class Player : BaseMovement
             if (lastCheckpoint != null)
                 lastCheckpoint.Deselect();
 
-            // Select this checkpoint
             lastCheckpoint = checkpoint;
         }
+        checkpoint.Select(followingSouls.Count);
     }
 
     public void PickupSoul(Soul soul)
     {
-        if (soul.target == null)
+        if (followingSouls.Count > 0)
         {
-            if (followingSouls.Count > 0)
-            {
-                // Get this soul to start following the last soul in the chain
-                soul.StartFollow(followingSouls[^1].transform);
-                followingSouls.Add(soul);
-            }
-            else
-            {
-                // This soul is the first soul so its first in the chain and follows the player
-                soul.StartFollow(transform);
-                followingSouls.Add(soul);
-            }
+            // Get this soul to start following the last soul in the chain
+            soul.StartFollow(followingSouls[^1].transform);
+            followingSouls.Add(soul);
         }
+        else
+        {
+            // This soul is the first soul so its first in the chain and follows the player
+            soul.StartFollow(transform);
+            followingSouls.Add(soul);
+        }
+    }
+
+    public void OnLand()
+    {
+        canDoubleJump = true;
+        canCoyoteJump = true;
+        airTime = 0;
+        wallJumping.ResetJumps();
+        dashing.TryResetDash();
     }
 
     public override void OnCollisionEnter2D(Collision2D collision)
     {
-        float normalAngle = Vector2.Angle(collision.GetContact(0).normal, Vector2.up);
-        if (TryLand(collision, normalAngle))
-        {
-            canDoubleJump = true;
-            canCoyoteJump = true;
-            airTime = 0;
-            wallJumping.ResetJumps();
-        }
-        CheckWall(collision, normalAngle);
+        base.OnCollisionEnter2D(collision);
 
         switch (collision.transform.tag)
         {
@@ -338,8 +344,62 @@ public class Player : BaseMovement
         }
     }
 
-    public override void OnCollisionExit2D(Collision2D collision)
+    public override object CaptureState()
     {
-        ExitCollision(collision);
+        float[] position = { transform.position.x, transform.position.y, transform.position.z };
+        float[] eulerAngles = { transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z };
+        float[] velocity = { rb.velocity.x, rb.velocity.y };
+        string[] followingSoulIDs = new string[followingSouls.Count];
+        for (int i = 0; i < followingSouls.Count; i++)
+        {
+            followingSoulIDs[i] = followingSouls[i].GetComponent<SaveableEntity>().UniqueId;
+        }
+        string lastCheckpointID = null;
+        if (lastCheckpoint != null)
+        {
+            lastCheckpointID = lastCheckpoint.GetComponent<SaveableEntity>().UniqueId;
+        }
+        return new object[] { position, eulerAngles, velocity, followingSoulIDs, lastCheckpointID, canCoyoteJump, canDoubleJump, dashing.canDash };
+    }
+
+    public override void RestoreState(object state)
+    {
+        object[] data = (object[])state;
+        float[] position = (float[])data[0];
+        float[] eulerAngles = (float[])data[1];
+        float[] velocity = (float[])data[2];
+        string[] followingSoulIDs = (string[])data[3];
+        string lastCheckpointID = (string)data[4];
+        canCoyoteJump = (bool)data[5];
+        canDoubleJump = (bool)data[6];
+        dashing.canDash = (bool)data[7];
+        dashing.UpdateDashIndicator();
+
+        if (updateTransformOnLoad)
+        {
+            transform.position = new Vector3(position[0], position[1], position[2]);
+            transform.eulerAngles = new Vector3(eulerAngles[0], eulerAngles[1], eulerAngles[2]);
+            rb.velocity = new Vector2(velocity[0], velocity[1]);
+            updateTransformOnLoad = true;
+        }
+
+        for(int i = 0; i < followingSoulIDs.Length; i++)
+        {
+            Soul soul = SaveSystem.instance.saveableEntityDict[followingSoulIDs[i]].GetComponent<Soul>();
+            if(i == 0)
+            {
+                soul.StartFollow(transform);
+            }
+            else
+            {
+                soul.StartFollow(followingSouls[i-1].transform);
+            }
+            followingSouls.Add(soul);
+        }
+        if (lastCheckpointID != null)
+        {
+            lastCheckpoint = SaveSystem.instance.saveableEntityDict[lastCheckpointID].GetComponent<Checkpoint>();
+            lastCheckpoint.Select(0, false);
+        }
     }
 }

@@ -26,6 +26,8 @@ public class Checkpoint : MonoBehaviour
 
     [SerializeField] private ParticleSystem respawnParticles;
 
+    [SerializeField] bool canSaveState = false;
+
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -41,7 +43,7 @@ public class Checkpoint : MonoBehaviour
         respawnParticles.Play();
     }
 
-    public void Select(int souls)
+    public void Select(int souls, bool save = true)
     {
         if(selectionIndicator.color != selectedColor)
         {
@@ -49,7 +51,8 @@ public class Checkpoint : MonoBehaviour
             selectionIndicator.material.SetColor("_EmissionColor", selectedEmission);
             if(selectionLight != null)
                 selectionLight.color = selectedColor;
-            audioSource.PlayOneShot(selectSound);
+            if(audioSource != null)
+                audioSource.PlayOneShot(selectSound);
         }
         if (!unlocked)
         {
@@ -57,6 +60,9 @@ public class Checkpoint : MonoBehaviour
                 souls = 0;
             onSelect?.Invoke(souls);
         }
+
+        if(canSaveState && save)
+            SaveSystem.instance.Save();
     }
 
     public void Deselect()
