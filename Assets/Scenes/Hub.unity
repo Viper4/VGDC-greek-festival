@@ -10389,7 +10389,7 @@ PrefabInstance:
     - target: {fileID: 8976501451224453392, guid: 88a808eecdc7e8c46b359063d3c10005, type: 3}
       propertyPath: onTriggerEnter.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 6032588}
+      objectReference: {fileID: 491925056544632509}
     - target: {fileID: 8976501451224453392, guid: 88a808eecdc7e8c46b359063d3c10005, type: 3}
       propertyPath: onTriggerEnter.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
@@ -10400,7 +10400,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8976501451224453392, guid: 88a808eecdc7e8c46b359063d3c10005, type: 3}
       propertyPath: onTriggerEnter.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: TriggerLoadScene
+      value: LoadScene
       objectReference: {fileID: 0}
     - target: {fileID: 8976501451224453392, guid: 88a808eecdc7e8c46b359063d3c10005, type: 3}
       propertyPath: onTriggerEnter.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
@@ -10408,7 +10408,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8976501451224453392, guid: 88a808eecdc7e8c46b359063d3c10005, type: 3}
       propertyPath: onTriggerEnter.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: SceneLoader, Assembly-CSharp
+      value: Trigger, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 8976501451224453392, guid: 88a808eecdc7e8c46b359063d3c10005, type: 3}
       propertyPath: onTriggerEnter.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
@@ -10435,6 +10435,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 88a808eecdc7e8c46b359063d3c10005, type: 3}
+--- !u!114 &491925056544632509 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8976501451224453392, guid: 88a808eecdc7e8c46b359063d3c10005, type: 3}
+  m_PrefabInstance: {fileID: 491925056544632508}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ed12efc4b9225643a34f866b06d3945, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4504524444580320100
 PrefabInstance:
   m_ObjectHideFlags: 0

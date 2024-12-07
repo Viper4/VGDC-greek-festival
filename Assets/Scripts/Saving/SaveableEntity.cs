@@ -39,7 +39,10 @@ public class SaveableEntity : MonoBehaviour
     // To delete this saveable entity from the game
     public void Delete()
     {
-        foreach (ISaveable saveable in GetComponents<ISaveable>())
+        ISaveable[] saveables = GetComponents<ISaveable>();
+        if (saveables.Length == 0)
+            Destroy(gameObject);
+        foreach (ISaveable saveable in saveables)
         {
             saveable.Delete();
         }

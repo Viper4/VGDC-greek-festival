@@ -25,7 +25,6 @@ public class PauseUI : MonoBehaviour
 
     public void TogglePause()
     {
-        Debug.Log("Here");
         if (transform == null)
         {
             Destroy(this);
@@ -39,10 +38,9 @@ public class PauseUI : MonoBehaviour
         }
         else
         {
-            SaveSystem.instance.Save();
             timePlayedText.text = "Time played: " + Time.time.ToString("0.00");
             deathsText.text = "X " + Player.instance.deaths.ToString();
-            soulsText.text = "X " + Player.instance.soulsCollected.ToString();
+            soulsText.text = "X " + Player.instance.levelSoulsCollected.ToString();
             Time.timeScale = 0;
             screenBlur.SetActive(true);
             pauseMenu.SetActive(true);

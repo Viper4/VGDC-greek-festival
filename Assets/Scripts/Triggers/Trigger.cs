@@ -105,4 +105,14 @@ public class Trigger : MonoBehaviour
     {
         Destroy(toDestroy);
     }
+
+    public void LoadScene(string sceneName)
+    {
+        SceneLoader.instance.TriggerLoadScene(sceneName);
+    }
+
+    public void Save()
+    {
+        SaveSystem.instance.Save();
+    }
 }

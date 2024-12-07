@@ -31,7 +31,7 @@ public class SceneLoader : MonoBehaviour
     public void LoadScene(string sceneName, bool trigger = false)
     {
         string scenePath = $"Assets/Scenes/{sceneName}.unity";
-        StartCoroutine(LoadRoutine(SceneUtility.GetBuildIndexByScenePath(scenePath)));
+        StartCoroutine(LoadRoutine(SceneUtility.GetBuildIndexByScenePath(scenePath), trigger));
     }
 
     public void LoadScene(int buildIndex)
@@ -42,7 +42,7 @@ public class SceneLoader : MonoBehaviour
     private IEnumerator LoadRoutine(int buildIndex, bool trigger = false)
     {
         if(trigger)
-            Player.instance.updateTransformOnLoad = false;
+            Player.instance.useSavedTransform = false;
         isLoading = true;
         Time.timeScale = 0;
         loadingScreen.SetActive(true);
@@ -63,7 +63,11 @@ public class SceneLoader : MonoBehaviour
         asyncLoad.allowSceneActivation = true;
         Time.timeScale = 1;
         isLoading = false;
-        SaveSystem.instance.StoreSaveableEntities();
-        SaveSystem.instance.RestoreEntityStates();
+        if(buildIndex != 0)
+        {
+            yield return new WaitUntil(() => SceneManager.GetActiveScene().buildIndex == buildIndex);
+            SaveSystem.instance.StoreSaveableEntities();
+            SaveSystem.instance.RestoreEntityStates();
+        }
     }
 }

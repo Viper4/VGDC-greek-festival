@@ -47,12 +47,18 @@ public class BossOne : BaseMovement, ISaveable
     [SerializeField] private float shakeSpeed = 12f;
     [SerializeField] private float shakeDuration = 0.6f;
 
-    public override void Start()
+    private void GetComponents()
     {
-        base.Start();
+        rb = GetComponent<Rigidbody2D>();
         audioSource = GetComponent<AudioSource>();
         healthTrigger = GetComponent<HealthTrigger>();
         healthSystem = GetComponent<HealthSystem>();
+    }
+
+    public override void Start()
+    {
+        base.Start();
+        GetComponents();
         originalIdleTime = idleTime;
         spawnPosition = transform.position;
         onLand.AddListener(Land);
@@ -270,15 +276,23 @@ public class BossOne : BaseMovement, ISaveable
 
     public override object CaptureState()
     {
+        if (rb == null)
+        {
+            GetComponents();
+        }
         float[] position = { transform.position.x, transform.position.y, transform.position.z };
         float[] eulerAngles = { transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z };
-        float[] velocity = { rb.velocity.x, rb.velocity.y };
+        float[] velocity = new float[] { rb.velocity.x, rb.velocity.y };
         float health = healthSystem.health;
         return new object[] { position, eulerAngles, velocity, health };
     }
 
     public override void RestoreState(object state)
     {
+        if (rb == null)
+        {
+            GetComponents();
+        }
         object[] data = (object[])state;
         float[] position = (float[])data[0];
         float[] eulerAngles = (float[])data[1];
@@ -292,9 +306,9 @@ public class BossOne : BaseMovement, ISaveable
 
     public override void Delete()
     {
-        if(healthSystem == null)
+        if (healthSystem == null)
         {
-            healthSystem = GetComponent<HealthSystem>();
+            GetComponents();
         }
         healthSystem.health = 0;
         healthSystem.HealthUpdate();

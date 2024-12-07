@@ -100,5 +100,9 @@ public class StatsUI : MonoBehaviour
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
+        deathsIcon.color = deathsEndColor;
+        deathsText.color = deathsEndColor;
+        soulsIcon.color = soulsEndColor;
+        soulsText.color = soulsEndColor;
     }
 }

@@ -10,7 +10,7 @@ public class BaseMovement : MonoBehaviour, ISaveable
     [HideInInspector] public Collider2D _collider;
     [HideInInspector] public Stairs stairs;
 
-    private float gravityScale = 1f;
+    [HideInInspector] public float gravityScale = 1f;
     [Header("BaseMovement")]
     public float runSpeed = 5f;
     public float walkSpeed = 2f;

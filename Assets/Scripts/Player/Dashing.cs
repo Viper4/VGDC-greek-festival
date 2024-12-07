@@ -68,9 +68,18 @@ public class Dashing : MonoBehaviour
         canDash = false;
         UpdateDashIndicator();
         yield return new WaitForSecondsRealtime(inputWait);
+
         Vector2 moveInput = Player.instance.input.Player.Move.ReadValue<Vector2>();
 
-        jumped = jumped || Player.instance.input.Player.Jump.ReadValue<float>() >= 1f;
+        if (dashRoutine != null)
+        {
+            StopCoroutine(dashRoutine);
+            jumped = false;
+        }
+        else
+        {
+            jumped = jumped || Player.instance.input.Player.Jump.ReadValue<float>() >= 1f;
+        }
 
         if (moveInput != Vector2.zero)
         {
@@ -88,6 +97,11 @@ public class Dashing : MonoBehaviour
         bool waveDash = moveInput.y < 0 && moveInput.x != 0;
         Player.instance.movementAudio.PlayDash();
         velocity = moveInput * dashSpeed;
+        if (!bunnyHop)
+        {
+            Player.instance.rb.gravityScale = 0f;
+            Player.instance.rb.velocity = Vector2.zero;
+        }
         if (moveInput.y < 0)
         {
             // Stop downward dash if we hit the ground
@@ -138,8 +152,9 @@ public class Dashing : MonoBehaviour
             velocity = Vector2.zero;
             Player.instance.rb.velocity = Vector2.zero;
         }
+        Player.instance.rb.gravityScale = Player.instance.gravityScale;
 
-        if(!waveDash)
+        if (!waveDash)
             yield return new WaitForSeconds(dashCooldown);
 
         while (!Player.instance.IsGrounded)
@@ -155,14 +170,19 @@ public class Dashing : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
         velocity = Vector2.zero;
-        canDash = true;
-        UpdateDashIndicator();
         dashRoutine = null;
         if (waveDash && Player.instance.input.Player.Jump.ReadValue<float>() >= 1f)
         {
             moveInput.y = 0;
             moveInput.Normalize();
             dashRoutine = StartCoroutine(Dash(moveInput, true));
+            yield return new WaitForSecondsRealtime(0.05f);
+            canDash = true; // Wait before allowing another dash to prevent immediately losing dash after wave dash
         }
+        else
+        {
+            canDash = true;
+        }
+        UpdateDashIndicator();
     }
 }

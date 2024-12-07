@@ -17,7 +17,7 @@ public class SaveSystem : MonoBehaviour
         public int sceneIndex;
         public float health;
         public int deaths;
-        public int totalSoulsCollected;
+        public int soulsCollected;
     }
 
     private void Awake()
@@ -74,7 +74,7 @@ public class SaveSystem : MonoBehaviour
         CaptureState(gameState);
         int sceneIndex = SceneManager.GetActiveScene().buildIndex;
 
-        string playerPath = GetPath($"player.dat");
+        string playerPath = GetPath($"player.txt");
         print($"saving player data to {playerPath}");
 
         PlayerData playerData = new PlayerData()
@@ -82,7 +82,7 @@ public class SaveSystem : MonoBehaviour
             sceneIndex = sceneIndex,
             health = Player.instance.GetComponent<HealthSystem>().health,
             deaths = Player.instance.deaths,
-            totalSoulsCollected = Player.instance.totalSoulsCollected,
+            soulsCollected = Player.instance.soulsCollected,
         };
         using (FileStream fs = File.Open(playerPath, FileMode.Create))
         {
@@ -93,7 +93,7 @@ public class SaveSystem : MonoBehaviour
 
         if (sceneIndex != 0)
         {
-            string scenePath = GetPath($"scene{sceneIndex}.dat");
+            string scenePath = GetPath($"scene{sceneIndex}.txt");
             print($"saving scene to {scenePath}");
 
             using (FileStream fs = File.Open(scenePath, FileMode.Create))
@@ -107,7 +107,7 @@ public class SaveSystem : MonoBehaviour
 
     public void Load()
     {
-        string playerPath = GetPath("player.dat");
+        string playerPath = GetPath("player.txt");
         print($"loading player data from {playerPath}");
         if (!File.Exists(playerPath))
             return;
@@ -120,12 +120,10 @@ public class SaveSystem : MonoBehaviour
             playerData = (PlayerData)binaryFormatter.Deserialize(fs);
         }
         Player.instance.deaths = playerData.deaths;
-        Player.instance.totalSoulsCollected = playerData.totalSoulsCollected;
-        HealthSystem playerHealthSystem = Player.instance.GetComponent<HealthSystem>();
-        playerHealthSystem.health = playerData.health;
-        playerHealthSystem.HealthUpdate(false);
+        Player.instance.soulsCollected = playerData.soulsCollected;
+        Player.instance.GetComponent<HealthSystem>().health = playerData.health;
 
-        string scenePath = GetPath($"scene{playerData.sceneIndex}.dat");
+        string scenePath = GetPath($"scene{playerData.sceneIndex}.txt");
         print($"loading scene data from {scenePath}");
         if (File.Exists(scenePath))
         {
@@ -158,6 +156,10 @@ public class SaveSystem : MonoBehaviour
         state.Clear();
         foreach (SaveableEntity saveable in FindObjectsOfType<SaveableEntity>(true))
         {
+            if (saveable.name.Contains("Soul"))
+            {
+                Debug.Log(saveable.name);
+            }
             state[saveable.UniqueId] = saveable.CaptureState();
         }
     }
@@ -170,8 +172,6 @@ public class SaveSystem : MonoBehaviour
             string id = saveable.UniqueId;
             if (state.ContainsKey(id))
                 saveable.RestoreState(state[id]);
-            else
-                saveable.Delete();
         }
     }
 
@@ -210,6 +210,6 @@ public class SaveSystem : MonoBehaviour
     public bool HasCurrentSceneSave()
     {
         int sceneIndex = SceneManager.GetActiveScene().buildIndex;
-        return File.Exists(GetPath($"scene{sceneIndex}.dat"));
+        return File.Exists(GetPath($"scene{sceneIndex}.txt"));
     }
 }

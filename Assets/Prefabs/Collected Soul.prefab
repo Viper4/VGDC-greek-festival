@@ -784,6 +784,9 @@ MonoBehaviour:
   - Enemy
   - Projectile
   - Soul
+  onLand:
+    m_PersistentCalls:
+      m_Calls: []
   fallCheckDistance: 3
   climbSpeed: 3
   movementAudio: {fileID: 4515525036801978312}
@@ -820,7 +823,7 @@ MonoBehaviour:
   - Hello!
   - I'm a soul you collected.
   - This place is the hub.
-  - If you walk into the yellow diamond you go to the sample level.
+  - Go down the well to load the first level.
   - Goodbye.
   timesPerChar:
   - 0.05

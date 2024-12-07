@@ -41,17 +41,25 @@ public class HealthSystem : MonoBehaviour
         onMaxHealthUpdate?.Invoke(maxHealth);
         if (updateHealth)
             health = maxHealth;
-        onHealthUpdate?.Invoke(1);
+        float healthPercent = health / maxHealth;
+        onHealthUpdate?.Invoke(healthPercent);
         if (healthBarSprites != null)
         {
-            foreach (SpriteRenderer sprite in healthBarSprites)
+            for(int i = 0; i < healthBarSprites.Length; i++)
             {
-                sprite.transform.localScale = healthBarScale;
+                if(i == 0)
+                {
+                    healthBarSprites[i].transform.localScale = new Vector3(healthPercent * healthBarScale.x, healthBarScale.y, healthBarScale.z);
+                }
+                else
+                {
+                    healthBarSprites[i].transform.localScale = healthBarScale;
+                }
             }
         }
         if (bossBarImage != null)
         {
-            bossBarImage.rectTransform.sizeDelta = new Vector2(bossBarWidth, bossBarImage.rectTransform.sizeDelta.y);
+            bossBarImage.rectTransform.sizeDelta = new Vector2(healthPercent * bossBarWidth, bossBarImage.rectTransform.sizeDelta.y);
         }
         yield return new WaitForFixedUpdate();
         immune = false;
@@ -70,7 +78,7 @@ public class HealthSystem : MonoBehaviour
         canUpdateHealth = true;
     }
 
-    public void HealthUpdate()
+    public void HealthUpdate(bool invokeEvent = true)
     {
         if (health <= 0)
         {
@@ -82,7 +90,8 @@ public class HealthSystem : MonoBehaviour
             health = maxHealth;
         }
         float healthPercent = health / maxHealth;
-        onHealthUpdate?.Invoke(healthPercent);
+        if(invokeEvent)
+            onHealthUpdate?.Invoke(healthPercent);
         if (healthBarSprites.Length > 0)
         {
             healthBarSprites[0].transform.localScale = new Vector3(healthPercent * healthBarScale.x, healthBarScale.y, healthBarScale.z);

@@ -14,7 +14,7 @@ public class InteractionLock : MonoBehaviour
     public void AddInteract(int amount)
     {
         numInteracts += amount;
-        if(numInteracts >= interactsForUnlock)
+        if (numInteracts >= interactsForUnlock)
         {
             Unlock();
         }

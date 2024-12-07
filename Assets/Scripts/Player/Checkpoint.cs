@@ -86,4 +86,13 @@ public class Checkpoint : MonoBehaviour
             collision.GetComponent<Player>().SetCheckpoint(this);
         }
     }
+
+    public IEnumerator SaveCooldown()
+    {
+        // Prevent checkpoint from immediately saving after loading the level
+        bool originalCanSave = canSaveState;
+        canSaveState = false;
+        yield return new WaitForEndOfFrame();
+        canSaveState = originalCanSave;
+    }
 }

@@ -32,12 +32,12 @@ public class Player : BaseMovement, ISaveable
     [SerializeField] private PauseUI pauseUI;
 
     private HealthSystem previousKill;
-    public int soulsCollected = 0;
+    public int totalSoulsCollected = 0;
+    public int levelSoulsCollected = 0;
     public int deaths = 0;
 
-    public bool updateTransformOnLoad = true;
+    public bool useSavedTransform = true;
 
-    // Called before Start()
     private void OnEnable()
     {
         if (instance == null)
@@ -58,7 +58,7 @@ public class Player : BaseMovement, ISaveable
         {
             instance.followingSouls.Clear();
             instance.lastCheckpoint = null;
-            if (!SaveSystem.instance.HasCurrentSceneSave())
+            if (!instance.useSavedTransform)
             {
                 instance.transform.SetPositionAndRotation(transform.position, transform.rotation);
             }
@@ -262,7 +262,7 @@ public class Player : BaseMovement, ISaveable
         }
         followingSouls.Clear();
         deaths++;
-        statsUI.PopupUI(deaths, soulsCollected, 0.5f); // Show stats
+        statsUI.PopupUI(deaths, levelSoulsCollected, 0.5f); // Show stats
         dying = false;
         IsGrounded = false;
         healthSystem.ResetHealth();
@@ -283,20 +283,20 @@ public class Player : BaseMovement, ISaveable
         {
             foreach (Soul followingSoul in followingSouls)
             {
-                soulsCollected++;
+                levelSoulsCollected++;
+                totalSoulsCollected++;
                 followingSoul.Fade();
             }
             // If we saved new souls show stats
             if (followingSouls.Count > 0)
-                statsUI.PopupUI(deaths, soulsCollected, 0.5f);
-            followingSouls.Clear();
+                statsUI.PopupUI(deaths, levelSoulsCollected, 0.5f);
         }
 
         // If we're setting a new checkpoint
         if (lastCheckpoint != checkpoint)
         {
             // Show stats
-            statsUI.PopupUI(deaths, soulsCollected, 0.5f);
+            statsUI.PopupUI(deaths, levelSoulsCollected, 0.5f);
 
             // If the last checkpoint isn't null, unselect it
             if (lastCheckpoint != null)
@@ -305,6 +305,7 @@ public class Player : BaseMovement, ISaveable
             lastCheckpoint = checkpoint;
         }
         checkpoint.Select(followingSouls.Count);
+        followingSouls.Clear();
     }
 
     public void PickupSoul(Soul soul)
@@ -359,7 +360,7 @@ public class Player : BaseMovement, ISaveable
         {
             lastCheckpointID = lastCheckpoint.GetComponent<SaveableEntity>().UniqueId;
         }
-        return new object[] { position, eulerAngles, velocity, followingSoulIDs, lastCheckpointID, canCoyoteJump, canDoubleJump, dashing.canDash };
+        return new object[] { position, eulerAngles, velocity, followingSoulIDs, lastCheckpointID, canCoyoteJump, canDoubleJump, dashing.canDash, levelSoulsCollected };
     }
 
     public override void RestoreState(object state)
@@ -375,12 +376,12 @@ public class Player : BaseMovement, ISaveable
         dashing.canDash = (bool)data[7];
         dashing.UpdateDashIndicator();
 
-        if (updateTransformOnLoad)
+        if (useSavedTransform)
         {
             transform.position = new Vector3(position[0], position[1], position[2]);
             transform.eulerAngles = new Vector3(eulerAngles[0], eulerAngles[1], eulerAngles[2]);
             rb.velocity = new Vector2(velocity[0], velocity[1]);
-            updateTransformOnLoad = true;
+            useSavedTransform = false;
         }
 
         for(int i = 0; i < followingSoulIDs.Length; i++)
@@ -396,10 +397,13 @@ public class Player : BaseMovement, ISaveable
             }
             followingSouls.Add(soul);
         }
+
+        levelSoulsCollected = (int)data[8];
         if (lastCheckpointID != null)
         {
             lastCheckpoint = SaveSystem.instance.saveableEntityDict[lastCheckpointID].GetComponent<Checkpoint>();
-            lastCheckpoint.Select(0, false);
+            lastCheckpoint.Select(levelSoulsCollected, false);
+            StartCoroutine(lastCheckpoint.SaveCooldown());
         }
     }
 }

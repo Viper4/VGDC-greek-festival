@@ -4751,9 +4751,10 @@ MonoBehaviour:
   deathTime: 1
   statsUI: {fileID: 2629752551155893318}
   pauseUI: {fileID: 5315934267357499005}
-  soulsCollected: 0
+  totalSoulsCollected: 0
+  levelSoulsCollected: 0
   deaths: 0
-  updateTransformOnLoad: 0
+  useSavedTransform: 1
 --- !u!114 &7853303006011264248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5368,18 +5369,6 @@ MonoBehaviour:
   onHealthUpdate:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2629752551155893318}
-        m_TargetAssemblyTypeName: StatsUI, Assembly-CSharp
-        m_MethodName: SetHealth
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 2629752551155893318}
         m_TargetAssemblyTypeName: StatsUI, Assembly-CSharp
         m_MethodName: SetHealth
