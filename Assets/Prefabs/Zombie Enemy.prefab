@@ -609,6 +609,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   _collider: {fileID: 0}
   stairs: {fileID: 0}
+  gravityScale: 1
   runSpeed: 4
   walkSpeed: 2
   crouchSpeed: 1
@@ -621,6 +622,9 @@ MonoBehaviour:
   - Enemy
   - Projectile
   - Soul
+  onLand:
+    m_PersistentCalls:
+      m_Calls: []
   fallCheckDistance: 3
   climbSpeed: 2
   movementAudio: {fileID: 2517661995053869172}

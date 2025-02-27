@@ -23,7 +23,6 @@ public class HealthSystem : MonoBehaviour
     [SerializeField] private UnityEvent<float> onMaxHealthUpdate; // Exact max health value
     [SerializeField] private UnityEvent onDeath;
     private bool canUpdateHealth = true;
-    private bool immune = false;
 
     public float KillHealAmount;
 
@@ -34,9 +33,9 @@ public class HealthSystem : MonoBehaviour
         ResetHealth(false);  // In case we want to start not at max health
     }
 
-    private IEnumerator ResetHealthRoutine(bool updateHealth)
+    public void ResetHealth(bool updateHealth = true)
     {
-        immune = true;
+        StopAllCoroutines(); // In case a routine is trying to change health, stop everything
         maxHealth = originalMaxHealth;
         onMaxHealthUpdate?.Invoke(maxHealth);
         if (updateHealth)
@@ -45,9 +44,9 @@ public class HealthSystem : MonoBehaviour
         onHealthUpdate?.Invoke(healthPercent);
         if (healthBarSprites != null)
         {
-            for(int i = 0; i < healthBarSprites.Length; i++)
+            for (int i = 0; i < healthBarSprites.Length; i++)
             {
-                if(i == 0)
+                if (i == 0)
                 {
                     healthBarSprites[i].transform.localScale = new Vector3(healthPercent * healthBarScale.x, healthBarScale.y, healthBarScale.z);
                 }
@@ -61,14 +60,6 @@ public class HealthSystem : MonoBehaviour
         {
             bossBarImage.rectTransform.sizeDelta = new Vector2(healthPercent * bossBarWidth, bossBarImage.rectTransform.sizeDelta.y);
         }
-        yield return new WaitForFixedUpdate();
-        immune = false;
-    }
-
-    public void ResetHealth(bool updateHealth = true)
-    {
-        StopAllCoroutines();
-        StartCoroutine(ResetHealthRoutine(updateHealth));
     }
 
     private IEnumerator HealthCooldown(float time)
@@ -113,7 +104,7 @@ public class HealthSystem : MonoBehaviour
 
     public bool AddHealth(float amount, float cooldown, bool overrideCooldown = false)
     {
-        if (invincible || immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
+        if (invincible || amount == 0 || (!canUpdateHealth && !overrideCooldown))
             return false;
         health += amount;
         StartCoroutine(HealthCooldown(cooldown));
@@ -123,7 +114,7 @@ public class HealthSystem : MonoBehaviour
 
     public bool SetHealth(float amount, float cooldown, bool overrideCooldown = false)
     {
-        if (invincible || immune || amount == health || (!canUpdateHealth && !overrideCooldown))
+        if (invincible || amount == health || (!canUpdateHealth && !overrideCooldown))
             return false;
         health = amount;
         StartCoroutine(HealthCooldown(cooldown));
@@ -166,7 +157,7 @@ public class HealthSystem : MonoBehaviour
 
     public bool AddMaxHealth(float amount, float cooldown, bool overrideCooldown = false)
     {
-        if (invincible || immune || amount == 0 || (!canUpdateHealth && !overrideCooldown))
+        if (invincible || amount == 0 || (!canUpdateHealth && !overrideCooldown))
             return false;
         maxHealth += amount;
         StartCoroutine(HealthCooldown(cooldown));
@@ -176,7 +167,7 @@ public class HealthSystem : MonoBehaviour
 
     public bool SetMaxHealth(float amount, float cooldown, bool overrideCooldown = false)
     {
-        if (invincible || immune || amount == maxHealth || (!canUpdateHealth && !overrideCooldown))
+        if (invincible || amount == maxHealth || (!canUpdateHealth && !overrideCooldown))
             return false;
         maxHealth = amount;
         StartCoroutine(HealthCooldown(cooldown));

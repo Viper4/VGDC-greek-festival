@@ -4469,11 +4469,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3729971121194765665, guid: 4d5636b4bdcbfd5418f7091699a19818, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 45.199997
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 3729971121194765665, guid: 4d5636b4bdcbfd5418f7091699a19818, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.100000024
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 3729971121194765665, guid: 4d5636b4bdcbfd5418f7091699a19818, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5058,6 +5058,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   _collider: {fileID: 0}
   stairs: {fileID: 0}
+  gravityScale: 1
   runSpeed: 5
   walkSpeed: 2
   crouchSpeed: 1
@@ -5070,6 +5071,9 @@ MonoBehaviour:
   - Enemy
   - Projectile
   - Soul
+  onLand:
+    m_PersistentCalls:
+      m_Calls: []
   fallCheckDistance: 3
   climbSpeed: 2
   movementAudio: {fileID: 0}

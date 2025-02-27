@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Stairs : Trigger
@@ -98,7 +97,7 @@ public class Stairs : Trigger
 
         if(!TryGetComponent(out BoxCollider2D triggerCollider))
         {
-            triggerCollider = transform.AddComponent<BoxCollider2D>();
+            triggerCollider = gameObject.AddComponent<BoxCollider2D>();
         }
         triggerCollider.isTrigger = true;
 

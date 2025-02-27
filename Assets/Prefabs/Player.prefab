@@ -2678,7 +2678,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7722121182631698393}
   - component: {fileID: 7110723774120596830}
-  - component: {fileID: 1482472124851924759}
   - component: {fileID: 1721915463431178170}
   - component: {fileID: 2982843961935162859}
   m_Layer: 0
@@ -2756,14 +2755,6 @@ Camera:
   m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &1482472124851924759
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4913056891811428036}
-  m_Enabled: 1
 --- !u!114 &1721915463431178170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3037,6 +3028,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1267111733965913311}
   - component: {fileID: 777191910454209965}
+  - component: {fileID: 7948489093792460191}
   m_Layer: 0
   m_Name: Health Bar Parent
   m_TagString: Untagged
@@ -3081,6 +3073,14 @@ PositionConstraint:
   m_Sources:
   - sourceTransform: {fileID: 1399390001140983904}
     weight: 1
+--- !u!81 &7948489093792460191
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6001076023242404602}
+  m_Enabled: 1
 --- !u!1 &6090000918147775202
 GameObject:
   m_ObjectHideFlags: 0
@@ -4704,6 +4704,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   _collider: {fileID: 0}
   stairs: {fileID: 0}
+  gravityScale: 1
   runSpeed: 10
   walkSpeed: 5
   crouchSpeed: 2

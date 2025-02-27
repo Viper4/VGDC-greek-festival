@@ -26,6 +26,11 @@ public class HealthTrigger : Trigger
         TryGetComponent(out audioSource);
     }
 
+    private void OnDisable()
+    {
+        canUse = true; // Coroutines get stopped when the gameobject gets disabled
+    }
+
     private IEnumerator UseCooldown()
     {
         canUse = false;
